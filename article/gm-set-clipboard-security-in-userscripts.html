@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GM_setClipboard Security in Userscripts - userscript</title>
+    <meta name="description" content="This article provides an overview of the GMsetClipboard function used in browser userscripts, detailing its purpose, syntax, and critical security constraints. It covers how userscript managers handle clipboard access, the risks of clipboard hijacking, a">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/gm-set-clipboard-security-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GM_setClipboard Security in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/gm-set-clipboard-security-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article provides an overview of the GMsetClipboard function used in browser userscripts, detailing its purpose, syntax, and critical security constraints. It covers how userscript managers handle clipboard access, the risks of clipboard hijacking, a" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="gm_setclipboard-security-in-userscripts">GM_setClipboard
+Security in Userscripts</h1>
+<p>This article provides an overview of the <code>GM_setClipboard</code>
+function used in browser userscripts, detailing its purpose, syntax, and
+critical security constraints. It covers how userscript managers handle
+clipboard access, the risks of clipboard hijacking, and the safeguards
+enforced to protect user data.</p>
+<h2 id="what-is-gm_setclipboard">What is GM_setClipboard?</h2>
+<p><code>GM_setClipboard</code> is a specialized API function provided
+by userscript managers such as Tampermonkey, Violentmonkey, and
+Greasemonkey. It allows userscripts to programmatically write data—such
+as plain text, HTML, or specific MIME types—directly to the operating
+system's clipboard.</p>
+<p>Unlike standard web page scripts that rely on the DOM-restricted
+<code>navigator.clipboard</code> API, <code>GM_setClipboard</code>
+offers a streamlined, cross-browser method for modifying clipboard
+contents across any web domain where the script is active.</p>
+<h3 id="basic-syntax">Basic Syntax</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_setClipboard</span>(data<span class="op">,</span> info)<span class="op">;</span></span></code></pre></div>
+<ul>
+<li><strong><code>data</code></strong>: The string or content to be
+copied to the clipboard.</li>
+<li><strong><code>info</code></strong>: <em>(Optional)</em> A string
+defining the MIME type (e.g., <code>'text'</code> or
+<code>'html'</code>) or an object specifying data types, depending on
+the userscript engine.</li>
+</ul>
+<hr />
+<h2 id="security-constraints-and-risk-mitigation">Security Constraints
+and Risk Mitigation</h2>
+<p>Granting scripts access to the system clipboard presents security
+risks, such as silent data tampering. To prevent abuse, userscript
+managers and modern browsers enforce several security constraints on
+<code>GM_setClipboard</code>.</p>
+<h3 id="1-mandatory-scope-declaration-grant">1. Mandatory Scope
+Declaration (<code>@grant</code>)</h3>
+<p>A userscript cannot execute <code>GM_setClipboard</code> unless it
+explicitly requests access in its metadata block:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Clipboard Helper</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_setClipboard</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>If <code>// @grant GM_setClipboard</code> is missing, the function is
+unavailable within the script's execution context. This prevents
+unauthorized or injected scripts from secretly accessing the API.</p>
+<h3 id="2-prevention-of-clipboard-hijacking">2. Prevention of Clipboard
+Hijacking</h3>
+<p>Clipboard hijacking occurs when a malicious script replaces copied
+content (such as cryptocurrency wallet addresses, shell commands, or
+passwords) with attacker-controlled data.</p>
+<p>To mitigate this:</p>
+<ul>
+<li><strong>Sandbox Isolation:</strong> <code>GM_setClipboard</code> is
+isolated within the userscript execution context. Native web page
+scripts cannot call or hijack this function.</li>
+<li><strong>Explicit Triggers:</strong> Script developers are expected
+to bind clipboard actions to explicit user actions, reducing the
+likelihood of unexpected overwrites.</li>
+</ul>
+<h3 id="3-user-gesture-requirements">3. User Gesture Requirements</h3>
+<p>Modern browser security models often require an explicit user gesture
+(such as a click or key press) to permit clipboard modifications. If
+<code>GM_setClipboard</code> is called asynchronously or inside
+automated background loops without direct user interaction, browser
+security policies or the userscript manager may block the operation.</p>
+<h3 id="4-privilege-separation">4. Privilege Separation</h3>
+<p>The userscript engine ensures that web page scripts running on the
+target site cannot detect or hook into <code>GM_setClipboard</code>.
+This prevents malicious websites from abusing elevated userscript
+permissions to manipulate the host system's clipboard.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

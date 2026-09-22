@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Map Custom Keyboard Shortcuts Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can fully map custom keyboard shortcuts to perform specific web page actions. Browser script managers such as Tampermonkey, Violentmonkey, or Greasemonkey allow you to execute custom JavaScript on target websites, listening for user keypresse">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-map-custom-keyboard-shortcuts-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Map Custom Keyboard Shortcuts Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-map-custom-keyboard-shortcuts-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can fully map custom keyboard shortcuts to perform specific web page actions. Browser script managers such as Tampermonkey, Violentmonkey, or Greasemonkey allow you to execute custom JavaScript on target websites, listening for user keypresse" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-map-custom-keyboard-shortcuts-using-userscripts">How to
+Map Custom Keyboard Shortcuts Using Userscripts</h1>
+<p>Userscripts can fully map custom keyboard shortcuts to perform
+specific web page actions. Browser script managers such as Tampermonkey,
+Violentmonkey, or Greasemonkey allow you to execute custom JavaScript on
+target websites, listening for user keypresses and triggering
+interactions like clicking buttons, navigating pages, or toggling UI
+elements. This article explains how keyboard shortcuts work within
+userscripts, provides a functional code example, and details best
+practices for handling browser defaults and input fields.</p>
+<h2 id="how-shortcut-userscripts-function">How Shortcut Userscripts
+Function</h2>
+<p>Userscripts manipulate the web page by attaching global event
+listeners to the <code>window</code> or <code>document</code> object.
+When a user presses a key, the browser generates a <code>keydown</code>
+or <code>keyup</code> event. The script captures this event, checks if
+the pressed key combination matches your designated shortcut, and
+executes the target action by interacting with the Document Object Model
+(DOM).</p>
+<h2 id="basic-userscript-example">Basic Userscript Example</h2>
+<p>Below is a complete JavaScript template for a userscript that
+triggers a site action using a custom shortcut (e.g., pressing
+<code>Shift + G</code> to click a specific button).</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Custom Keyboard Shortcut Mapper</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Map custom keys to page actions</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;function&#39;</span> <span class="op">===</span> <span class="kw">typeof</span> <span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span> <span class="op">&amp;&amp;</span> <span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;keydown&#39;</span><span class="op">,</span> <span class="kw">function</span>(<span class="bu">event</span>) {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Prevent shortcuts from triggering while typing in input fields</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> activeElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="at">activeElement</span><span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> isInputField <span class="op">=</span> activeElement<span class="op">.</span><span class="at">tagName</span> <span class="op">===</span> <span class="st">&#39;INPUT&#39;</span> <span class="op">||</span> </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                             activeElement<span class="op">.</span><span class="at">tagName</span> <span class="op">===</span> <span class="st">&#39;TEXTAREA&#39;</span> <span class="op">||</span> </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                             activeElement<span class="op">.</span><span class="at">isContentEditable</span><span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (isInputField) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Example: Trigger action on Shift + G</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">shiftKey</span> <span class="op">&amp;&amp;</span> <span class="bu">event</span><span class="op">.</span><span class="fu">key</span><span class="op">.</span><span class="fu">toLowerCase</span>() <span class="op">===</span> <span class="st">&#39;g&#39;</span>) {</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            <span class="bu">event</span><span class="op">.</span><span class="fu">preventDefault</span>()<span class="op">;</span> <span class="co">// Stop default page/browser behavior</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Target a specific element on the page and perform an action</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>            <span class="kw">const</span> targetButton <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.submit-btn&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (targetButton) {</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                targetButton<span class="op">.</span><span class="fu">click</span>()<span class="op">;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="essential-implementation-rules">Essential Implementation
+Rules</h2>
+<h3 id="1-ignore-active-input-fields">1. Ignore Active Input Fields</h3>
+<p>Without proper checks, your custom shortcuts will trigger while
+typing standard text into search bars, comment boxes, or form fields.
+Always inspect <code>document.activeElement</code> to verify the user is
+not currently focused inside an <code>&lt;input&gt;</code>,
+<code>&lt;textarea&gt;</code>, or <code>contenteditable</code> element
+before executing a shortcut action.</p>
+<h3 id="2-prevent-default-browser-behaviors">2. Prevent Default Browser
+Behaviors</h3>
+<p>Many key combinations are reserved by browsers (such as
+<code>Ctrl + S</code> for saving or <code>Ctrl + P</code> for printing).
+Calling <code>event.preventDefault()</code> inside your listener stops
+the browser's native response so only your script's designated action
+executes.</p>
+<h3 id="3-handle-modifier-keys-accurately">3. Handle Modifier Keys
+Accurately</h3>
+<p>To map complex combinations, evaluate the Boolean properties attached
+to the event object:</p>
+<ul>
+<li><code>event.ctrlKey</code> (Control key)</li>
+<li><code>event.altKey</code> (Alt / Option key)</li>
+<li><code>event.shiftKey</code> (Shift key)</li>
+<li><code>event.metaKey</code> (Command key on macOS, Windows key on
+Windows)</li>
+</ul>
+<p>Match these modifiers with <code>event.key</code> or
+<code>event.code</code> to ensure cross-platform consistency.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

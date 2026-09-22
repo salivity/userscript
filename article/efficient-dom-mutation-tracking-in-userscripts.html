@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Efficient DOM Mutation Tracking in Userscripts - userscript</title>
+    <meta name="description" content="Modern dynamic websites constantly update their layout without refreshing the page, making real-time DOM tracking essential for userscripts. To observe these continuous changes without triggering browser lag or visual frame drops, userscripts rely on the">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/efficient-dom-mutation-tracking-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Efficient DOM Mutation Tracking in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/efficient-dom-mutation-tracking-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern dynamic websites constantly update their layout without refreshing the page, making real-time DOM tracking essential for userscripts. To observe these continuous changes without triggering browser lag or visual frame drops, userscripts rely on the" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="efficient-dom-mutation-tracking-in-userscripts">Efficient DOM
+Mutation Tracking in Userscripts</h1>
+<p>Modern dynamic websites constantly update their layout without
+refreshing the page, making real-time DOM tracking essential for
+userscripts. To observe these continuous changes without triggering
+browser lag or visual frame drops, userscripts rely on the native
+<code>MutationObserver</code> API combined with optimization strategies
+like target scoping, attribute filtering, debouncing, and immediate
+observer cleanup.</p>
+<h2 id="the-core-mechanism-mutationobserver-api">The Core Mechanism:
+MutationObserver API</h2>
+<p>Legacy web development relied on <code>MutationEvents</code> (such as
+<code>DOMNodeInserted</code>), which fired synchronously for every
+single DOM change, causing severe performance degradation. Modern
+userscripts use the <code>MutationObserver</code> API instead.</p>
+<p><code>MutationObserver</code> operates asynchronously. Rather than
+interrupting the browser's main rendering thread for every single
+modification, it collects DOM changes into a queue and delivers them in
+batches as an array of <code>MutationRecord</code> objects.</p>
+<h2 id="strategies-to-eliminate-performance-bottlenecks">Strategies to
+Eliminate Performance Bottlenecks</h2>
+<p>While <code>MutationObserver</code> is natively optimized, tracking
+large DOM trees incorrectly can still cause performance issues.
+Userscripts maintain high performance using several core practices.</p>
+<h3 id="1-scope-observations-to-specific-containers">1. Scope
+Observations to Specific Containers</h3>
+<p>Avoid observing the entire <code>document.body</code> or
+<code>document.documentElement</code> with <code>subtree: true</code>
+unless strictly necessary. Instead, attach the observer to the nearest
+static parent container of the dynamic content you want to modify.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Inefficient: Tracking the entire document tree</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Efficient: Tracking only the specific dynamic feed</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> feedContainer <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.feed-container&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (feedContainer) {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  observer<span class="op">.</span><span class="fu">observe</span>(feedContainer<span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="2-restrict-mutation-configuration-flags">2. Restrict Mutation
+Configuration Flags</h3>
+<p>Only enable the specific mutation types your script needs. If you
+only care about new elements being added, configure the observer for
+<code>childList</code> and disable <code>attributes</code> or
+<code>characterData</code>.</p>
+<p>If attribute tracking is required, limit the scope using
+<code>attributeFilter</code> so the observer only triggers for relevant
+changes, such as class or style updates:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(targetNode<span class="op">,</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">attributes</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">attributeFilter</span><span class="op">:</span> [<span class="st">&#39;class&#39;</span><span class="op">,</span> <span class="st">&#39;data-loaded&#39;</span>] <span class="co">// Ignore all other attribute changes</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="3-debounce-and-batch-processing">3. Debounce and Batch
+Processing</h3>
+<p>When web applications insert hundreds of elements rapidly (such as
+infinite-scroll lists), processing every mutation record individually
+creates CPU bottlenecks. Userscripts resolve this by debouncing
+execution or utilizing <code>requestAnimationFrame</code> to batch DOM
+operations into a single repaint cycle.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> mutationQueue <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> isProcessing <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  mutationQueue<span class="op">.</span><span class="fu">push</span>(<span class="op">...</span>mutations)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>isProcessing) {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    isProcessing <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">requestAnimationFrame</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">processMutations</span>(mutationQueue)<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>      mutationQueue <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      isProcessing <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="4-disconnect-observers-upon-target-detection">4. Disconnect
+Observers Upon Target Detection</h3>
+<p>Many userscripts only need to track mutations until a specific
+element appears on the screen (e.g., waiting for an ad container or a
+late-loading button). Once the element is detected and modified,
+immediately calling <code>observer.disconnect()</code> stops all
+background processing and frees system memory.</p>
+<h3 id="5-combine-direct-queries-with-observers">5. Combine Direct
+Queries with Observers</h3>
+<p>Instead of relying solely on a persistent observer, perform a direct
+<code>querySelector</code> check when the script loads. If the element
+already exists in the static HTML, process it immediately and avoid
+initializing a <code>MutationObserver</code> altogether.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

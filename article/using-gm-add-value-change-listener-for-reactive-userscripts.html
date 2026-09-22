@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using GM_addValueChangeListener for Reactive Userscripts - userscript</title>
+    <meta name="description" content="The GMaddValueChangeListener function provided by userscript managers like Tampermonkey and Violentmonkey allows developers to implement reactive programming patterns across browser tabs and isolated script execution contexts. By attaching callback funct">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/using-gm-add-value-change-listener-for-reactive-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Using GM_addValueChangeListener for Reactive Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/using-gm-add-value-change-listener-for-reactive-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMaddValueChangeListener function provided by userscript managers like Tampermonkey and Violentmonkey allows developers to implement reactive programming patterns across browser tabs and isolated script execution contexts. By attaching callback funct" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="using-gm_addvaluechangelistener-for-reactive-userscripts">Using
+GM_addValueChangeListener for Reactive Userscripts</h1>
+<p>The <code>GM_addValueChangeListener</code> function provided by
+userscript managers like Tampermonkey and Violentmonkey allows
+developers to implement reactive programming patterns across browser
+tabs and isolated script execution contexts. By attaching callback
+functions to specific storage keys managed via <code>GM_setValue</code>,
+userscripts can automatically respond to state changes in real time
+without resorting to expensive interval polling. This article explains
+how <code>GM_addValueChangeListener</code> works, its parameters, and
+how to structure your userscript to build responsive, event-driven
+cross-tab features.</p>
+<h2 id="understanding-the-reactive-flow-with-gm-storage">Understanding
+the Reactive Flow with GM Storage</h2>
+<p>Traditional web scripts often rely on continuous loops
+(<code>setInterval</code>) or manual DOM inspection to detect state
+changes across different tabs. Reactive programming, by contrast, relies
+on event streams where data emitters push updates directly to
+consumers.</p>
+<p>In a userscript environment, <code>GM_setValue</code> acts as the
+state publisher, and <code>GM_addValueChangeListener</code> acts as the
+reactive subscriber. When any open tab updates a target key using
+<code>GM_setValue</code>, the userscript engine intercepts the
+modification and immediately triggers all registered listener functions
+subscribed to that key across all tabs.</p>
+<h2 id="api-syntax-and-parameters">API Syntax and Parameters</h2>
+<p>To set up a listener, invoke <code>GM_addValueChangeListener</code>
+with the target key name and a callback function:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> listenerId <span class="op">=</span> <span class="fu">GM_addValueChangeListener</span>(keyName<span class="op">,</span> <span class="kw">function</span>(name<span class="op">,</span> oldValue<span class="op">,</span> newValue<span class="op">,</span> remote) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Reactive logic handles the state change here</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>The callback function receives four distinct arguments:</p>
+<ul>
+<li><strong><code>name</code></strong>: A string representing the name
+of the storage key that changed.</li>
+<li><strong><code>oldValue</code></strong>: The previous value stored
+under the key before the update occurred.</li>
+<li><strong><code>newValue</code></strong>: The newly assigned value
+stored under the key.</li>
+<li><strong><code>remote</code></strong>: A boolean flag indicating
+whether the change originated from a different tab (<code>true</code>)
+or the current execution context (<code>false</code>).</li>
+</ul>
+<h2 id="implementing-reactive-patterns-in-userscripts">Implementing
+Reactive Patterns in Userscripts</h2>
+<h3 id="1-cross-tab-state-synchronization">1. Cross-Tab State
+Synchronization</h3>
+<p>You can synchronize UI states—such as dark mode toggles or user
+preferences—instantly across multiple open instances of a website.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Register the listener for reactive UI updates</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addValueChangeListener</span>(<span class="st">&#39;theme_preference&#39;</span><span class="op">,</span> (name<span class="op">,</span> oldValue<span class="op">,</span> newValue<span class="op">,</span> remote) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (remote) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">applyTheme</span>(newValue)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Function to update the DOM</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">applyTheme</span>(theme) {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">toggle</span>(<span class="st">&#39;dark-mode&#39;</span><span class="op">,</span> theme <span class="op">===</span> <span class="st">&#39;dark&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">// State trigger (e.g., bound to a button click)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">toggleTheme</span>() {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> currentTheme <span class="op">=</span> <span class="fu">GM_getValue</span>(<span class="st">&#39;theme_preference&#39;</span><span class="op">,</span> <span class="st">&#39;light&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> newTheme <span class="op">=</span> currentTheme <span class="op">===</span> <span class="st">&#39;light&#39;</span> <span class="op">?</span> <span class="st">&#39;dark&#39;</span> <span class="op">:</span> <span class="st">&#39;light&#39;</span><span class="op">;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Applying local update and propagating to other tabs</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">applyTheme</span>(newTheme)<span class="op">;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="fu">GM_setValue</span>(<span class="st">&#39;theme_preference&#39;</span><span class="op">,</span> newTheme)<span class="op">;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="2-multi-tab-communication-bus">2. Multi-Tab Communication
+Bus</h3>
+<p><code>GM_addValueChangeListener</code> can serve as a lightweight
+event bus between tabs by transmitting JSON objects or timestamped
+payload messages.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Listener acting as an event consumer</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addValueChangeListener</span>(<span class="st">&#39;event_bus&#39;</span><span class="op">,</span> (name<span class="op">,</span> oldValue<span class="op">,</span> newValue<span class="op">,</span> remote) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>remote <span class="op">||</span> <span class="op">!</span>newValue) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">switch</span> (newValue<span class="op">.</span><span class="at">type</span>) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">case</span> <span class="st">&#39;LOGOUT_EVENT&#39;</span><span class="op">:</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&#39;User logged out in another tab. Redirecting...&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="bu">window</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="fu">reload</span>()<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">case</span> <span class="st">&#39;NOTIFICATION&#39;</span><span class="op">:</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">showBanner</span>(newValue<span class="op">.</span><span class="at">message</span>)<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">// Helper to broadcast events</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">broadcastEvent</span>(type<span class="op">,</span> payload <span class="op">=</span> {}) {</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">GM_setValue</span>(<span class="st">&#39;event_bus&#39;</span><span class="op">,</span> {</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">type</span><span class="op">:</span> type<span class="op">,</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="op">...</span>payload<span class="op">,</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="dt">timestamp</span><span class="op">:</span> <span class="bu">Date</span><span class="op">.</span><span class="fu">now</span>() <span class="co">// Ensures value changes even if payload is similar</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="3-cleanup-and-unsubscribing">3. Cleanup and Unsubscribing</h3>
+<p>To prevent memory leaks and unnecessary callback executions when
+dynamic components are unmounted, remove listeners using
+<code>GM_removeValueChangeListener</code>.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Store the ID returned upon creation</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> listenerId <span class="op">=</span> <span class="fu">GM_addValueChangeListener</span>(<span class="st">&#39;active_task&#39;</span><span class="op">,</span> handleTaskChange)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Remove the listener when it is no longer required</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_removeValueChangeListener</span>(listenerId)<span class="op">;</span></span></code></pre></div>
+<h2 id="best-practices">Best Practices</h2>
+<ul>
+<li><strong>Filter Remote Events</strong>: Always check the
+<code>remote</code> boolean parameter. If your current tab already
+updated its local state before calling <code>GM_setValue</code>, acting
+on non-remote changes can lead to redundant operations or infinite
+loops.</li>
+<li><strong>Ensure Value Uniqueness</strong>: The listener triggers only
+when the stored value actually changes. If broadcasting identical
+objects sequentially, include a unique property (such as
+<code>Date.now()</code> or a UUID) to guarantee the update event
+fires.</li>
+<li><strong>Grant Header Permissions</strong>: Ensure your userscript
+metadata block includes <code>@grant GM_addValueChangeListener</code>,
+<code>@grant GM_removeValueChangeListener</code>,
+<code>@grant GM_setValue</code>, and
+<code>@grant GM_getValue</code>.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

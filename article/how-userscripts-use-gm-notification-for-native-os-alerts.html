@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Use GM_notification for Native OS Alerts - userscript</title>
+    <meta name="description" content="Userscripts rely on browser extensions like Tampermonkey or Violentmonkey to bridge the gap between web pages and the host operating system. The GMnotification API is a specialized function provided by these extension managers that enables scripts to dis">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-use-gm-notification-for-native-os-alerts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Use GM_notification for Native OS Alerts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-use-gm-notification-for-native-os-alerts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts rely on browser extensions like Tampermonkey or Violentmonkey to bridge the gap between web pages and the host operating system. The GMnotification API is a specialized function provided by these extension managers that enables scripts to dis" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-use-gm_notification-for-native-os-alerts">How
+Userscripts Use GM_notification for Native OS Alerts</h1>
+<p>Userscripts rely on browser extensions like Tampermonkey or
+Violentmonkey to bridge the gap between web pages and the host operating
+system. The <code>GM_notification</code> API is a specialized function
+provided by these extension managers that enables scripts to display
+native desktop notifications outside the standard web browser viewport.
+This article breaks down how the API functions, how to configure
+metadata grants, and how to implement custom alerts with action
+handlers.</p>
+<h2 id="understanding-the-gm_notification-api">Understanding the
+GM_notification API</h2>
+<p>Standard web page notifications require explicit per-site permissions
+and often fail if the tab is inactive or closed.
+<code>GM_notification</code> bypasses site-specific web API restrictions
+by leveraging the userscript manager's higher-level extension
+privileges. When a script invokes this API, the userscript manager sends
+the payload to the browser's background process, which routes the
+request directly to the operating system's native notification
+system.</p>
+<h2 id="requiring-the-api-grant">Requiring the API Grant</h2>
+<p>To use <code>GM_notification</code>, you must declare it within your
+userscript's metadata block using the <code>@grant</code> directive.
+Without this line, the execution environment will not expose the API,
+resulting in a runtime error.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         OS Notification Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://example.com/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_notification</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="syntax-and-implementation">Syntax and Implementation</h2>
+<p>The <code>GM_notification</code> API accepts parameters either as an
+options object or as individual positional arguments. Using an options
+object is the recommended approach for readability and flexibility.</p>
+<h3 id="object-syntax-example">Object Syntax Example</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_notification</span>({</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">text</span><span class="op">:</span> <span class="st">&quot;Your process has completed successfully.&quot;</span><span class="op">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">title</span><span class="op">:</span> <span class="st">&quot;Process Update&quot;</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">timeout</span><span class="op">:</span> <span class="dv">4000</span><span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">onclick</span><span class="op">:</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">window</span><span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;User interacted with the alert.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">ondone</span><span class="op">:</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Notification cleared.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="positional-arguments-syntax">Positional Arguments Syntax</h3>
+<p>An alternative, simplified syntax allows sending quick alerts without
+defining an object:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Syntax: GM_notification(text, title, image, onclick)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_notification</span>(<span class="st">&quot;Download complete!&quot;</span><span class="op">,</span> <span class="st">&quot;File Manager&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="key-configuration-options">Key Configuration Options</h2>
+<p>When passing an object to <code>GM_notification</code>, the API
+supports several properties:</p>
+<ul>
+<li><strong>text</strong> <em>(String)</em>: The main body text
+displayed inside the notification alert.</li>
+<li><strong>title</strong> <em>(String)</em>: The bold headline shown at
+the top of the alert box.</li>
+<li><strong>image</strong> <em>(String)</em>: An absolute URL pointing
+to an icon image to display alongside the text.</li>
+<li><strong>timeout</strong> <em>(Number)</em>: The time in milliseconds
+before the alert automatically closes. Setting this to <code>0</code>
+keeps the notification open until the user manually dismisses it.</li>
+<li><strong>onclick</strong> <em>(Function)</em>: A callback triggered
+when the user clicks anywhere on the notification card.</li>
+<li><strong>ondone</strong> <em>(Function)</em>: A callback executed
+when the notification disappears, whether closed automatically or
+manually.</li>
+<li><strong>silent</strong> <em>(Boolean)</em>: Optional property
+supported by select managers to mute notification sounds.</li>
+</ul>
+<h2 id="native-os-integration">Native OS Integration</h2>
+<p>Because notifications route through the desktop manager, they
+automatically adopt system-level styling and behavior:</p>
+<ul>
+<li><strong>Windows</strong>: Appears via the Windows Action Center and
+follows system Focus Assist rules.</li>
+<li><strong>macOS</strong>: Displays in the top-right corner and logs to
+the macOS Notification Center.</li>
+<li><strong>Linux</strong>: Routes through the desktop environment's
+default notification daemon (such as <code>libnotify</code>).</li>
+</ul>
+<p>Users can manage sound, banner style, and application permissions for
+these alerts directly inside their operating system's global
+notification settings.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

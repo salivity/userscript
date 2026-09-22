@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do Userscripts Store Data Across Browser Sessions? - userscript</title>
+    <meta name="description" content="Userscripts manage persistent data storage across browser sessions primarily by leveraging specialized API functions provided by extension managers like Tampermonkey or Violentmonkey, as well as native web storage APIs. While standard web mechanisms like">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-userscripts-store-data-across-browser-sessions">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do Userscripts Store Data Across Browser Sessions? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-userscripts-store-data-across-browser-sessions" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts manage persistent data storage across browser sessions primarily by leveraging specialized API functions provided by extension managers like Tampermonkey or Violentmonkey, as well as native web storage APIs. While standard web mechanisms like" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-userscripts-store-data-across-browser-sessions">How Do
+Userscripts Store Data Across Browser Sessions?</h1>
+<p>Userscripts manage persistent data storage across browser sessions
+primarily by leveraging specialized API functions provided by extension
+managers like Tampermonkey or Violentmonkey, as well as native web
+storage APIs. While standard web mechanisms like
+<code>localStorage</code> and <code>IndexedDB</code> bind data strictly
+to a single domain, userscript-specific APIs allow developers to store
+preferences, tokens, and state variables securely across different
+domains or script updates. Understanding how these storage mechanisms
+differ—particularly in scope, security, and persistence—is essential for
+building reliable, cross-session browser scripts.</p>
+<hr />
+<h2 id="native-web-storage-vs-userscript-apis">Native Web Storage vs.
+Userscript APIs</h2>
+<p>When developing a userscript, you generally choose between standard
+browser APIs and userscript-manager APIs. Each serves distinct use cases
+depending on whether your script runs on a single site or across
+multiple domains.</p>
+<h3 id="1-web-storage-apis-localstorage--indexeddb">1. Web Storage APIs
+(<code>localStorage</code> &amp; <code>IndexedDB</code>)</h3>
+<p>These are the standard storage methods built directly into modern web
+browsers.</p>
+<ul>
+<li><strong><code>localStorage</code></strong>: Stores key-value pairs
+as strings. It persists until explicitly cleared by the user or
+script.</li>
+<li><strong><code>IndexedDB</code></strong>: A low-level API for
+structured, client-side storage of significant amounts of data,
+including files and blobs.</li>
+</ul>
+<blockquote>
+<p><strong>Key Limitation:</strong> Web Storage APIs are bound by the
+<strong>Same-Origin Policy</strong>. Data stored on
+<code>example.com</code> via <code>localStorage</code> cannot be
+accessed when the script runs on <code>another-domain.com</code>.
+Additionally, domain scripts can potentially access or modify data
+stored in <code>localStorage</code>.</p>
+</blockquote>
+<h3 id="2-userscript-manager-storage-gm_setvalue--gm_getvalue">2.
+Userscript Manager Storage (<code>GM_setValue</code> &amp;
+<code>GM_getValue</code>)</h3>
+<p>Userscript managers (such as Tampermonkey, Violentmonkey, and
+Greasemonkey) provide dedicated storage APIs that bypass same-origin
+restrictions and isolate your script's data from the host website.</p>
+<ul>
+<li><strong><code>GM_setValue(key, value)</code></strong>:
+Asynchronously or synchronously saves a value tied specifically to the
+userscript, regardless of the active web page.</li>
+<li><strong><code>GM_getValue(key, defaultValue)</code></strong>:
+Retrieves a previously saved value associated with the specified
+key.</li>
+<li><strong><code>GM_deleteValue(key)</code></strong>: Removes a stored
+key-value pair.</li>
+<li><strong><code>GM_listValues()</code></strong>: Returns an array of
+all keys stored by the script.</li>
+</ul>
+<hr />
+<h2 id="comparison-of-storage-methods">Comparison of Storage
+Methods</h2>
+<table>
+<thead>
+<tr>
+<th>Storage Method</th>
+<th>Domain Scope</th>
+<th>Security / Isolation</th>
+<th>Data Capacity</th>
+<th>Best Used For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>localStorage</code></strong></td>
+<td>Single Origin</td>
+<td>Accessible by host site scripts</td>
+<td>~5MB per origin</td>
+<td>Simple, non-sensitive site-specific settings</td>
+</tr>
+<tr>
+<td><strong><code>IndexedDB</code></strong></td>
+<td>Single Origin</td>
+<td>Accessible by host site scripts</td>
+<td>High (dependent on disk space)</td>
+<td>Large datasets or complex object storage on one domain</td>
+</tr>
+<tr>
+<td><strong><code>GM_setValue</code></strong></td>
+<td>Global (Cross-Domain)</td>
+<td>Isolated from host site scripts</td>
+<td>Generous (managed by browser extension)</td>
+<td>User preferences, API keys, and cross-site state tracking</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="requiring-permissions-for-gm-functions">Requiring Permissions
+for GM Functions</h2>
+<p>To use the dedicated userscript storage functions, you must
+explicitly declare them in the script's metadata block using the
+<code>@grant</code> directive:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Persistent Data Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_setValue</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getValue</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Storing a setting across sessions</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_setValue</span>(<span class="st">&#39;userTheme&#39;</span><span class="op">,</span> <span class="st">&#39;dark&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Retrieving the setting with a default fallback</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> theme <span class="op">=</span> <span class="fu">GM_getValue</span>(<span class="st">&#39;userTheme&#39;</span><span class="op">,</span> <span class="st">&#39;light&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Current theme: </span><span class="sc">${</span>theme<span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span></code></pre></div>
+<p>If <code>@grant none</code> is set, the script runs directly in the
+page's context and loses access to <code>GM_setValue</code>, forcing
+reliance on <code>localStorage</code> or <code>IndexedDB</code>.</p>
+<hr />
+<h2 id="best-practices-for-userscript-storage">Best Practices for
+Userscript Storage</h2>
+<ul>
+<li><strong>Use GM Functions for Cross-Domain Scripts:</strong> If your
+script runs on multiple domains, use <code>GM_setValue</code> to ensure
+settings carry over everywhere.</li>
+<li><strong>Serialize Complex Objects:</strong> While modern GM APIs
+handle JSON objects natively, explicitly serializing complex objects
+using <code>JSON.stringify()</code> and <code>JSON.parse()</code>
+ensures compatibility across older script managers.</li>
+<li><strong>Protect Sensitive Credentials:</strong> Avoid storing
+unencrypted passwords or sensitive personal data in standard web
+storage, as host page scripts can inspect local storage objects.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

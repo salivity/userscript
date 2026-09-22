@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Report a Bug in a Userscript - userscript</title>
+    <meta name="description" content="Reporting a bug to a userscript author requires identifying where the script is hosted, gathering essential technical details, and submitting a structured report through the platform's feedback or issue tracking system. By providing information such as y">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-report-a-bug-in-a-userscript">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Report a Bug in a Userscript - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-report-a-bug-in-a-userscript" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Reporting a bug to a userscript author requires identifying where the script is hosted, gathering essential technical details, and submitting a structured report through the platform's feedback or issue tracking system. By providing information such as y" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-report-a-bug-in-a-userscript">How to Report a Bug in a
+Userscript</h1>
+<p>Reporting a bug to a userscript author requires identifying where the
+script is hosted, gathering essential technical details, and submitting
+a structured report through the platform's feedback or issue tracking
+system. By providing information such as your browser type, script
+manager version, error logs, and steps to reproduce the problem, you
+help the developer diagnose and fix the issue quickly.</p>
+<h2 id="step-1-locate-the-userscript-source-page">Step 1: Locate the
+Userscript Source Page</h2>
+<p>Before you can report an issue, you need to find where the author
+manages their script. Most userscripts are hosted on specific
+repositories:</p>
+<ul>
+<li><strong>Script Manager Menu:</strong> Click your userscript manager
+extension icon (such as Tampermonkey, Violentmonkey, or Greasemonkey),
+find the script, and look for a link to its homepage, support page, or
+source code.</li>
+<li><strong>Script Headers:</strong> Open the script in your script
+manager's editor and look for lines at the top like
+<code>@supportURL</code>, <code>@website</code>, or
+<code>@namespace</code>. These URLs often direct you straight to the
+issue tracker.</li>
+<li><strong>Popular Repositories:</strong> Most scripts are hosted on
+<strong>Greasy Fork</strong>, <strong>OpenUserJS</strong>, or
+<strong>GitHub</strong>.</li>
+</ul>
+<h2 id="step-2-check-for-existing-reports">Step 2: Check for Existing
+Reports</h2>
+<p>Visit the script's support or discussion tab to check if someone else
+has already reported the same bug.</p>
+<ul>
+<li>If the issue is already reported, add a comment confirming that you
+are also experiencing it, along with any extra details you can
+provide.</li>
+<li>If the bug has not been reported yet, proceed to create a new report
+or issue ticket.</li>
+</ul>
+<h2 id="step-3-gather-bug-details">Step 3: Gather Bug Details</h2>
+<p>A good bug report gives the developer all the information needed to
+recreate the error. Prepare the following details before submitting:</p>
+<ul>
+<li><strong>Userscript Name and Version:</strong> Found in your script
+manager dashboard.</li>
+<li><strong>Userscript Manager Name and Version:</strong> (e.g.,
+Tampermonkey v4.19).</li>
+<li><strong>Browser Name and Version:</strong> (e.g., Chrome v122,
+Firefox v123).</li>
+<li><strong>Operating System:</strong> (e.g., Windows 11, macOS Sonoma,
+Android).</li>
+<li><strong>Target Page URL:</strong> The exact webpage address where
+the script broke.</li>
+<li><strong>Steps to Reproduce:</strong> A step-by-step list of what you
+clicked or did right before the bug occurred.</li>
+<li><strong>Console Error Logs:</strong> Open your browser's Developer
+Tools (<code>F12</code> or right-click &gt; <em>Inspect</em>), navigate
+to the <strong>Console</strong> tab, and copy any red error messages
+related to the script.</li>
+</ul>
+<h2 id="step-4-submit-the-bug-report">Step 4: Submit the Bug Report</h2>
+<p>Navigate to the appropriate platform and submit your details:</p>
+<h3 id="on-greasy-fork-or-openuserjs">On Greasy Fork or OpenUserJS</h3>
+<ol type="1">
+<li>Log in to your account on the platform.</li>
+<li>Go to the script's main page.</li>
+<li>Click on the <strong>Feedback</strong> or
+<strong>Discussion</strong> tab.</li>
+<li>Click <strong>Post a discussion</strong> or <strong>Report a
+bug</strong>.</li>
+<li>Title your post clearly (e.g., <em>"Script fails to load on search
+results page"</em>).</li>
+<li>Paste your gathered details into the body and submit.</li>
+</ol>
+<h3 id="on-github">On GitHub</h3>
+<ol type="1">
+<li>Sign in to your GitHub account.</li>
+<li>Navigate to the script's GitHub repository.</li>
+<li>Click the <strong>Issues</strong> tab near the top of the page.</li>
+<li>Click the green <strong>New Issue</strong> button.</li>
+<li>Provide a descriptive title and fill in the issue template if one is
+provided.</li>
+<li>Include your console logs, browser details, and steps to reproduce,
+then click <strong>Submit new issue</strong>.</li>
+</ol>
+<h2 id="step-5-follow-up">Step 5: Follow Up</h2>
+<p>Keep an eye on your email or notifications for replies from the
+author. Developers may ask for clarification, additional log files, or
+test scripts to confirm that their fix works.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Adapt to Different Screen Sizes - userscript</title>
+    <meta name="description" content="Userscripts modify the behavior and appearance of web pages by interacting directly with the browser's Document Object Model (DOM). When websites adjust their layout to accommodate different device screen sizes—a practice known as responsive web design">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-adapt-to-different-screen-sizes">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Adapt to Different Screen Sizes - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-adapt-to-different-screen-sizes" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts modify the behavior and appearance of web pages by interacting directly with the browser's Document Object Model (DOM). When websites adjust their layout to accommodate different device screen sizes—a practice known as responsive web design" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-adapt-to-different-screen-sizes">How Userscripts
+Adapt to Different Screen Sizes</h1>
+<p>Userscripts modify the behavior and appearance of web pages by
+interacting directly with the browser's Document Object Model (DOM).
+When websites adjust their layout to accommodate different device screen
+sizes—a practice known as responsive web design—userscripts must utilize
+specific strategies to remain functional across desktop, tablet, and
+mobile viewports. This article explores how userscripts detect layout
+shifts, handle dynamic DOM structures, inject responsive styles, and
+maintain cross-device compatibility.</p>
+<h2 id="detecting-viewport-and-screen-changes">Detecting Viewport and
+Screen Changes</h2>
+<p>To react when a website switches between desktop and mobile layouts,
+userscripts rely on native JavaScript APIs to monitor screen dimensions
+and orientation.</p>
+<ul>
+<li><strong><code>window.matchMedia()</code> API:</strong> Userscripts
+use this API to run script logic only when specific CSS media query
+conditions are met. For example, a script can check if the viewport is
+narrower than a mobile threshold (<code>max-width: 768px</code>) and
+execute device-specific modifications accordingly.</li>
+<li><strong>Resize Event Listeners:</strong> By attaching a listener to
+<code>window.addEventListener('resize', ...)</code>, a userscript can
+detect real-time layout changes, such as a user rotating a tablet or
+resizing a desktop browser window. Debouncing techniques are typically
+applied to prevent performance degradation during frequent resize
+events.</li>
+</ul>
+<h2 id="targeting-flexible-and-changing-dom-elements">Targeting Flexible
+and Changing DOM Elements</h2>
+<p>Responsive websites frequently alter element selectors, hide
+navigation menus inside hamburger icons, or completely rewrite parts of
+the DOM tree when transitioning between screen sizes. Userscripts handle
+these structural changes using resilient targeting techniques:</p>
+<ul>
+<li><strong>Flexible Selectors:</strong> Brittle CSS selectors (like
+<code>div &gt; div &gt; ul &gt; li:nth-child(2)</code>) break easily
+when layouts collapse on mobile screens. Userscripts instead target
+unique attributes, ARIA labels, or persistent data attributes (e.g.,
+<code>[data-testid="navigation"]</code>) that remain consistent across
+screen sizes.</li>
+<li><strong>Conditional Element Checks:</strong> Before modifying an
+element, a script verifies its presence in the current viewport layout.
+If a desktop sidebar is removed on mobile devices, the script
+conditionally bypasses operations on that missing element to prevent
+runtime errors.</li>
+</ul>
+<h2
+id="monitoring-dynamic-layout-shifts-via-mutationobserver">Monitoring
+Dynamic Layout Shifts via MutationObserver</h2>
+<p>Modern responsive websites continuously render, remove, or alter
+layout elements on the fly without refreshing the page. Userscripts
+handle these asynchronous UI changes using the
+<code>MutationObserver</code> API.</p>
+<p>Instead of running code once on page load, a
+<code>MutationObserver</code> watches the DOM tree for added, removed,
+or modified nodes. When a responsive site swaps a desktop menu for a
+mobile drawer menu, the observer triggers the userscript, allowing it to
+apply changes to the newly loaded layout elements instantly.</p>
+<h2 id="injecting-responsive-css-styles">Injecting Responsive CSS
+Styles</h2>
+<p>When userscripts add custom UI components or tweak existing layouts,
+they often inject custom CSS. To ensure these injected styles adapt
+seamlessly across screen sizes, scripts incorporate CSS media queries
+directly into injected <code>&lt;style&gt;</code> tags.</p>
+<p>By embedding queries like
+<code>@media screen and (max-width: 600px)</code> inside the script's
+custom stylesheet, the userscript lets the browser handle layout scaling
+naturally through CSS rendering, reducing the need for heavy JavaScript
+calculations.</p>
+<h2
+id="managing-differences-across-mobile-and-desktop-engine-contexts">Managing
+Differences Across Mobile and Desktop Engine Contexts</h2>
+<p>Browser extensions and userscript managers function differently on
+mobile devices compared to desktop browsers.</p>
+<ul>
+<li><strong>Desktop Managers:</strong> Extensions like Tampermonkey or
+Violentmonkey run scripts with full access to standard browser lifecycle
+events.</li>
+<li><strong>Mobile Environments:</strong> On mobile browsers (such as
+Safari on iOS or Firefox/Kiwi on Android), touch interactions and
+altered user-agent strings can impact script execution. Userscripts
+adapt by checking <code>navigator.userAgent</code> or detecting touch
+support (<code>'ontouchstart' in window</code>) to toggle touch-friendly
+UI controls or mobile-specific feature sets.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

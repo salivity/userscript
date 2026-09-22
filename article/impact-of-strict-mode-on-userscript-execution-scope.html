@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact of Strict Mode on Userscript Execution Scope - userscript</title>
+    <meta name="description" content="Enabling strict mode in JavaScript userscripts fundamentally alters how code is evaluated, variable scope is resolved, and execution context is bound. By placing "use strict"; at the top of a userscript or within specific functions, developers enforce ri">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/impact-of-strict-mode-on-userscript-execution-scope">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Impact of Strict Mode on Userscript Execution Scope - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/impact-of-strict-mode-on-userscript-execution-scope" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Enabling strict mode in JavaScript userscripts fundamentally alters how code is evaluated, variable scope is resolved, and execution context is bound. By placing "use strict"; at the top of a userscript or within specific functions, developers enforce ri" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="impact-of-strict-mode-on-userscript-execution-scope">Impact of
+Strict Mode on Userscript Execution Scope</h1>
+<p>Enabling strict mode in JavaScript userscripts fundamentally alters
+how code is evaluated, variable scope is resolved, and execution context
+is bound. By placing <code>"use strict";</code> at the top of a
+userscript or within specific functions, developers enforce rigid
+parsing and error-handling rules. This prevents accidental global scope
+pollution, modifies the binding of <code>this</code>, restricts access
+to execution context properties, and ensures cleaner isolation between
+the userscript sandbox and the host web page.</p>
+<h2 id="prevention-of-accidental-global-scope-pollution">Prevention of
+Accidental Global Scope Pollution</h2>
+<p>In standard JavaScript, assigning a value to an undeclared variable
+implicitly creates a property on the global object. In the context of
+userscripts:</p>
+<ul>
+<li><strong>Without Strict Mode:</strong> Assigning
+<code>myVar = 10;</code> without <code>let</code>, <code>const</code>,
+or <code>var</code> attaches <code>myVar</code> to the execution
+sandbox's global scope or the page's <code>window</code> object (if
+running with <code>@grant none</code>).</li>
+<li><strong>With Strict Mode:</strong> Attempting to assign a value to
+an undeclared variable immediately throws a <code>ReferenceError</code>,
+stopping execution and preventing accidental leaks into the global
+namespace.</li>
+</ul>
+<h2 id="altered-this-binding">Altered <code>this</code> Binding</h2>
+<p>Strict mode changes how functions handle <code>this</code> when
+invoked without an explicit context:</p>
+<ul>
+<li><strong>Default Context:</strong> In non-strict mode, calling a
+standard function sets <code>this</code> to the global object
+(<code>window</code> or the sandbox wrapper).</li>
+<li><strong>Strict Context:</strong> In strict mode, <code>this</code>
+remains <code>undefined</code> for plain function calls. This prevents
+userscripts from accidentally reading or modifying global properties
+through an unanchored <code>this</code>.</li>
+</ul>
+<h2 id="impact-on-userscript-sandboxing-and-grant-directives">Impact on
+Userscript Sandboxing and <code>@grant</code> Directives</h2>
+<p>Userscript managers (such as Tampermonkey or Violentmonkey) execute
+scripts in isolated environments based on their metadata directives:</p>
+<ul>
+<li><strong><code>@grant none</code>:</strong> The script runs directly
+within the target page's execution context. <code>"use strict";</code>
+safeguards the target website by preventing the script from overwriting
+host global variables or window properties.</li>
+<li><strong>Sandboxed Execution (e.g.,
+<code>@grant GM_getValue</code>):</strong> The script executes within a
+wrapper or proxy sandbox. <code>"use strict";</code> ensures variables
+remain local to the userscript scope and do not leak into the shared
+sandbox wrapper.</li>
+</ul>
+<h2 id="scope-protection-from-dynamic-expressions">Scope Protection from
+Dynamic Expressions</h2>
+<p>Strict mode restricts language features that alter dynamic
+scoping:</p>
+<ul>
+<li><strong>Disallowance of <code>with</code>:</strong> The
+<code>with</code> statement is completely forbidden, eliminating dynamic
+scope lookup hazards.</li>
+<li><strong><code>eval()</code> Scope Isolation:</strong> Variables
+declared inside an <code>eval()</code> block do not leak into the
+surrounding script or function scope, keeping the local execution scope
+clean.</li>
+</ul>
+<h2 id="strict-interaction-with-unsafewindow">Strict Interaction with
+<code>unsafeWindow</code></h2>
+<p>When a userscript interacts with the host page via
+<code>unsafeWindow</code>:</p>
+<ul>
+<li>Strict mode requires explicit variable assignment and prevents
+silent failures when writing to read-only properties on host
+objects.</li>
+<li>Attempting to modify non-writable properties on
+<code>unsafeWindow</code> will throw a runtime error rather than failing
+silently, aiding in debugging security boundaries.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

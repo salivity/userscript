@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscript Challenges in Real-Time Editors - userscript</title>
+    <meta name="description" content="Modifying real-time collaborative document editors with userscripts presents complex technical hurdles that go beyond standard web scripting. This article outlines the primary challenges developers face, including DOM instability, document state synchron">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscript-challenges-in-real-time-editors">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscript Challenges in Real-Time Editors - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscript-challenges-in-real-time-editors" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modifying real-time collaborative document editors with userscripts presents complex technical hurdles that go beyond standard web scripting. This article outlines the primary challenges developers face, including DOM instability, document state synchron" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="userscript-challenges-in-real-time-editors">Userscript
+Challenges in Real-Time Editors</h1>
+<p>Modifying real-time collaborative document editors with userscripts
+presents complex technical hurdles that go beyond standard web
+scripting. This article outlines the primary challenges developers face,
+including DOM instability, document state synchronization conflicts,
+custom rendering engines, and aggressive event handling.</p>
+<h2 id="virtualized-doms-and-unstable-selectors">Virtualized DOMs and
+Unstable Selectors</h2>
+<p>Real-time editors frequently render content dynamically using
+virtualized DOMs, which only render the elements currently visible in
+the viewport.</p>
+<ul>
+<li><strong>Element Mutation:</strong> Nodes are continuously destroyed
+and recreated as users scroll or type, causing stored DOM references in
+a userscript to become invalid instantly.</li>
+<li><strong>Obfuscated Classes:</strong> Modern web editors often use
+generated, dynamic CSS class names that change with every deployment,
+making traditional CSS selectors unreliable.</li>
+</ul>
+<h2 id="conflict-with-ot-and-crdt-synchronization">Conflict with OT and
+CRDT Synchronization</h2>
+<p>Collaborative editors rely on Operational Transformation (OT) or
+Conflict-Free Replicated Data Types (CRDTs) to reconcile changes from
+multiple users simultaneously.</p>
+<p>Modifying the document's HTML directly via the DOM bypasses the
+editor's underlying data model. This creates a state mismatch where the
+local browser displays your changes, but the underlying CRDT/OT engine
+is unaware of them. As a result, your modifications are either
+immediately overwritten by incoming remote changes or cause the editor's
+sync engine to throw fatal errors.</p>
+<h2 id="non-standard-and-canvas-rendering">Non-Standard and Canvas
+Rendering</h2>
+<p>Many modern collaborative platforms have moved away from standard
+editable HTML (<code>contenteditable</code>) toward custom rendering
+pipelines:</p>
+<ul>
+<li><strong>Canvas or SVG Rendering:</strong> Some editors render text
+directly onto an HTML5 <code>&lt;canvas&gt;</code> element. Standard DOM
+manipulation techniques, text selection scripts, and element injection
+methods are entirely ineffective on these surfaces.</li>
+<li><strong>Custom Framework Wrappers:</strong> Editors built on
+frameworks like ProseMirror, Slate, or Draft.js manage their own
+internal state. To make persistent changes, a userscript must hook into
+the underlying JS instances, which are usually hidden inside private
+scopes or closure variables.</li>
+</ul>
+<h2 id="aggressive-event-interception">Aggressive Event
+Interception</h2>
+<p>Collaborative editors heavily intercept keyboard, mouse, and paste
+events to manage custom cursors, selection highlights, and undo/redo
+stacks.</p>
+<ul>
+<li><strong>Propagation Blocks:</strong> The editor may call
+<code>e.stopPropagation()</code> or <code>e.preventDefault()</code> on
+key inputs, preventing userscript event listeners from triggering.</li>
+<li><strong>Undo/Redo Stack Pollution:</strong> Programmatically
+inserting text or formatting can corrupt the editor's native history
+buffer, leading to unexpected behavior when a user attempts to undo an
+action.</li>
+</ul>
+<h2 id="mitigating-script-breakage">Mitigating Script Breakage</h2>
+<p>To overcome these obstacles, developers writing userscripts for
+real-time editors must avoid direct DOM mutation whenever possible.
+Instead, successful scripts typically rely on inspecting network
+payloads, intercepting JavaScript APIs via monkey-patching internal
+methods, or utilizing <code>MutationObserver</code> interfaces to react
+to DOM updates asynchronously.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Disqus Comments to Any Website Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can indeed integrate third-party comment systems like Disqus into almost any web page, though achieving a completely seamless user experience depends on website security policies and authentication rules. By using browser extensions such as T">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/add-disqus-comments-to-any-website-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Add Disqus Comments to Any Website Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/add-disqus-comments-to-any-website-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can indeed integrate third-party comment systems like Disqus into almost any web page, though achieving a completely seamless user experience depends on website security policies and authentication rules. By using browser extensions such as T" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="add-disqus-comments-to-any-website-using-userscripts">Add Disqus
+Comments to Any Website Using Userscripts</h1>
+<p>Userscripts can indeed integrate third-party comment systems like
+Disqus into almost any web page, though achieving a completely seamless
+user experience depends on website security policies and authentication
+rules. By using browser extensions such as Tampermonkey or
+Violentmonkey, userscripts can dynamically inject the required
+JavaScript SDKs or iframes directly into the Document Object Model (DOM)
+of a target site. This enables users to attach fully functional,
+community-driven discussion threads to static websites, documentation
+pages, or personal blogs that lack native commenting features. However,
+real-world constraints like Content Security Policies (CSP),
+cross-origin iframe restrictions, and third-party cookie blocking
+require specific technical adjustments to make the integration work
+reliably.</p>
+<h2 id="how-userscripts-inject-disqus-into-a-page">How Userscripts
+Inject Disqus into a Page</h2>
+<p>To embed Disqus into a website that does not natively support it, a
+userscript performs three primary actions:</p>
+<ol type="1">
+<li><strong>DOM Container Creation:</strong> The script creates a new
+HTML container (<code>&lt;div id="disqus_thread"&gt;&lt;/div&gt;</code>)
+and inserts it into a logical position on the page, such as below the
+main article body or near the footer.</li>
+<li><strong>Configuration Setup:</strong> The script defines global
+configuration variables (<code>disqus_config</code>), assigning a unique
+page URL (<code>this.page.url</code>) and a unique identifier
+(<code>this.page.identifier</code>) so Disqus can map comments to that
+specific page.</li>
+<li><strong>Script Loader Injection:</strong> The script creates a
+<code>&lt;script&gt;</code> tag pointing to the unique Disqus shortname
+URL (<code>https://[shortname].disqus.com/embed.js</code>) and appends
+it to the document head or body.</li>
+</ol>
+<h2 id="key-technical-obstacles-to-seamless-integration">Key Technical
+Obstacles to "Seamless" Integration</h2>
+<p>While basic injection is straightforward, several modern web security
+standards can impede a completely invisible or frictionless setup.</p>
+<h3 id="1-content-security-policy-csp-restrictions">1. Content Security
+Policy (CSP) Restrictions</h3>
+<p>Many modern websites enforce strict Content Security Policies via
+HTTP headers. If a host site specifies a <code>script-src</code> policy
+that forbids loading third-party scripts from external domains like
+<code>disqus.com</code>, standard script injection will fail.</p>
+<ul>
+<li><strong>Workaround:</strong> Advanced userscripts must either bypass
+strict CSP by using extension privileges (such as GM_xmlhttpRequest to
+fetch assets), or use browser extensions designed to disable CSP header
+enforcement on target domains.</li>
+</ul>
+<h3 id="2-third-party-cookie-restrictions">2. Third-Party Cookie
+Restrictions</h3>
+<p>Modern web browsers (including Chrome, Firefox, and Safari)
+aggressively restrict third-party cookies by default. Because Disqus
+relies on cookies within an embedded iframe to maintain user login
+states across different domains, users may find themselves frequently
+logged out or unable to sign in through the injected widget without
+adjusting their browser privacy settings.</p>
+<h3 id="3-page-identification-and-routing">3. Page Identification and
+Routing</h3>
+<p>For a comment thread to persist correctly across multiple visits or
+pages on a site, the userscript must accurately generate a stable
+identifier. On single-page applications (SPAs) where navigation occurs
+dynamically without full page reloads, the userscript must hook into
+browser history changes (<code>pushState</code> or
+<code>hashchange</code> events) to reset and reload the Disqus thread
+instance dynamically using <code>DISQUS.reset()</code>.</p>
+<h2 id="best-practices-for-implementing-userscript-comments">Best
+Practices for Implementing Userscript Comments</h2>
+<ul>
+<li><strong>Target Specific Insertion Nodes:</strong> Use robust
+<code>querySelector</code> statements to identify main content
+containers so the comment section appends naturally to the page layout
+without breaking site styling.</li>
+<li><strong>Inject Custom CSS:</strong> Apply basic container styling
+(padding, margins, max-width) to match the host site's existing theme
+and prevent layout shifts when the iframe finishes loading.</li>
+<li><strong>Handle SPA Navigation:</strong> Listen for DOM mutations or
+URL changes to ensure comment threads update dynamically when navigating
+between different articles on the same domain.</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>Userscripts are powerful enough to inject functional third-party
+comment sections like Disqus into virtually any site. While technical
+obstacles like CSP headers and third-party cookie blocks prevent it from
+being a zero-configuration solution for every user, a properly designed
+script provides a stable, highly integrated commenting interface for
+personal browsing and custom power-user workflows.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

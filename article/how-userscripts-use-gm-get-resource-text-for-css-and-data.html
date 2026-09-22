@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Use GM_getResourceText for CSS and Data - userscript</title>
+    <meta name="description" content="Userscripts often rely on external assets such as custom CSS stylesheets, template files, or raw text data to modify web pages. The GMgetResourceText function, available in userscript managers like Tampermonkey and Violentmonkey, enables scripts to acces">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-use-gm-get-resource-text-for-css-and-data">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Use GM_getResourceText for CSS and Data - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-use-gm-get-resource-text-for-css-and-data" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts often rely on external assets such as custom CSS stylesheets, template files, or raw text data to modify web pages. The GMgetResourceText function, available in userscript managers like Tampermonkey and Violentmonkey, enables scripts to acces" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-use-gm_getresourcetext-for-css-and-data">How
+Userscripts Use GM_getResourceText for CSS and Data</h1>
+<p>Userscripts often rely on external assets such as custom CSS
+stylesheets, template files, or raw text data to modify web pages. The
+<code>GM_getResourceText</code> function, available in userscript
+managers like Tampermonkey and Violentmonkey, enables scripts to access
+the raw text of these pre-downloaded external files. By defining
+external files in the script's metadata header, developers can fetch,
+cache, and utilize external code or assets securely and efficiently
+without facing cross-origin restrictions.</p>
+<h2 id="step-1-declaring-resources-in-the-metadata-block">Step 1:
+Declaring Resources in the Metadata Block</h2>
+<p>Before <code>GM_getResourceText</code> can access an external file,
+the resource must be declared in the userscript's metadata block using
+the <code>@resource</code> directive. You must also grant the script
+permission to use the <code>GM_getResourceText</code> API with the
+<code>@grant</code> directive.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         External Resource Loader Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Demonstrate GM_getResourceText</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @resource     customCSS https://example.com/styles.css</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @resource     configData https://example.com/data.json</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getResourceText</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_addStyle</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>In this block:</p>
+<ul>
+<li><code>@resource customCSS ...</code> assigns the identifier
+<code>customCSS</code> to the stylesheet URL.</li>
+<li><code>@resource configData ...</code> assigns the identifier
+<code>configData</code> to the JSON data URL.</li>
+<li><code>@grant GM_getResourceText</code> requests permission to call
+the function.</li>
+</ul>
+<p>The userscript manager downloads and caches these resources when the
+script is installed or updated.</p>
+<h2 id="step-2-retrieving-resource-content">Step 2: Retrieving Resource
+Content</h2>
+<p>To retrieve the text content of a declared resource, pass the
+resource name as a string parameter to
+<code>GM_getResourceText</code>.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> cssText <span class="op">=</span> <span class="fu">GM_getResourceText</span>(<span class="st">&quot;customCSS&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> jsonText <span class="op">=</span> <span class="fu">GM_getResourceText</span>(<span class="st">&quot;configData&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>If the resource exists and was successfully downloaded, the function
+returns a string containing the raw text of the file.</p>
+<h2 id="step-3-injecting-external-css-into-the-page">Step 3: Injecting
+External CSS into the Page</h2>
+<p>Once the CSS string is retrieved, it can be applied to the target
+website. The most common method is combining
+<code>GM_getResourceText</code> with <code>GM_addStyle</code> or
+creating a standard HTML <code>&lt;style&gt;</code> element.</p>
+<h3 id="using-gm_addstyle">Using <code>GM_addStyle</code>:</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> myCss <span class="op">=</span> <span class="fu">GM_getResourceText</span>(<span class="st">&quot;customCSS&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addStyle</span>(myCss)<span class="op">;</span></span></code></pre></div>
+<h3 id="using-vanilla-javascript">Using Vanilla JavaScript:</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> myCss <span class="op">=</span> <span class="fu">GM_getResourceText</span>(<span class="st">&quot;customCSS&quot;</span>)<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> styleElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&quot;style&quot;</span>)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>styleElement<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> myCss<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">head</span><span class="op">.</span><span class="fu">appendChild</span>(styleElement)<span class="op">;</span></span></code></pre></div>
+<h2 id="step-4-parsing-external-data">Step 4: Parsing External Data</h2>
+<p>If the loaded resource is formatted data, such as JSON, it must be
+parsed after retrieval.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> rawJson <span class="op">=</span> <span class="fu">GM_getResourceText</span>(<span class="st">&quot;configData&quot;</span>)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> data <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(rawJson)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Loaded data:&quot;</span><span class="op">,</span> data)<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>} <span class="cf">catch</span> (error) {</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Failed to parse JSON resource:&quot;</span><span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="advantages-of-using-gm_getresourcetext">Advantages of Using
+<code>GM_getResourceText</code></h2>
+<ul>
+<li><strong>Bypasses CORS Restrictions:</strong> Because the browser
+extension downloads the resource outside the webpage context,
+Cross-Origin Resource Sharing (CORS) rules do not block the
+request.</li>
+<li><strong>Offline Availability and Speed:</strong> Resources are saved
+locally in the userscript manager storage, ensuring instant loading
+without making additional network requests on every page load.</li>
+<li><strong>Security:</strong> The source URL is defined inside the
+script metadata, preventing dynamic injection of untrusted third-party
+script URLs at runtime.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

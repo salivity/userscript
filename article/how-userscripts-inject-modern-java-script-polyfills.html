@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Inject Modern JavaScript Polyfills - userscript</title>
+    <meta name="description" content="Userscripts can enhance legacy websites by injecting polyfills—code snippets that emulate modern JavaScript APIs and features unsupported by older browser environments or outdated site frameworks. By leveraging userscript manager directives like @requi">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-inject-modern-java-script-polyfills">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Inject Modern JavaScript Polyfills - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-inject-modern-java-script-polyfills" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can enhance legacy websites by injecting polyfills—code snippets that emulate modern JavaScript APIs and features unsupported by older browser environments or outdated site frameworks. By leveraging userscript manager directives like @requi" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-inject-modern-javascript-polyfills">How
+Userscripts Inject Modern JavaScript Polyfills</h1>
+<p>Userscripts can enhance legacy websites by injecting polyfills—code
+snippets that emulate modern JavaScript APIs and features unsupported by
+older browser environments or outdated site frameworks. By leveraging
+userscript manager directives like <code>@require</code>, execution
+hooks such as <code>@run-at document-start</code>, or dynamic DOM script
+injection, developers can load polyfill libraries (like
+<code>core-js</code>) before the target site scripts execute. This
+article explains the technical mechanisms userscripts use to inject
+polyfills, manage window scope isolation, and restore modern web
+functionality to legacy pages.</p>
+<h2
+id="understanding-polyfills-in-the-context-of-userscripts">Understanding
+Polyfills in the Context of Userscripts</h2>
+<p>A polyfill is code that implements a feature on web browsers that do
+not natively support it. Legacy websites or outdated web views often
+lack modern JavaScript methods (such as
+<code>Array.prototype.at()</code>, <code>Object.fromEntries()</code>, or
+the <code>fetch()</code> API).</p>
+<p>Userscripts run via browser extensions (such as Tampermonkey,
+Violentmonkey, or Greasemonkey) to modify web pages. When a userscript
+targets an older site, it can inject these missing features directly
+into the browser's execution context, allowing both the script itself
+and the underlying site to use modern syntax and APIs.</p>
+<h2
+id="method-1-injecting-polyfills-via-the-require-metadata-block">Method
+1: Injecting Polyfills via the <code>@require</code> Metadata Block</h2>
+<p>The cleanest and most common way to add polyfills to a userscript is
+using the <code>@require</code> header in the metadata block. Userscript
+engines automatically download the requested external script and prepend
+its execution to the userscript.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Legacy Site Modernizer</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://legacy-example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-start</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @require      https://cdnjs.cloudflare.com/ajax/libs/core-js/3.32.0/minified.js</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Modern JS features are now available within the userscript context</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> data <span class="op">=</span> [<span class="dv">10</span><span class="op">,</span> <span class="dv">20</span><span class="op">,</span> <span class="dv">30</span>]<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(data<span class="op">.</span><span class="fu">at</span>(<span class="op">-</span><span class="dv">1</span>))<span class="op">;</span> <span class="co">// Output: 30</span></span></code></pre></div>
+<p>Setting <code>@run-at document-start</code> ensures that the polyfill
+loads before the DOM is fully constructed and before any site scripts
+attempt to execute.</p>
+<h2 id="method-2-dynamic-script-injection-into-the-page-context">Method
+2: Dynamic Script Injection into the Page Context</h2>
+<p>By default, userscripts execute inside an isolated context (a
+sandbox) separate from the main web page. While <code>@require</code>
+polyfills the userscript's isolated scope, it may not polyfill the
+actual page's global <code>window</code> object.</p>
+<p>To make polyfills available to the host website's original scripts,
+the userscript must dynamically insert a <code>&lt;script&gt;</code>
+element directly into the DOM context.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use strict&#39;</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> script <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;script&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    script<span class="op">.</span><span class="at">src</span> <span class="op">=</span> <span class="st">&#39;https://cdnjs.cloudflare.com/ajax/libs/core-js/3.32.0/minified.js&#39;</span><span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    script<span class="op">.</span><span class="at">onload</span> <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Polyfills successfully loaded into the main page context.&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    (<span class="bu">document</span><span class="op">.</span><span class="at">head</span> <span class="op">||</span> <span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span>)<span class="op">.</span><span class="fu">appendChild</span>(script)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<p>This method attaches the polyfilled methods directly to the host
+page's global <code>window</code> scope, enabling legacy scripts on the
+page to use modern features without throwing <code>TypeError</code> or
+<code>Undefined</code> exceptions.</p>
+<h2 id="method-3-polyfilling-via-unsafewindow">Method 3: Polyfilling via
+<code>unsafeWindow</code></h2>
+<p>For userscript managers that support the <code>GM_info</code> or
+<code>unsafeWindow</code> API, developers can attach missing methods
+directly to the host page's <code>window</code> object from within the
+sandbox context.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Fetch API Polyfill Injector</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://legacy-example.com/*</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        unsafeWindow</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>unsafeWindow<span class="op">.</span><span class="at">fetch</span>) {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Assign a polyfilled fetch implementation to the main page window</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    unsafeWindow<span class="op">.</span><span class="at">fetch</span> <span class="op">=</span> <span class="kw">function</span>(url<span class="op">,</span> options) {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">new</span> <span class="bu">Promise</span>((resolve<span class="op">,</span> reject) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            <span class="kw">const</span> xhr <span class="op">=</span> <span class="kw">new</span> <span class="bu">XMLHttpRequest</span>()<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            xhr<span class="op">.</span><span class="fu">open</span>(options<span class="op">?.</span><span class="at">method</span> <span class="op">||</span> <span class="st">&#39;GET&#39;</span><span class="op">,</span> url)<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>            xhr<span class="op">.</span><span class="at">onload</span> <span class="op">=</span> () <span class="kw">=&gt;</span> <span class="fu">resolve</span>(<span class="kw">new</span> <span class="fu">Response</span>(xhr<span class="op">.</span><span class="at">responseText</span><span class="op">,</span> { <span class="dt">status</span><span class="op">:</span> xhr<span class="op">.</span><span class="at">status</span> }))<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>            xhr<span class="op">.</span><span class="at">onerror</span> <span class="op">=</span> () <span class="kw">=&gt;</span> <span class="fu">reject</span>(<span class="kw">new</span> <span class="bu">TypeError</span>(<span class="st">&#39;Network request failed&#39;</span>))<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            xhr<span class="op">.</span><span class="fu">send</span>(options<span class="op">?.</span><span class="at">body</span>)<span class="op">;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="polyfills-vs-transpilation-for-syntax-support">Polyfills vs.
+Transpilation for Syntax Support</h2>
+<p>It is important to distinguish between API polyfills and syntax
+transpilation:</p>
+<ul>
+<li><strong>API Polyfills:</strong> Add missing runtime functions or
+methods (e.g., <code>Promise</code>, <code>fetch</code>,
+<code>String.prototype.replaceAll</code>). These can be injected at
+runtime using the methods outlined above.</li>
+<li><strong>Syntax Transpilation:</strong> Older JavaScript engines
+cannot parse modern syntax constructs (e.g., optional chaining
+<code>?.</code>, nullish coalescing <code>??</code>, or arrow functions
+<code>() =&gt; {}</code>).</li>
+</ul>
+<p>If the target browser itself is too old to parse modern syntax,
+injecting a polyfill script at runtime will not prevent syntax errors.
+In these cases, the userscript source code must be transpiled down to
+ES5 using tools like Babel prior to installing it in the userscript
+manager.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

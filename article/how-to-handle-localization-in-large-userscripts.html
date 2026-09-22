@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Handle Localization in Large Userscripts - userscript</title>
+    <meta name="description" content="Managing internationalization (i18n) natively in large userscripts requires a lightweight, scalable pattern that avoids the overhead of external dependencies. By leveraging native JavaScript features such as navigator.language, nested dictionary objects,">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-handle-localization-in-large-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Handle Localization in Large Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-handle-localization-in-large-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing internationalization (i18n) natively in large userscripts requires a lightweight, scalable pattern that avoids the overhead of external dependencies. By leveraging native JavaScript features such as navigator.language, nested dictionary objects," />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-handle-localization-in-large-userscripts">How to Handle
+Localization in Large Userscripts</h1>
+<p>Managing internationalization (i18n) natively in large userscripts
+requires a lightweight, scalable pattern that avoids the overhead of
+external dependencies. By leveraging native JavaScript features such as
+<code>navigator.language</code>, nested dictionary objects, dynamic
+string interpolation, and <code>Proxy</code> objects for safe fallbacks,
+you can implement a high-performance localization system. This article
+breaks down the best native strategies to structure, manage, and render
+localized strings seamlessly within your userscripts.</p>
+<h2 id="1-detecting-and-normalizing-user-locales">1. Detecting and
+Normalizing User Locales</h2>
+<p>Browser environments provide the user's preferred language via
+<code>navigator.language</code> or <code>navigator.languages</code>. To
+ensure consistency, normalize these locale strings to match your
+script's supported language codes (typically standard ISO 639-1
+two-letter codes or full BCP 47 tags).</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> getPreferredLanguage <span class="op">=</span> (supportedLocales<span class="op">,</span> defaultLocale <span class="op">=</span> <span class="st">&#39;en&#39;</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> userLocales <span class="op">=</span> <span class="bu">navigator</span><span class="op">.</span><span class="at">languages</span> <span class="op">||</span> [<span class="bu">navigator</span><span class="op">.</span><span class="at">language</span> <span class="op">||</span> defaultLocale]<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">const</span> locale <span class="kw">of</span> userLocales) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> primaryCode <span class="op">=</span> locale<span class="op">.</span><span class="fu">split</span>(<span class="st">&#39;-&#39;</span>)[<span class="dv">0</span>]<span class="op">.</span><span class="fu">toLowerCase</span>()<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Exact match (e.g., &#39;zh-CN&#39;)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (supportedLocales<span class="op">.</span><span class="fu">includes</span>(locale)) <span class="cf">return</span> locale<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Primary language match (e.g., &#39;en&#39; from &#39;en-US&#39;)</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (supportedLocales<span class="op">.</span><span class="fu">includes</span>(primaryCode)) <span class="cf">return</span> primaryCode<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> defaultLocale<span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="2-structuring-the-localization-dictionary">2. Structuring the
+Localization Dictionary</h2>
+<p>Keep localization strings modular by organizing them into key-value
+maps per language. For large scripts, structure keys hierarchically
+based on UI modules or features.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> i18nStrings <span class="op">=</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">en</span><span class="op">:</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">settings</span><span class="op">:</span> {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> <span class="st">&quot;User Settings&quot;</span><span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">save</span><span class="op">:</span> <span class="st">&quot;Save Changes&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">messages</span><span class="op">:</span> {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">welcome</span><span class="op">:</span> <span class="st">&quot;Hello, {name}!&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">es</span><span class="op">:</span> {</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">settings</span><span class="op">:</span> {</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">title</span><span class="op">:</span> <span class="st">&quot;Configuración de Usuario&quot;</span><span class="op">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">save</span><span class="op">:</span> <span class="st">&quot;Guardar Cambios&quot;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">messages</span><span class="op">:</span> {</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">welcome</span><span class="op">:</span> <span class="st">&quot;¡Hola, {name}!&quot;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="3-creating-a-translation-function-with-dynamic-variables">3.
+Creating a Translation Function with Dynamic Variables</h2>
+<p>A centralized helper function resolves dot-notation keys (e.g.,
+<code>'settings.title'</code>) and replaces dynamic placeholders (e.g.,
+<code>{name}</code>) within strings.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TranslationManager {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">constructor</span>(translations<span class="op">,</span> defaultLocale <span class="op">=</span> <span class="st">&#39;en&#39;</span>) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">translations</span> <span class="op">=</span> translations<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">defaultLocale</span> <span class="op">=</span> defaultLocale<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">currentLocale</span> <span class="op">=</span> <span class="fu">getPreferredLanguage</span>(<span class="bu">Object</span><span class="op">.</span><span class="fu">keys</span>(translations)<span class="op">,</span> defaultLocale)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">setLocale</span>(locale) {</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">translations</span>[locale]) {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">currentLocale</span> <span class="op">=</span> locale<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">t</span>(path<span class="op">,</span> variables <span class="op">=</span> {}) {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> getValue <span class="op">=</span> (locale) <span class="kw">=&gt;</span> </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      path<span class="op">.</span><span class="fu">split</span>(<span class="st">&#39;.&#39;</span>)<span class="op">.</span><span class="fu">reduce</span>((obj<span class="op">,</span> key) <span class="kw">=&gt;</span> obj<span class="op">?.</span>[key]<span class="op">,</span> <span class="kw">this</span><span class="op">.</span><span class="at">translations</span>[locale])<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Fallback logic: Try active locale, then default locale, then return key path</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">let</span> template <span class="op">=</span> <span class="fu">getValue</span>(<span class="kw">this</span><span class="op">.</span><span class="at">currentLocale</span>) <span class="op">||</span> <span class="fu">getValue</span>(<span class="kw">this</span><span class="op">.</span><span class="at">defaultLocale</span>) <span class="op">||</span> path<span class="op">;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">typeof</span> template <span class="op">!==</span> <span class="st">&#39;string&#39;</span>) {</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> path<span class="op">;</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Replace dynamic placeholders like {variable}</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> template<span class="op">.</span><span class="fu">replace</span>(<span class="ss">/</span><span class="sc">\{(\w+)\}</span><span class="ss">/g</span><span class="op">,</span> (_<span class="op">,</span> key) <span class="kw">=&gt;</span> variables[key] <span class="op">??</span> <span class="vs">`{</span><span class="sc">${</span>key<span class="sc">}</span><span class="vs">}`</span>)<span class="op">;</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">// Usage instance</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> i18n <span class="op">=</span> <span class="kw">new</span> <span class="fu">TranslationManager</span>(i18nStrings<span class="op">,</span> <span class="st">&#39;en&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(i18n<span class="op">.</span><span class="fu">t</span>(<span class="st">&#39;settings.save&#39;</span>))<span class="op">;</span> <span class="co">// Output based on browser language</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(i18n<span class="op">.</span><span class="fu">t</span>(<span class="st">&#39;messages.welcome&#39;</span><span class="op">,</span> { <span class="dt">name</span><span class="op">:</span> <span class="st">&#39;Alice&#39;</span> }))<span class="op">;</span></span></code></pre></div>
+<h2 id="4-using-proxies-for-fail-safe-and-type-like-access">4. Using
+Proxies for Fail-Safe and Type-Like Access</h2>
+<p>To avoid broken layouts caused by missing translation keys, you can
+wrap your translation engine in a JavaScript <code>Proxy</code>. This
+enables direct property lookups while seamlessly applying fallbacks when
+keys are missing.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">createI18nProxy</span>(manager) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">new</span> <span class="bu">Proxy</span>(manager<span class="op">,</span> {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">get</span>(target<span class="op">,</span> prop) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (prop <span class="kw">in</span> target) <span class="cf">return</span> target[prop]<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> (variables) <span class="kw">=&gt;</span> target<span class="op">.</span><span class="fu">t</span>(prop<span class="op">,</span> variables)<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> __ <span class="op">=</span> <span class="fu">createI18nProxy</span>(i18n)<span class="op">;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Lookups automatically route through the fallback system</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="fu">__</span>(<span class="st">&#39;settings.title&#39;</span>))<span class="op">;</span> </span></code></pre></div>
+<h2 id="5-architectural-best-practices-for-large-userscripts">5.
+Architectural Best Practices for Large Userscripts</h2>
+<ol type="1">
+<li><strong>Keep Fallbacks Self-Contained:</strong> Always assign a
+complete fallback dictionary (such as English) so that if a translated
+string is absent, the UI displays readable text instead of empty
+elements or undefined errors.</li>
+<li><strong>Bundle Modules during Development:</strong> If your
+userscript is built using tools like Rollup or Esbuild, separate your
+translation JSON/JS files per language during development and bundle
+them into a single script output for distribution.</li>
+<li><strong>Lazy Load Extra Locales (Optional):</strong> For
+exceptionally large scripts, load primary strings inline and fetch
+secondary language dictionaries dynamically using
+<code>GM.xmlHttpRequest</code> or <code>fetch</code> only when activated
+by the user.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

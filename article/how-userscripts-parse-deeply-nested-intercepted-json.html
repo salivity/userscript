@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Parse Deeply Nested Intercepted JSON - userscript</title>
+    <meta name="description" content="Userscripts intercept network traffic by overriding native web browser APIs such as fetch and XMLHttpRequest, allowing developers to read and alter data transferred between a client and a server. When network responses contain deeply nested JSON, userscr">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-parse-deeply-nested-intercepted-json">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Parse Deeply Nested Intercepted JSON - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-parse-deeply-nested-intercepted-json" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts intercept network traffic by overriding native web browser APIs such as fetch and XMLHttpRequest, allowing developers to read and alter data transferred between a client and a server. When network responses contain deeply nested JSON, userscr" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-parse-deeply-nested-intercepted-json">How
+Userscripts Parse Deeply Nested Intercepted JSON</h1>
+<p>Userscripts intercept network traffic by overriding native web
+browser APIs such as <code>fetch</code> and <code>XMLHttpRequest</code>,
+allowing developers to read and alter data transferred between a client
+and a server. When network responses contain deeply nested JSON,
+userscripts use a combination of monkey-patching, string parsing,
+defensive navigation techniques, and structural traversal to access and
+modify hidden data points safely without breaking the host
+application.</p>
+<h2 id="intercepting-network-traffic">Intercepting Network Traffic</h2>
+<p>Before interacting with JSON, a userscript must intercept the
+incoming payload. This is typically achieved by overriding the browser's
+global asynchronous request handlers before the web application executes
+its own scripts.</p>
+<p>For <code>fetch</code> requests, userscripts redefine
+<code>window.fetch</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalFetch <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">fetch</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">fetch</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">function</span> (<span class="op">...</span>args) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> originalFetch<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> args)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> clonedResponse <span class="op">=</span> response<span class="op">.</span><span class="fu">clone</span>()<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  clonedResponse<span class="op">.</span><span class="fu">json</span>()<span class="op">.</span><span class="fu">then</span>(data <span class="kw">=&gt;</span> {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">handleNestedJson</span>(data)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> response<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>For older or alternative implementations using
+<code>XMLHttpRequest</code>, the script patches
+<code>XHR.prototype.open</code> or <code>XHR.prototype.send</code> and
+adds an event listener for <code>readystatechange</code> or
+<code>load</code>.</p>
+<h2 id="parsing-the-response-body">Parsing the Response Body</h2>
+<p>Once intercepted, the raw payload exists as a JSON-formatted string,
+a ReadableStream, or an ArrayBuffer. Userscripts convert raw text into
+an actionable JavaScript object using <code>JSON.parse()</code>. Because
+dynamic network traffic can occasionally yield malformed data, parsing
+is always wrapped in error-handling blocks to prevent script
+termination.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">safeParse</span>(rawText) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">try</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(rawText)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">catch</span> (error) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Failed to parse JSON response:&quot;</span><span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="accessing-deeply-nested-properties">Accessing Deeply Nested
+Properties</h2>
+<p>Deeply nested JSON responses often contain long paths, such as
+<code>response.data.user.settings.notifications.email.enabled</code>. If
+any intermediate key is missing or <code>null</code>, standard
+dot-notation throws an exception. Userscripts employ several patterns to
+safely navigate these structures.</p>
+<h3 id="1-optional-chaining-and-nullish-coalescing">1. Optional Chaining
+and Nullish Coalescing</h3>
+<p>Modern JavaScript engines support optional chaining
+(<code>?.</code>), which stops evaluation and returns
+<code>undefined</code> if an intermediate reference is <code>null</code>
+or <code>undefined</code>.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> isEmailEnabled <span class="op">=</span> data<span class="op">?.</span><span class="at">data</span><span class="op">?.</span><span class="at">user</span><span class="op">?.</span><span class="at">settings</span><span class="op">?.</span><span class="at">notifications</span><span class="op">?.</span><span class="at">email</span><span class="op">?.</span><span class="at">enabled</span> <span class="op">??</span> <span class="kw">false</span><span class="op">;</span></span></code></pre></div>
+<h3 id="2-recursive-traversal">2. Recursive Traversal</h3>
+<p>When the exact structural depth or path is dynamic, userscripts use
+recursive functions to search for target keys across arbitrary nested
+levels.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">findNestedKey</span>(obj<span class="op">,</span> targetKey) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">typeof</span> obj <span class="op">!==</span> <span class="st">&#39;object&#39;</span> <span class="op">||</span> obj <span class="op">===</span> <span class="kw">null</span>) <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="bu">Object</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">hasOwnProperty</span><span class="op">.</span><span class="fu">call</span>(obj<span class="op">,</span> targetKey)) <span class="cf">return</span> obj[targetKey]<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">const</span> key <span class="kw">of</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">keys</span>(obj)) {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> result <span class="op">=</span> <span class="fu">findNestedKey</span>(obj[key]<span class="op">,</span> targetKey)<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (result <span class="op">!==</span> <span class="kw">null</span>) <span class="cf">return</span> result<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="3-destructuring-with-default-values">3. Destructuring with
+Default Values</h3>
+<p>When extracting multiple values from a known nested branch,
+destructuring simplifies the syntax while providing fallback values.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">data</span><span class="op">:</span> {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">user</span><span class="op">:</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">profile</span><span class="op">:</span> { id <span class="op">=</span> <span class="kw">null</span><span class="op">,</span> username <span class="op">=</span> <span class="st">&#39;Guest&#39;</span> } <span class="op">=</span> {}</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    } <span class="op">=</span> {}</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  } <span class="op">=</span> {}</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>} <span class="op">=</span> responseData<span class="op">;</span></span></code></pre></div>
+<h2 id="modifying-and-re-injecting-nested-data">Modifying and
+Re-injecting Nested Data</h2>
+<p>To alter web page behavior, userscripts often modify deeply nested
+values within the intercepted object and construct a new
+<code>Response</code> object to return to the web application.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">fetch</span> <span class="op">=</span> <span class="kw">async</span> <span class="kw">function</span> (<span class="op">...</span>args) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> originalFetch<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> args)<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> data <span class="op">=</span> <span class="cf">await</span> response<span class="op">.</span><span class="fu">json</span>()<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Modify a nested property deep inside the object</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (data<span class="op">?.</span><span class="at">config</span><span class="op">?.</span><span class="at">features</span><span class="op">?.</span><span class="at">betaAccess</span> <span class="op">!==</span> <span class="kw">undefined</span>) {</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    data<span class="op">.</span><span class="at">config</span><span class="op">.</span><span class="at">features</span><span class="op">.</span><span class="at">betaAccess</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Return a new response stream containing the modified JSON</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">new</span> <span class="fu">Response</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(data)<span class="op">,</span> {</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">status</span><span class="op">:</span> response<span class="op">.</span><span class="at">status</span><span class="op">,</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">statusText</span><span class="op">:</span> response<span class="op">.</span><span class="at">statusText</span><span class="op">,</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> response<span class="op">.</span><span class="at">headers</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>By safely parsing payloads, handling variable depths with guarded
+accessors, and reconstructing responses, userscripts reliably read and
+transform complex network traffic in real time.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

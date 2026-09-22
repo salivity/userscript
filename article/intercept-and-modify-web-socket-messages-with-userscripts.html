@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intercept and Modify WebSocket Messages with Userscripts - userscript</title>
+    <meta name="description" content="Yes, userscripts can intercept and modify WebSocket messages in real-time. Because userscripts run directly in the context of the browser page, they can override the native window.WebSocket object before the target website establishes a connection. By mo">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/intercept-and-modify-web-socket-messages-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Intercept and Modify WebSocket Messages with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/intercept-and-modify-web-socket-messages-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can intercept and modify WebSocket messages in real-time. Because userscripts run directly in the context of the browser page, they can override the native window.WebSocket object before the target website establishes a connection. By mo" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="intercept-and-modify-websocket-messages-with-userscripts">Intercept
+and Modify WebSocket Messages with Userscripts</h1>
+<p>Yes, userscripts can intercept and modify WebSocket messages in
+real-time. Because userscripts run directly in the context of the
+browser page, they can override the native <code>window.WebSocket</code>
+object before the target website establishes a connection. By
+monkey-patching the global WebSocket constructor and its prototype
+methods, userscripts gain full control over both outgoing and incoming
+network frames.</p>
+<h2 id="how-userscript-websocket-interception-works">How Userscript
+WebSocket Interception Works</h2>
+<p>WebSockets rely on the browser's built-in <code>WebSocket</code> API.
+Since JavaScript allows global browser objects to be redefined, a
+userscript can replace the default <code>WebSocket</code> constructor
+with a custom wrapper function.</p>
+<p>When the web application instantiates a new connection using
+<code>new WebSocket(url)</code>, the calls pass through the userscript's
+wrapper instead of going directly to the browser engine.</p>
+<h3 id="intercepting-outgoing-messages">Intercepting Outgoing
+Messages</h3>
+<p>To inspect or alter data sent from the client to the server,
+userscripts override the <code>send</code> method on the
+<code>WebSocket.prototype</code>.</p>
+<p>When the web application attempts to send data, the overridden
+<code>send</code> function intercepts the payload. The script can then
+log the payload, alter the string or binary buffer, or block the
+transmission entirely before passing the modified data to the original
+<code>send</code> implementation.</p>
+<h3 id="intercepting-incoming-messages">Intercepting Incoming
+Messages</h3>
+<p>Modifying messages coming from the server to the client requires
+intercepting event listeners. This is typically done through two
+vectors:</p>
+<ol type="1">
+<li><strong>The <code>onmessage</code> Property Setter:</strong> The
+userscript replaces the setter for the <code>onmessage</code> property
+on the custom WebSocket instance. When the application assigns a handler
+to <code>ws.onmessage</code>, the script wraps that handler in a custom
+function that intercepts incoming event data before invoking the
+original callback.</li>
+<li><strong>The <code>addEventListener</code> Method:</strong> The
+userscript overrides <code>WebSocket.prototype.addEventListener</code>.
+When the application registers a listener for the <code>'message'</code>
+event, the wrapper captures incoming <code>MessageEvent</code> objects,
+allows modification of the <code>.data</code> property, and forwards the
+modified event to the application's original listener.</li>
+</ol>
+<h2 id="execution-timing-requirements">Execution Timing
+Requirements</h2>
+<p>For a userscript to successfully intercept WebSockets, it must
+execute before the target web application initializes its own
+connections. In browser extensions like Tampermonkey or Violentmonkey,
+this is achieved by adding the following metadata directive:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at document-start</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>Setting <code>@run-at document-start</code> ensures the global
+<code>window.WebSocket</code> constructor is patched as early as
+possible in the DOM lifecycle.</p>
+<h2 id="handling-binary-data-and-anti-tampering">Handling Binary Data
+and Anti-Tampering</h2>
+<ul>
+<li><strong>Data Formats:</strong> WebSockets transport data as plain
+text (often JSON) or binary formats (<code>ArrayBuffer</code> or
+<code>Blob</code>). While text/JSON payloads are easy to parse and
+alter, binary data requires decoding and re-encoding using utility
+objects like <code>DataView</code>, <code>TextDecoder</code>, or
+<code>Uint8Array</code>.</li>
+<li><strong>Encrypted Connections (WSS):</strong> Secure WebSocket
+connections (<code>wss://</code>) encrypt traffic over TLS between the
+browser and server. However, because interception occurs inside the
+browser execution context, the data is captured after TLS decryption
+(incoming) or before TLS encryption (outgoing).</li>
+<li><strong>Framework Protections:</strong> Some complex applications
+store references to the native <code>window.WebSocket</code> inside
+private closures before external scripts run, or validate object
+integrity using <code>Function.prototype.toString</code>. Advanced
+userscripts counter this by spoofing native function strings or
+injecting the monkey-patch via inline <code>&lt;script&gt;</code> tags
+as close to page load as possible.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

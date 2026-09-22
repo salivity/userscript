@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Dark Mode on Any Website with Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can easily force almost any website into dark mode, even if the site has no native dark theme support. By utilizing user script managers like Tampermonkey or Violentmonkey, browser scripts inject custom CSS styles or JavaScript code directly">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/force-dark-mode-on-any-website-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Force Dark Mode on Any Website with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/force-dark-mode-on-any-website-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can easily force almost any website into dark mode, even if the site has no native dark theme support. By utilizing user script managers like Tampermonkey or Violentmonkey, browser scripts inject custom CSS styles or JavaScript code directly" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="force-dark-mode-on-any-website-with-userscripts">Force Dark Mode
+on Any Website with Userscripts</h1>
+<p>Userscripts can easily force almost any website into dark mode, even
+if the site has no native dark theme support. By utilizing user script
+managers like Tampermonkey or Violentmonkey, browser scripts inject
+custom CSS styles or JavaScript code directly into web pages to invert
+colors, alter background elements, and adjust text contrast. This
+article breaks down how userscripts achieve forced dark mode, how you
+can set them up, and the potential limitations of using them.</p>
+<h2 id="how-userscripts-force-dark-mode">How Userscripts Force Dark
+Mode</h2>
+<p>Userscripts manipulate a web page's structure and styling after the
+page loads in your browser. They force dark mode primarily through two
+main techniques:</p>
+<h3 id="1-custom-css-injection">1. Custom CSS Injection</h3>
+<p>The script injects custom Cascading Style Sheets (CSS) into the
+document head. This CSS explicitly overrides the site's default light
+backgrounds and dark text:</p>
+<ul>
+<li><strong>Backgrounds:</strong> Changes main containers, body tags,
+and sections to dark shades (such as <code>#121212</code> or
+<code>#181818</code>).</li>
+<li><strong>Text:</strong> Changes paragraphs, headings, and links to
+high-contrast light colors (such as <code>#E0E0E0</code>).</li>
+<li><strong>Interactive Elements:</strong> Adjusts input fields,
+buttons, and borders so they remain visible against dark
+backgrounds.</li>
+</ul>
+<h3 id="2-css-filter-inversion">2. CSS Filter Inversion</h3>
+<p>For a quick, automatic fix across complex elements, a userscript can
+apply a global CSS filter to the root HTML element:</p>
+<ul>
+<li><code>filter: invert(100%) hue-rotate(180deg);</code></li>
+</ul>
+<p>This flips light colors to dark while attempting to preserve original
+color hues. To prevent images, videos, and media from looking like photo
+negatives, the script applies a second inversion filter
+(<code>invert(100%)</code>) specifically to <code>&lt;img&gt;</code>,
+<code>&lt;video&gt;</code>, and <code>&lt;svg&gt;</code> elements.</p>
+<h2 id="how-to-set-up-a-dark-mode-userscript">How to Set Up a Dark Mode
+Userscript</h2>
+<p>To force dark mode on unsupported websites, follow these steps:</p>
+<ol type="1">
+<li><strong>Install a Script Manager:</strong> Add a browser extension
+such as Tampermonkey or Violentmonkey to your web browser.</li>
+<li><strong>Find or Create a Script:</strong>
+<ul>
+<li><strong>Pre-made scripts:</strong> Search repositories like Greasy
+Fork or OpenUserJS for site-specific dark themes or universal dark mode
+scripts.</li>
+<li><strong>Custom scripts:</strong> Write a basic script targeting a
+specific domain that applies custom styles on load.</li>
+</ul></li>
+<li><strong>Enable and Run:</strong> Save the script and refresh the
+target website. The manager will execute the script automatically
+whenever you visit that site.</li>
+</ol>
+<h2 id="advantages-of-using-userscripts">Advantages of Using
+Userscripts</h2>
+<ul>
+<li><strong>Granular Control:</strong> You can edit the CSS directly to
+fix broken layout elements, change specific accent colors, or adjust
+contrast levels.</li>
+<li><strong>Low Resource Usage:</strong> Lightweight userscripts
+generally consume less memory than full-featured browser
+extensions.</li>
+<li><strong>Per-Site Customization:</strong> You can apply custom rules
+to single websites without affecting your entire browsing
+experience.</li>
+</ul>
+<h2 id="limitations-to-keep-in-mind">Limitations to Keep in Mind</h2>
+<ul>
+<li><strong>Visual Artifacts:</strong> Automatic color inversion can
+sometimes result in low-contrast text, invisible icons, or weirdly
+shaded buttons.</li>
+<li><strong>Flash of Light Content:</strong> On slower connections or
+heavy sites, you may briefly see the original white background before
+the script executes.</li>
+<li><strong>Site Updates:</strong> If a website changes its internal
+HTML class names or structural CSS, a targeted userscript may stop
+working until it is manually updated.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the MutationObserver API and Why Use It in Userscripts? - userscript</title>
+    <meta name="description" content="The MutationObserver API is a native JavaScript feature that allows developers to detect and react to changes in the DOM (Document Object Model), such as node additions, text modifications, or attribute updates. In modern userscript development—where s">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-mutation-observer-api-and-why-use-it-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the MutationObserver API and Why Use It in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-mutation-observer-api-and-why-use-it-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The MutationObserver API is a native JavaScript feature that allows developers to detect and react to changes in the DOM (Document Object Model), such as node additions, text modifications, or attribute updates. In modern userscript development—where s" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="what-is-the-mutationobserver-api-and-why-use-it-in-userscripts">What
+Is the MutationObserver API and Why Use It in Userscripts?</h1>
+<p>The MutationObserver API is a native JavaScript feature that allows
+developers to detect and react to changes in the DOM (Document Object
+Model), such as node additions, text modifications, or attribute
+updates. In modern userscript development—where scripts run on top of
+third-party websites built with dynamic frameworks like React, Vue, or
+Angular—it provides an asynchronous, performant way to wait for
+dynamically rendered elements without resorting to laggy, resource-heavy
+polling loops.</p>
+<h2
+id="understanding-the-need-the-shift-to-dynamic-web-pages">Understanding
+the Need: The Shift to Dynamic Web Pages</h2>
+<p>Traditional web pages loaded content all at once via static HTML. A
+simple userscript could run as soon as the DOM was ready
+(<code>DOMContentLoaded</code>), manipulate the necessary elements, and
+finish execution.</p>
+<p>Modern websites, however, rely heavily on Single Page Application
+(SPA) architecture and dynamic content fetching. Elements are constantly
+being created, updated, or removed after the initial page load based on
+API responses and user interactions.</p>
+<h3 id="why-old-techniques-fail">Why Old Techniques Fail</h3>
+<p>Before <code>MutationObserver</code>, developers used several
+workaround methods to handle dynamic content, each with significant
+drawbacks:</p>
+<ul>
+<li><code>setInterval()</code> Polling: Constantly checks the DOM every
+few hundred milliseconds to see if an element exists. This wastes CPU
+resources, drains battery life, and introduces unnecessary latency.</li>
+<li>Mutation Events (e.g., <code>DOMNodeInserted</code>): An older
+event-based system that fired synchronously on every single change. This
+frequently caused serious performance bottlenecks and browser lag,
+leading to its deprecation.</li>
+</ul>
+<h2 id="how-the-mutationobserver-api-works">How the MutationObserver API
+Works</h2>
+<p>The <code>MutationObserver</code> solves performance issues by
+working asynchronously. Instead of firing immediately on every minute
+change, it collects a batch of DOM alterations and delivers them in a
+single callback function via a microtask.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. Define the callback function to handle mutations</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> callback <span class="op">=</span> (mutationsList<span class="op">,</span> observer) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">const</span> mutation <span class="kw">of</span> mutationsList) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (mutation<span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&#39;childList&#39;</span>) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="kw">const</span> targetElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.dynamic-target&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (targetElement) {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Target element found!&#39;</span><span class="op">,</span> targetElement)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Perform actions here</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Optionally disconnect if only needed once:</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                <span class="co">// observer.disconnect();</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. Instantiate the observer</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>(callback)<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. Define what to observe</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> config <span class="op">=</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> }<span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co">// 4. Start observing a parent container (or document.body)</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> config)<span class="op">;</span></span></code></pre></div>
+<h3 id="key-observation-options">Key Observation Options</h3>
+<p>When calling the <code>.observe()</code> method, you can customize
+what changes to listen for using a configuration object:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>childList</code></strong></td>
+<td>Set to <code>true</code> to monitor the addition or removal of child
+nodes.</td>
+</tr>
+<tr>
+<td><strong><code>subtree</code></strong></td>
+<td>Set to <code>true</code> to extend monitoring to all descendants,
+not just direct children.</td>
+</tr>
+<tr>
+<td><strong><code>attributes</code></strong></td>
+<td>Set to <code>true</code> to watch for changes to element attributes
+(e.g., <code>class</code>, <code>style</code>).</td>
+</tr>
+<tr>
+<td><strong><code>characterData</code></strong></td>
+<td>Set to <code>true</code> to monitor changes to text content within
+nodes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="why-mutationobserver-is-crucial-for-userscripts">Why
+MutationObserver Is Crucial for Userscripts</h2>
+<p>Userscripts (run via browser extensions like Tampermonkey or
+Violentmonkey) operate in an environment where they do not control when
+the host site updates its UI. <code>MutationObserver</code> provides
+three major benefits specifically tailored to userscript
+development:</p>
+<h3 id="1-reliable-element-detection">1. Reliable Element Detection</h3>
+<p>When modifying third-party sites, elements you want to tweak might
+not exist when your script runs. By observing a container element or
+<code>document.body</code>, your userscript can reliably detect when
+specific UI components appear and modify them immediately.</p>
+<h3 id="2-superior-performance-and-battery-life">2. Superior Performance
+and Battery Life</h3>
+<p>Because <code>MutationObserver</code> batches notifications
+microtask-by-microtask, it avoids freezing the browser UI thread. It
+runs only when actual changes occur, keeping CPU usage low compared to
+continuous interval checking.</p>
+<h3 id="3-clean-cleanup-capabilities">3. Clean Cleanup Capabilities</h3>
+<p>Observers can easily be disconnected using
+<code>observer.disconnect()</code> once the required element is
+modified, ensuring that your script doesn't continue running in the
+background unnecessarily.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

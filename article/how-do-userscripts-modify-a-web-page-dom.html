@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do Userscripts Modify a Web Page DOM? - userscript</title>
+    <meta name="description" content="Userscripts are light scripts written in JavaScript that run locally in a user's browser to dynamically alter the structure, styling, or functionality of web pages. By interacting directly with the Document Object Model (DOM), userscripts can read, add,">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-userscripts-modify-a-web-page-dom">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do Userscripts Modify a Web Page DOM? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-userscripts-modify-a-web-page-dom" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts are light scripts written in JavaScript that run locally in a user's browser to dynamically alter the structure, styling, or functionality of web pages. By interacting directly with the Document Object Model (DOM), userscripts can read, add," />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-userscripts-modify-a-web-page-dom">How Do Userscripts
+Modify a Web Page DOM?</h1>
+<p>Userscripts are light scripts written in JavaScript that run locally
+in a user's browser to dynamically alter the structure, styling, or
+functionality of web pages. By interacting directly with the Document
+Object Model (DOM), userscripts can read, add, remove, or modify HTML
+elements and CSS styles after a page has loaded. This guide explains the
+core mechanisms userscripts use to access and manipulate the DOM, how
+browser extensions execute them safely, and best practices for creating
+smooth web modifications.</p>
+<h2 id="understanding-the-dom-and-userscript-execution">Understanding
+the DOM and Userscript Execution</h2>
+<p>The Document Object Model (DOM) is a programming interface
+representing a web document as a tree of node objects. When a browser
+loads an HTML document, it creates this tree, allowing scripts to
+dynamically interact with the page content.</p>
+<p>Userscripts—typically managed by browser extensions such as
+Tampermonkey, Violentmonkey, or Greasemonkey—inject custom JavaScript
+directly into the target page context. Depending on configuration
+metadata, these scripts can execute at different stages of page
+loading:</p>
+<ul>
+<li><strong><code>document-start</code>:</strong> Runs before any DOM
+elements or scripts are loaded.</li>
+<li><strong><code>document-body</code>:</strong> Runs as soon as the
+<code>&lt;body&gt;</code> element appears in the DOM.</li>
+<li><strong><code>document-end</code>:</strong> Runs when the DOM tree
+is fully constructed, but external resources like images may still be
+downloading.</li>
+<li><strong><code>document-idle</code>:</strong> Runs after the page and
+all resources have completely finished loading (default behavior).</li>
+</ul>
+<h2 id="core-techniques-for-modifying-dom-elements">Core Techniques for
+Modifying DOM Elements</h2>
+<p>Userscripts rely on standard web APIs to target and alter page
+content.</p>
+<h3 id="selecting-elements">Selecting Elements</h3>
+<p>To modify an element, the script must first locate it within the DOM
+tree using selection methods:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Target a single element using CSS selectors</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mainHeader <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;h1.article-title&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Target multiple elements</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> customButtons <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">&#39;.action-btn&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="modifying-content-and-attributes">Modifying Content and
+Attributes</h3>
+<p>Once an element is selected, userscripts can update text, change
+properties, or swap attributes:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Changing text content safely</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> title <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;h1&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (title) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  title<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="st">&#39;Updated Header via Userscript&#39;</span><span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Updating element attributes</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> link <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;a.external-link&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (link) {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  link<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;target&#39;</span><span class="op">,</span> <span class="st">&#39;_blank&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  link<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;rel&#39;</span><span class="op">,</span> <span class="st">&#39;noopener noreferrer&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="adding-and-removing-elements">Adding and Removing Elements</h3>
+<p>Userscripts frequently inject new UI elements—such as custom download
+buttons, custom navigation bars, or floating toolbars—or remove unwanted
+elements like distracting sidebars.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Injecting a custom button</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> container <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.toolbar&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (container) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> newBtn <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;button&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  newBtn<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="st">&#39;Custom Action&#39;</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  newBtn<span class="op">.</span><span class="at">className</span> <span class="op">=</span> <span class="st">&#39;my-userscript-btn&#39;</span><span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Attach event listeners</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  newBtn<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">alert</span>(<span class="st">&#39;Userscript action triggered!&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  container<span class="op">.</span><span class="fu">appendChild</span>(newBtn)<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">// Removing an unwanted element</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> adBanner <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.promotional-banner&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (adBanner) {</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>  adBanner<span class="op">.</span><span class="fu">remove</span>()<span class="op">;</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="injecting-custom-styles">Injecting Custom Styles</h2>
+<p>In addition to altering raw HTML structure, userscripts often inject
+custom CSS to alter page layouts, enable dark modes, or hide dynamic
+clutter.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> style <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;style&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>style<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="vs">`</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="vs">  .promotional-banner { display: none !important; }</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="vs">  body { background-color: #121212 !important; color: #e0e0e0 !important; }</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">head</span><span class="op">.</span><span class="fu">appendChild</span>(style)<span class="op">;</span></span></code></pre></div>
+<p>Many userscript managers also provide helper functions like
+<code>GM_addStyle</code> to simplify style injection across browser
+environments.</p>
+<h2 id="handling-modern-dynamic-web-pages-spas">Handling Modern Dynamic
+Web Pages (SPAs)</h2>
+<p>Modern web applications built with frameworks like React, Vue, or
+Angular continuously update the DOM asynchronously without full page
+reloads. A simple script running at <code>document-end</code> might fail
+if the target element isn't rendered immediately.</p>
+<p>To manipulate dynamic content reliably, userscripts use two main
+strategies:</p>
+<h3 id="1-mutationobserver-api">1. MutationObserver API</h3>
+<p>The <code>MutationObserver</code> interface monitors the DOM tree for
+changes and fires a callback whenever targeted nodes are added,
+modified, or removed.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutationsList) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">const</span> mutation <span class="kw">of</span> mutationsList) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (mutation<span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&#39;childList&#39;</span>) {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>      <span class="kw">const</span> targetNode <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.dynamic-content&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (targetNode) {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        targetNode<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">border</span> <span class="op">=</span> <span class="st">&#39;2px solid green&#39;</span><span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Optionally disconnect once the target is handled</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        observer<span class="op">.</span><span class="fu">disconnect</span>()<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">// Start observing the target parent node for added child elements</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<h3 id="2-event-delegation">2. Event Delegation</h3>
+<p>When adding functionality to elements that are frequently re-rendered
+or generated dynamically, event delegation attaches a single listener to
+a parent node that stays permanent throughout the page lifetime.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">target</span><span class="op">.</span><span class="fu">matches</span>(<span class="st">&#39;.dynamic-button&#39;</span>)) {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Dynamically created button clicked!&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>By combining standard DOM manipulation methods with asynchronous
+handling like <code>MutationObserver</code>, userscripts can completely
+reshape how web pages look and behave.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How @require Caching Works in Userscripts - userscript</title>
+    <meta name="description" content="The @require tag in userscripts allows developers to include external JavaScript libraries, such as jQuery or Lodash, into their scripts. Script managers like Tampermonkey, Violentmonkey, and Greasemonkey use a strict caching mechanism for these dependen">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-require-caching-works-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How @require Caching Works in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-require-caching-works-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @require tag in userscripts allows developers to include external JavaScript libraries, such as jQuery or Lodash, into their scripts. Script managers like Tampermonkey, Violentmonkey, and Greasemonkey use a strict caching mechanism for these dependen" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-require-caching-works-in-userscripts">How @require Caching
+Works in Userscripts</h1>
+<p>The <code>@require</code> tag in userscripts allows developers to
+include external JavaScript libraries, such as jQuery or Lodash, into
+their scripts. Script managers like Tampermonkey, Violentmonkey, and
+Greasemonkey use a strict caching mechanism for these dependencies,
+downloading them once during installation and serving them locally
+thereafter. This article explains how the <code>@require</code> caching
+system functions, how it impacts script loading speed and reliability,
+and how to handle updates to required dependencies.</p>
+<h2 id="the-require-caching-mechanism">The <code>@require</code> Caching
+Mechanism</h2>
+<p>When you install or update a userscript containing
+<code>@require</code> directives, the script manager fetches the
+specified remote JavaScript files via HTTP.</p>
+<p>Instead of re-fetching these files every time a matching webpage
+loads, the extension saves the full source code of each required file
+into browser-level extension storage (typically IndexedDB or
+WebSQL).</p>
+<p>Key characteristics of this mechanism include:</p>
+<ul>
+<li><strong>One-Time Download:</strong> Fetching occurs strictly at
+installation or update time.</li>
+<li><strong>Local Injection:</strong> During runtime, the cached script
+text is injected directly into the execution context before your main
+script runs.</li>
+<li><strong>Network Bypass:</strong> Normal page loads generate zero
+network requests for the URLs listed in <code>@require</code>
+headers.</li>
+</ul>
+<h2 id="how-caching-affects-userscript-loading">How Caching Affects
+Userscript Loading</h2>
+<p>The local caching strategy significantly alters how userscripts
+execute compared to traditional web development script tags.</p>
+<h3 id="1-instant-execution-and-reduced-latency">1. Instant Execution
+and Reduced Latency</h3>
+<p>Because required libraries are stored locally, network speed and
+latency do not delay script execution. The extension injects the cached
+code immediately when the target DOM state is met, eliminating rendering
+delays caused by slow Content Delivery Networks (CDNs).</p>
+<h3 id="2-offline-availability-and-reliability">2. Offline Availability
+and Reliability</h3>
+<p>If an external CDN goes down or the user is offline, the userscript
+continues to function normally. The script manager relies entirely on
+the local copy, insulating the script from remote host failures or
+network dropouts.</p>
+<h3 id="3-code-immutability">3. Code Immutability</h3>
+<p>Remote changes to a required script URL will not automatically
+propagate to existing users. If a CDN file changes or is compromised,
+users who already installed the script retain the original version
+fetched at installation.</p>
+<h2 id="how-to-update-cached-requirements">How to Update Cached
+Requirements</h2>
+<p>Because <code>@require</code> files are cached permanently upon
+installation, changing the code at a remote URL will not update the file
+for current users. To force an update to a <code>@require</code>
+resource, you must use one of the following methods:</p>
+<ol type="1">
+<li><strong>Change the Target URL:</strong> Append a version query
+parameter or update the path in the <code>@require</code> header (e.g.,
+<code>// @require https://example.com/lib.js?v=1.1</code>). Script
+managers treat a new URL as a new resource and download it.</li>
+<li><strong>Increment the Userscript <code>@version</code>:</strong>
+Updating the main script's <code>@version</code> header prompts the
+script manager to re-check and re-download all associated
+<code>@require</code> dependencies during the update cycle.</li>
+<li><strong>Manual Reinstallation:</strong> Users can manually reinstall
+the userscript or clear the script manager's cache to force fresh
+downloads of all dependencies.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

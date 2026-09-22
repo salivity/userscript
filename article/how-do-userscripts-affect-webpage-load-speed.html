@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do Userscripts Affect Webpage Load Speed? - userscript</title>
+    <meta name="description" content="Userscripts alter webpage functionality and appearance by injecting custom JavaScript, which can either delay page render times or optimize browser performance depending on how they are written and executed. While inefficiently coded scripts, heavy DOM m">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-userscripts-affect-webpage-load-speed">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do Userscripts Affect Webpage Load Speed? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-userscripts-affect-webpage-load-speed" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts alter webpage functionality and appearance by injecting custom JavaScript, which can either delay page render times or optimize browser performance depending on how they are written and executed. While inefficiently coded scripts, heavy DOM m" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-userscripts-affect-webpage-load-speed">How Do Userscripts
+Affect Webpage Load Speed?</h1>
+<p>Userscripts alter webpage functionality and appearance by injecting
+custom JavaScript, which can either delay page render times or optimize
+browser performance depending on how they are written and executed.
+While inefficiently coded scripts, heavy DOM manipulations, and improper
+execution timing can significantly decrease loading speed, lightweight
+scripts designed to block resource-heavy trackers or strip unwanted
+elements can actually make pages load faster. Understanding the
+mechanisms behind userscript execution, the key factors influencing
+performance, and best practices helps maintain a fast browsing
+experience.</p>
+<h2 id="the-mechanisms-behind-userscript-execution">The Mechanisms
+Behind Userscript Execution</h2>
+<p>Userscripts rely on browser extensions like Tampermonkey or
+Violentmonkey to execute custom code on target domains. The primary
+factor influencing performance is the script's execution timing, defined
+by the <code>@run-at</code> metadata directive:</p>
+<ul>
+<li><strong><code>document-start</code></strong>: The script runs before
+any HTML or DOM elements are parsed. If a script performs heavy
+operations here, it directly blocks the browser's render pipeline,
+causing visible delays.</li>
+<li><strong><code>document-body</code></strong>: The script executes as
+soon as the <code>&lt;body&gt;</code> element appears, which can cause
+layout shifts if elements are inserted or modified prematurely.</li>
+<li><strong><code>document-end</code></strong>: The script runs right
+after DOM parsing completes but before external assets like images
+finish loading.</li>
+<li><strong><code>document-idle</code></strong>: The default setting in
+most managers, which runs the script after the page and its initial
+resources have loaded, minimizing impact on initial page render
+speed.</li>
+</ul>
+<h2 id="how-userscripts-can-slow-down-webpages">How Userscripts Can Slow
+Down Webpages</h2>
+<p>When userscripts negatively impact page load times, the issue usually
+stems from resource competition or unoptimized code logic.</p>
+<h3 id="1-synchronous-execution-and-render-blocking">1. Synchronous
+Execution and Render Blocking</h3>
+<p>Because JavaScript operates on a single thread, complex loops or
+blocking synchronous operations inside a userscript halt the browser's
+main thread. This delays crucial browser tasks like painting pixels or
+handling user input.</p>
+<h3 id="2-excessive-dom-manipulation-and-reflows">2. Excessive DOM
+Manipulation and Reflows</h3>
+<p>Modifying the Document Object Model (DOM) repeatedly forces the
+browser to recalculate layout geometry and repaint the screen. Scripts
+that query or alter elements continuously in large loops generate
+significant performance bottlenecks.</p>
+<h3 id="3-additional-network-requests">3. Additional Network
+Requests</h3>
+<p>Userscripts that fetch remote assets or external data using
+<code>GM_xmlhttpRequest</code> add network overhead. Multiple concurrent
+requests can saturate browser connection limits and delay the loading of
+native page resources.</p>
+<h2 id="how-userscripts-can-increase-loading-speed">How Userscripts Can
+Increase Loading Speed</h2>
+<p>Despite adding additional code, userscripts can improve overall web
+performance when used strategically.</p>
+<ul>
+<li><strong>Blocking Unwanted Resources</strong>: Custom scripts can
+intercept and cancel third-party tracking scripts, bloated ad
+frameworks, or heavy analytics packages before they execute.</li>
+<li><strong>Removing Unnecessary Elements</strong>: Stripping heavy
+autoplaying video players, canvas animations, or complex sidebar widgets
+reduces browser memory usage and lowers overall CPU consumption during
+rendering.</li>
+<li><strong>Deferring Non-Essential Features</strong>: Userscripts can
+alter existing site behaviors to lazy-load media or delay background
+fetches until specifically requested.</li>
+</ul>
+<h2 id="best-practices-for-maintaining-fast-load-times">Best Practices
+for Maintaining Fast Load Times</h2>
+<p>To ensure custom scripts do not compromise browser performance,
+consider the following optimization strategies:</p>
+<ul>
+<li><strong>Optimize Execution Triggers</strong>: Use
+<code>@run-at document-idle</code> whenever immediate pre-render
+modification is not strictly required.</li>
+<li><strong>Batch DOM Changes</strong>: Consolidate multiple DOM updates
+into a single operation using <code>DocumentFragment</code> or
+<code>requestAnimationFrame</code>.</li>
+<li><strong>Limit Dynamic Selectors</strong>: Avoid relying on expensive
+polling loops like <code>setInterval</code> to wait for elements to
+appear; instead, utilize efficiently configured
+<code>MutationObserver</code> instances.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Format Raw JSON in Browser Using Userscripts - userscript</title>
+    <meta name="description" content="Yes, userscripts can be used to automatically format raw JSON data displayed in a web browser window. By utilizing browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey, a custom JavaScript script can detect when a page contains unformatte">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/auto-format-raw-json-in-browser-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Auto Format Raw JSON in Browser Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/auto-format-raw-json-in-browser-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can be used to automatically format raw JSON data displayed in a web browser window. By utilizing browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey, a custom JavaScript script can detect when a page contains unformatte" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="auto-format-raw-json-in-browser-using-userscripts">Auto Format
+Raw JSON in Browser Using Userscripts</h1>
+<p>Yes, userscripts can be used to automatically format raw JSON data
+displayed in a web browser window. By utilizing browser extensions like
+Tampermonkey, Violentmonkey, or Greasemonkey, a custom JavaScript script
+can detect when a page contains unformatted JSON text, parse that data,
+and dynamically replace the plain text with a structured, collapsible,
+and syntax-highlighted HTML layout.</p>
+<h2 id="how-userscripts-process-raw-json-data">How Userscripts Process
+Raw JSON Data</h2>
+<p>When a browser fetches an API endpoint or a raw <code>.json</code>
+file, it typically displays the response as an unformatted text string.
+A userscript automates the formatting process using the following
+workflow:</p>
+<ol type="1">
+<li><strong>Detection:</strong> The script checks the document's content
+type or inspects the body text to verify if the content is valid
+JSON.</li>
+<li><strong>Parsing:</strong> The raw string is processed using
+<code>JSON.parse()</code> to turn it into a readable JavaScript
+object.</li>
+<li><strong>Rendering:</strong> The script constructs formatted HTML
+elements—adding indentation, color coding for keys and values, and
+interactive elements like toggle arrows for collapsing objects or
+arrays.</li>
+<li><strong>DOM Replacement:</strong> The raw document body is cleared
+and replaced with the newly generated, styled tree view.</li>
+</ol>
+<h2 id="a-basic-userscript-implementation">A Basic Userscript
+Implementation</h2>
+<p>Below is a conceptual example of how a minimal userscript
+automatically formats plain JSON text:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Auto JSON Formatter</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        http://*/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*/*</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-end</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use me strict&#39;</span><span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check if document contains JSON</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> bodyText <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">innerText</span><span class="op">.</span><span class="fu">trim</span>()<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>bodyText<span class="op">.</span><span class="fu">startsWith</span>(<span class="st">&#39;{&#39;</span>) <span class="op">&amp;&amp;</span> <span class="op">!</span>bodyText<span class="op">.</span><span class="fu">startsWith</span>(<span class="st">&#39;[&#39;</span>)) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> {</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> jsonObject <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(bodyText)<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Pretty-print JSON with 2-space indentation</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> formattedJSON <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(jsonObject<span class="op">,</span> <span class="kw">null</span><span class="op">,</span> <span class="dv">2</span>)<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Render formatted text inside a &lt;pre&gt; block</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> <span class="vs">`&lt;pre style=&quot;font-family: monospace; white-space: pre-wrap;&quot;&gt;</span><span class="sc">${</span>formattedJSON<span class="sc">}</span><span class="vs">&lt;/pre&gt;`</span><span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">catch</span> (e) {</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Document is not valid JSON; do nothing</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="key-advantages-of-using-userscripts-for-json">Key Advantages of
+Using Userscripts for JSON</h2>
+<ul>
+<li><strong>Customization:</strong> Unlike built-in browser viewers,
+userscripts allow complete control over themes, font sizes, key-sorting
+rules, and keyboard shortcuts.</li>
+<li><strong>Privacy:</strong> All parsing and rendering occur locally on
+your machine, preventing sensitive API data from being sent to
+third-party online JSON tools.</li>
+<li><strong>Lightweight:</strong> A custom script uses minimal system
+resources compared to heavy browser extensions.</li>
+</ul>
+<h2 id="potential-conflicts-to-consider">Potential Conflicts to
+Consider</h2>
+<p>Modern web browsers like Firefox and Chrome include native JSON
+viewers. If a native viewer is enabled, the browser converts the page
+before the userscript executes. To ensure your userscript runs smoothly,
+you may need to disable the browser's native JSON viewing features or
+configure the script to target specific content headers.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

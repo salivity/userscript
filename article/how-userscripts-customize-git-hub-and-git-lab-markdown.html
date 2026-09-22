@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Customize GitHub and GitLab Markdown - userscript</title>
+    <meta name="description" content="Userscripts allow web browser users to alter the appearance and functionality of web pages by running custom JavaScript code locally. On platforms like GitHub and GitLab, userscripts customize Markdown rendering by interacting directly with the Document">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-customize-git-hub-and-git-lab-markdown">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Customize GitHub and GitLab Markdown - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-customize-git-hub-and-git-lab-markdown" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts allow web browser users to alter the appearance and functionality of web pages by running custom JavaScript code locally. On platforms like GitHub and GitLab, userscripts customize Markdown rendering by interacting directly with the Document" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-customize-github-and-gitlab-markdown">How
+Userscripts Customize GitHub and GitLab Markdown</h1>
+<p>Userscripts allow web browser users to alter the appearance and
+functionality of web pages by running custom JavaScript code locally. On
+platforms like GitHub and GitLab, userscripts customize Markdown
+rendering by interacting directly with the Document Object Model (DOM),
+intercepting text blocks, and injecting custom styles, third-party
+rendering libraries, or new interactive components. This gives
+developers complete control over how documentation, pull requests,
+issues, and README files display on their screens.</p>
+<h2 id="the-technical-mechanism-behind-userscripts">The Technical
+Mechanism Behind Userscripts</h2>
+<p>Userscripts operate through browser extensions such as Tampermonkey,
+Violentmonkey, or Greasemonkey. When a user navigates to a GitHub or
+GitLab page, the extension runs the designated script in the browser
+context.</p>
+<h3 id="1-identifying-markdown-containers">1. Identifying Markdown
+Containers</h3>
+<p>Platforms structure their rendered Markdown inside specific HTML
+elements. Userscripts use DOM selection methods like
+<code>document.querySelector</code> or
+<code>document.querySelectorAll</code> to target these containers:</p>
+<ul>
+<li><strong>GitHub:</strong> Uses classes such as
+<code>.markdown-body</code> or attribute selectors like
+<code>[data-target="react-app.renderedMarkdown"]</code>.</li>
+<li><strong>GitLab:</strong> Targets elements like <code>.md</code>,
+<code>.wiki</code>, or <code>.note-text</code>.</li>
+</ul>
+<h3 id="2-handling-dynamic-page-loading">2. Handling Dynamic Page
+Loading</h3>
+<p>Both GitHub and GitLab rely heavily on Single Page Application (SPA)
+architecture, dynamically loading content without full page refreshes.
+Standard scripts that run once upon page load will fail when navigating
+between issues or repositories.</p>
+<p>To overcome this, userscripts implement a
+<code>MutationObserver</code>. This API monitors the DOM tree for
+changes, triggering the script's Markdown parsing logic whenever new
+content is injected into the page.</p>
+<h2 id="core-techniques-for-customizing-markdown">Core Techniques for
+Customizing Markdown</h2>
+<p>Userscripts use several distinct methods to modify Markdown rendering
+depending on the desired outcome.</p>
+<h3 id="transforming-text-and-html-elements">Transforming Text and HTML
+Elements</h3>
+<p>Scripts can scan raw text or rendered HTML for specific regular
+expressions or tag patterns, replacing them with enhanced elements.</p>
+<ul>
+<li><strong>Custom Badges and Tags:</strong> Automatically converting
+text tags like <code>[TODO]</code> or <code>[URGENT]</code> into styled
+HTML badges.</li>
+<li><strong>Link Previews:</strong> Converting standard Markdown links
+into interactive hover cards or embedded media players.</li>
+<li><strong>Table Enhancements:</strong> Converting basic HTML tables
+generated by Markdown into sortable, filterable data grids.</li>
+</ul>
+<h3 id="injecting-third-party-libraries">Injecting Third-Party
+Libraries</h3>
+<p>Standard Markdown on GitHub and GitLab lacks built-in support for
+certain complex visualizations. Userscripts can import external
+JavaScript and CSS libraries using <code>@require</code> directives in
+the script metadata.</p>
+<p>Common integrations include:</p>
+<ul>
+<li><strong>Math Rendering:</strong> Loading KaTeX or MathJax to parse
+inline LaTeX notation (<code>$E=mc^2$</code>) and display complex
+mathematical equations.</li>
+<li><strong>Diagramming:</strong> Using Mermaid.js or PlantUML to turn
+standard fenced code blocks (e.g., <code>```mermaid</code>) into
+rendered flowcharts and sequence diagrams.</li>
+<li><strong>Syntax Highlighting:</strong> Replacing default syntax
+highlighting engines with libraries like Prism.js or Highlight.js for
+unsupported programming languages.</li>
+</ul>
+<h3 id="custom-css-injection">Custom CSS Injection</h3>
+<p>For visual changes, userscripts can dynamically insert custom
+<code>&lt;style&gt;</code> blocks into the page document head. This
+allows users to:</p>
+<ul>
+<li>Override default font families, font sizes, and line heights.</li>
+<li>Adjust color palettes for enhanced dark mode compatibility.</li>
+<li>Hide specific Markdown components, such as automatic task lists or
+metadata headers.</li>
+</ul>
+<h2 id="workflow-example-rendering-custom-code-blocks">Workflow Example:
+Rendering Custom Code Blocks</h2>
+<p>A typical userscript rendering workflow follows these distinct
+steps:</p>
+<ol type="1">
+<li><strong>Detection:</strong> The script waits for the page to load
+and attaches a <code>MutationObserver</code> to watch for newly loaded
+Markdown blocks.</li>
+<li><strong>Parsing:</strong> It searches for target code blocks, such
+as <code>&lt;pre lang="custom-chart"&gt;</code>.</li>
+<li><strong>Execution:</strong> The raw text inside the code block is
+extracted and passed to an external processing library.</li>
+<li><strong>Replacement:</strong> The original <code>&lt;pre&gt;</code>
+tag is hidden or removed, and the newly generated visual element (such
+as an SVG chart) is appended in its place.</li>
+</ol>
+<h2 id="limitations-of-userscript-customization">Limitations of
+Userscript Customization</h2>
+<ul>
+<li><strong>Local Scope:</strong> Changes made by a userscript are only
+visible to the person running the script in their browser. Other
+collaborators viewing the same repository will see the default platform
+rendering.</li>
+<li><strong>DOM Fragility:</strong> Platforms frequently update their
+front-end code and CSS class names. If GitHub or GitLab renames a target
+class, the userscript may fail until updated to match the new
+selector.</li>
+<li><strong>Security Constraints:</strong> Modern Content Security
+Policies (CSP) enforced by platforms may restrict scripts from executing
+inline code or fetching resources from external domains without proper
+user configuration.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

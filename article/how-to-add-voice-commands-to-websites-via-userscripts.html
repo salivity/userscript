@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Add Voice Commands to Websites via Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can fully interact with the Web Speech API to add custom voice command functionality to virtually any website. By leveraging browser extension managers such as Tampermonkey, Violentmonkey, or Greasemonkey, you can inject JavaScript that initi">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-add-voice-commands-to-websites-via-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Add Voice Commands to Websites via Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-add-voice-commands-to-websites-via-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can fully interact with the Web Speech API to add custom voice command functionality to virtually any website. By leveraging browser extension managers such as Tampermonkey, Violentmonkey, or Greasemonkey, you can inject JavaScript that initi" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-add-voice-commands-to-websites-via-userscripts">How to
+Add Voice Commands to Websites via Userscripts</h1>
+<p>Userscripts can fully interact with the Web Speech API to add custom
+voice command functionality to virtually any website. By leveraging
+browser extension managers such as Tampermonkey, Violentmonkey, or
+Greasemonkey, you can inject JavaScript that initializes the browser's
+native speech recognition engine, listens for spoken keywords, and
+automatically triggers actions on the target web page. This guide covers
+how userscripts access the Web Speech API, how to set up basic voice
+triggers, and the essential browser security requirements you must keep
+in mind.</p>
+<h2 id="how-userscripts-access-the-web-speech-api">How Userscripts
+Access the Web Speech API</h2>
+<p>Because userscripts run directly in the context of the web page (or
+have access to the page's global object via <code>window</code> or
+<code>unsafeWindow</code>), they share access to all standard web APIs
+available to normal site scripts.</p>
+<p>The Web Speech API consists of two primary parts:</p>
+<ol type="1">
+<li><strong>Speech Recognition (<code>SpeechRecognition</code> or
+<code>webkitSpeechRecognition</code>):</strong> Converts audio input
+into text strings.</li>
+<li><strong>Speech Synthesis (<code>SpeechSynthesis</code>):</strong>
+Provides text-to-speech capabilities to give voice feedback to the
+user.</li>
+</ol>
+<p>A userscript simply creates a new instance of the browser's speech
+recognition engine and attaches event listeners to handle the
+results.</p>
+<h2 id="basic-implementation-example">Basic Implementation Example</h2>
+<p>Below is a conceptual example of a userscript snippet that Listens
+for specific spoken phrases to automate page interactions, such as
+clicking a button or scrolling.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Voice Controlled Website</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use me strict&#39;</span><span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check for browser support</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> SpeechRecognition <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">SpeechRecognition</span> <span class="op">||</span> <span class="bu">window</span><span class="op">.</span><span class="at">webkitSpeechRecognition</span><span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>SpeechRecognition) {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&#39;Web Speech API is not supported in this browser.&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> recognition <span class="op">=</span> <span class="kw">new</span> <span class="fu">SpeechRecognition</span>()<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    recognition<span class="op">.</span><span class="at">continuous</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    recognition<span class="op">.</span><span class="at">lang</span> <span class="op">=</span> <span class="st">&#39;en-US&#39;</span><span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Handle recognized speech</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    recognition<span class="op">.</span><span class="at">onresult</span> <span class="op">=</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> current <span class="op">=</span> <span class="bu">event</span><span class="op">.</span><span class="at">resultIndex</span><span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> transcript <span class="op">=</span> <span class="bu">event</span><span class="op">.</span><span class="at">results</span>[current][<span class="dv">0</span>]<span class="op">.</span><span class="at">transcript</span><span class="op">.</span><span class="fu">trim</span>()<span class="op">.</span><span class="fu">toLowerCase</span>()<span class="op">;</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Voice Command Received:&#39;</span><span class="op">,</span> transcript)<span class="op">;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Define command matching</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (transcript<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;scroll down&#39;</span>)) {</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>            <span class="bu">window</span><span class="op">.</span><span class="fu">scrollBy</span>({ <span class="dt">top</span><span class="op">:</span> <span class="dv">500</span><span class="op">,</span> <span class="dt">behavior</span><span class="op">:</span> <span class="st">&#39;smooth&#39;</span> })<span class="op">;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> <span class="cf">if</span> (transcript<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;click search&#39;</span>)) {</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>            <span class="kw">const</span> searchButton <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;button[type=&quot;submit&quot;]&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (searchButton) searchButton<span class="op">.</span><span class="fu">click</span>()<span class="op">;</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Start listening</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    recognition<span class="op">.</span><span class="fu">start</span>()<span class="op">;</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="practical-applications-for-voice-enabled-userscripts">Practical
+Applications for Voice-Enabled Userscripts</h2>
+<ul>
+<li><strong>Accessibility Enhancements:</strong> Automate navigation,
+form filling, or button presses for users who prefer hands-free
+interaction.</li>
+<li><strong>Custom Workflow Automation:</strong> Create voice shortcuts
+for complex actions like submitting forms, toggling dark mode, or
+switching tabs.</li>
+<li><strong>Text-to-Speech Feedback:</strong> Combine Speech Recognition
+with <code>window.speechSynthesis</code> so the script can read selected
+text back to you upon request.</li>
+</ul>
+<h2 id="technical-considerations-and-limitations">Technical
+Considerations and Limitations</h2>
+<ol type="1">
+<li><strong>HTTPS Requirement:</strong> The Web Speech API requires a
+secure context (<code>https://</code>). It will not function on insecure
+(<code>http://</code>) pages in most modern browsers.</li>
+<li><strong>Microphone Permissions:</strong> The user must manually
+accept the browser's microphone access prompt for each domain where the
+userscript runs. Once granted, permissions are saved per domain.</li>
+<li><strong>Browser Support:</strong> Speech recognition is best
+supported in Chromium-based browsers (Google Chrome, Microsoft Edge,
+Brave). Firefox and Safari have limited or flag-dependent support for
+speech-to-text features.</li>
+<li><strong>Cloud Processing:</strong> On Chrome and Edge, speech
+recognition often sends audio data to server-based speech engines for
+processing, which requires an active internet connection.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

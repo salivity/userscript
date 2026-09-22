@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is GM_registerMenuCommand in Userscripts? - userscript</title>
+    <meta name="description" content="The GMregisterMenuCommand function is an API provided by browser userscript managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—that allows developers to add custom entry points to the browser extension's popup menu. By registering these c">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-gm-register-menu-command-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What is GM_registerMenuCommand in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-gm-register-menu-command-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMregisterMenuCommand function is an API provided by browser userscript managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—that allows developers to add custom entry points to the browser extension's popup menu. By registering these c" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-gm_registermenucommand-in-userscripts">What is
+GM_registerMenuCommand in Userscripts?</h1>
+<p>The <code>GM_registerMenuCommand</code> function is an API provided
+by browser userscript managers—such as Tampermonkey, Violentmonkey, and
+Greasemonkey—that allows developers to add custom entry points to the
+browser extension's popup menu. By registering these commands,
+developers enable users to trigger specific JavaScript functions on
+demand rather than relying solely on automated page events. This article
+explains how <code>GM_registerMenuCommand</code> works, its syntax,
+required metadata permissions, and practical use cases.</p>
+<h2 id="purpose-and-functionality">Purpose and Functionality</h2>
+<p>Standard userscripts run automatically when a web page loads or
+updates. However, some features should only execute when requested by
+the user, such as opening a settings modal, triggering a manual data
+export, or toggling a script feature on and off.</p>
+<p><code>GM_registerMenuCommand</code> bridges this gap by adding
+interactive buttons or items directly inside the userscript manager's
+extension menu in the browser toolbar.</p>
+<h2 id="syntax-and-parameters">Syntax and Parameters</h2>
+<p>The function takes the following general syntax:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_registerMenuCommand</span>(caption<span class="op">,</span> onClickFunc<span class="op">,</span> accessKey)<span class="op">;</span></span></code></pre></div>
+<h3 id="parameters">Parameters:</h3>
+<ol type="1">
+<li><strong><code>caption</code> (String, Required):</strong> The text
+displayed in the userscript manager's menu.</li>
+<li><strong><code>onClickFunc</code> (Function, Required):</strong> The
+callback function executed when the user clicks the menu item.</li>
+<li><strong><code>accessKey</code> (String, Optional):</strong> A single
+character used as a keyboard shortcut to trigger the command when the
+menu is open.</li>
+</ol>
+<p>In modern userscript managers like Tampermonkey, an optional fourth
+options object or modern signature can be used to pass extra
+configuration, such as custom IDs or auto-close behavior.</p>
+<h2 id="required-header-grant">Required Header Grant</h2>
+<p>To use this function, you must explicitly request permission in the
+userscript's metadata block using the <code>@grant</code> directive:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Custom Menu Example</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_registerMenuCommand</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>Without <code>@grant GM_registerMenuCommand</code>, calling the
+function will result in a runtime reference error.</p>
+<h2 id="practical-example">Practical Example</h2>
+<p>Below is a basic implementation demonstrating how to add a toggle
+switch for a script setting:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Page Theme Dynamic Toggle</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        *://*/*</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_registerMenuCommand</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use strict&#39;</span><span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">function</span> <span class="fu">toggleDarkMode</span>() {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">toggle</span>(<span class="st">&#39;dark-mode-override&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">alert</span>(<span class="st">&#39;Dark mode toggled!&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Register the command in the extension menu</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">GM_registerMenuCommand</span>(<span class="st">&quot;Toggle Dark Mode&quot;</span><span class="op">,</span> toggleDarkMode<span class="op">,</span> <span class="st">&quot;d&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<p>When a user clicks on the extension icon while visiting any site,
+"Toggle Dark Mode" will appear as a clickable option under this script's
+section.</p>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<ul>
+<li><strong>Configuration Modals:</strong> Opening a user interface to
+let users change script preferences.</li>
+<li><strong>Feature Toggles:</strong> Enabling or disabling specific
+script functions without editing code.</li>
+<li><strong>Manual Data Processing:</strong> Initiating actions like
+downloading data, scraping content, or filling forms on demand.</li>
+<li><strong>Debugging Tools:</strong> Dumping diagnostic data to the
+browser console when troubleshooting.</li>
+</ul>
+<h2 id="unregistering-menu-commands">Unregistering Menu Commands</h2>
+<p>Some userscript managers also support
+<code>GM_unregisterMenuCommand</code>. This companion function allows
+developers to remove menu items dynamically using a menu command ID
+returned by <code>GM_registerMenuCommand</code>, which is useful for
+updating menu text state dynamically (e.g., changing "Enable Feature" to
+"Disable Feature").</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Block Specific JavaScript Files with Userscripts - userscript</title>
+    <meta name="description" content="Yes, userscripts can prevent specific JavaScript files from loading or executing on a webpage, though success depends on execution timing and how the script is inserted into the document. By running a userscript at the earliest possible stage (@run-at do">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-block-specific-java-script-files-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Block Specific JavaScript Files with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-block-specific-java-script-files-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can prevent specific JavaScript files from loading or executing on a webpage, though success depends on execution timing and how the script is inserted into the document. By running a userscript at the earliest possible stage (@run-at do" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-block-specific-javascript-files-with-userscripts">How to
+Block Specific JavaScript Files with Userscripts</h1>
+<p>Yes, userscripts can prevent specific JavaScript files from loading
+or executing on a webpage, though success depends on execution timing
+and how the script is inserted into the document. By running a
+userscript at the earliest possible stage
+(<code>@run-at document-start</code>), developers can intercept
+<code>&lt;script&gt;</code> elements before they fetch or execute remote
+code using techniques like DOM monkey-patching,
+<code>MutationObserver</code>, or extension-specific APIs like
+<code>GM_webRequest</code>.</p>
+<h2 id="why-execution-timing-matters">Why Execution Timing Matters</h2>
+<p>For a userscript to block an external JavaScript file, it must
+execute <strong>before</strong> the browser parses and requests that
+file. Standard userscripts often run at <code>document-idle</code> or
+<code>document-end</code>, which is too late to stop network requests
+for synchronous <code>&lt;script&gt;</code> tags located in the page
+header.</p>
+<p>To ensure your script runs early enough, include this directive in
+your userscript metadata block:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Script Blocker</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-start</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="method-1-intercepting-script-creation-dom-patching">Method 1:
+Intercepting Script Creation (DOM Patching)</h2>
+<p>If the target website dynamically injects script tags via JavaScript,
+you can override <code>document.createElement</code> to prevent specific
+scripts from setting matching <code>src</code> attributes.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalCreateElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span> <span class="op">=</span> <span class="kw">function</span> (tagName<span class="op">,</span> options) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> element <span class="op">=</span> originalCreateElement<span class="op">.</span><span class="fu">call</span>(<span class="bu">document</span><span class="op">,</span> tagName<span class="op">,</span> options)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (tagName<span class="op">.</span><span class="fu">toLowerCase</span>() <span class="op">===</span> <span class="st">&#39;script&#39;</span>) {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(element<span class="op">,</span> <span class="st">&#39;src&#39;</span><span class="op">,</span> {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="kw">set</span>(url) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (url<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;unwanted-script.js&#39;</span>)) {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Blocked script loading:&#39;</span><span class="op">,</span> url)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span><span class="op">;</span> <span class="co">// Stop setting the src attribute</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                element<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;src&#39;</span><span class="op">,</span> url)<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            }<span class="op">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>            <span class="kw">get</span>() {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> element<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&#39;src&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> element<span class="op">;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2
+id="method-2-blocking-html-embedded-scripts-with-mutationobserver">Method
+2: Blocking HTML-Embedded Scripts with MutationObserver</h2>
+<p>To block external scripts hardcoded directly in the original HTML
+source, set up a <code>MutationObserver</code> at
+<code>document-start</code>. This allows you to catch and modify or
+remove script nodes the moment they enter the DOM.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">const</span> mutation <span class="kw">of</span> mutations) {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (<span class="kw">const</span> node <span class="kw">of</span> mutation<span class="op">.</span><span class="at">addedNodes</span>) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (node<span class="op">.</span><span class="at">tagName</span> <span class="op">===</span> <span class="st">&#39;SCRIPT&#39;</span> <span class="op">&amp;&amp;</span> node<span class="op">.</span><span class="at">src</span><span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;target-script.js&#39;</span>)) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Prevent execution by changing the type attribute</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                node<span class="op">.</span><span class="at">type</span> <span class="op">=</span> <span class="st">&#39;javascript/blocked&#39;</span><span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                node<span class="op">.</span><span class="fu">remove</span>()<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Prevented execution of:&#39;</span><span class="op">,</span> node<span class="op">.</span><span class="at">src</span>)<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span><span class="op">,</span> {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="method-3-using-gm_webrequest-network-level">Method 3: Using
+GM_webRequest (Network Level)</h2>
+<p>Some userscript managers (such as Violentmonkey or specific
+configurations of Tampermonkey) support the <code>GM_webRequest</code>
+API. This allows you to abort network requests before they reach the
+server level.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Block Network Script</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-start</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_webRequest</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_webRequest</span>([</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    { <span class="dt">selector</span><span class="op">:</span> <span class="st">&#39;*://example.com/path/to/script.js*&#39;</span><span class="op">,</span> <span class="dt">action</span><span class="op">:</span> <span class="st">&#39;cancel&#39;</span> }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>])<span class="op">;</span></span></code></pre></div>
+<h2
+id="limitations-of-using-userscripts-for-script-blocking">Limitations of
+Using Userscripts for Script Blocking</h2>
+<ul>
+<li><strong>Browser Pre-Parser:</strong> Modern browsers use preload
+scanners that might request synchronous scripts in the HTML head before
+userscripts complete initialization.</li>
+<li><strong>Inline Scripts:</strong> Blocking specific inline
+<code>&lt;script&gt;</code> blocks (scripts without a <code>src</code>
+attribute) requires removing or modifying the script element before the
+browser engine executes its contents, which can be difficult to catch
+reliably.</li>
+<li><strong>Dedicated Blockers:</strong> For strictly blocking network
+requests by URL pattern, dedicated content blockers (like uBlock Origin)
+are more reliable than userscripts because they hook directly into the
+browser's webRequest API at a lower system level.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Disable or Uninstall Userscripts Temporarily? - userscript</title>
+    <meta name="description" content="Managing custom userscripts in modern browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey allows you to troubleshoot website issues, prevent script conflicts, or temporarily pause custom functionality. This guide walks you through the ex">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-disable-or-uninstall-userscripts-temporarily">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Disable or Uninstall Userscripts Temporarily? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-disable-or-uninstall-userscripts-temporarily" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing custom userscripts in modern browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey allows you to troubleshoot website issues, prevent script conflicts, or temporarily pause custom functionality. This guide walks you through the ex" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-disable-or-uninstall-userscripts-temporarily">How to
+Disable or Uninstall Userscripts Temporarily?</h1>
+<p>Managing custom userscripts in modern browser extensions like
+Tampermonkey, Violentmonkey, or Greasemonkey allows you to troubleshoot
+website issues, prevent script conflicts, or temporarily pause custom
+functionality. This guide walks you through the exact steps to quickly
+toggle userscripts off and on across different extensions, manage
+site-specific execution, and completely uninstall scripts when they are
+no longer needed.</p>
+<hr />
+<h2 id="why-temporarily-disable-userscripts">Why Temporarily Disable
+Userscripts?</h2>
+<p>Userscripts alter how web pages function by injecting custom
+JavaScript. While they add powerful features, temporarily disabling them
+can be helpful when:</p>
+<ul>
+<li><strong>Troubleshooting broken websites:</strong> Determining if a
+script is interfering with page loading, buttons, or dynamic
+content.</li>
+<li><strong>Preventing script conflicts:</strong> Running multiple
+scripts that alter the same web elements can cause performance issues or
+bugs.</li>
+<li><strong>Testing original site features:</strong> Comparing a web
+app's default experience against your customized setup.</li>
+</ul>
+<hr />
+<h2 id="how-to-disable-userscripts-in-popular-extensions">How to Disable
+Userscripts in Popular Extensions</h2>
+<p>Most userscript managers provide quick toggles via their browser
+toolbar icons, as well as a centralized dashboard for full control.</p>
+<h3 id="1-tampermonkey">1. Tampermonkey</h3>
+<h4 id="quick-toggle-toolbar-menu">Quick Toggle (Toolbar Menu)</h4>
+<ul>
+<li>Click the <strong>Tampermonkey icon</strong> in your browser toolbar
+while viewing the target website.</li>
+<li>Locate the active script in the menu popup.</li>
+<li>Click the <strong>toggle switch</strong> next to the script name to
+turn it <strong>Off</strong>.</li>
+<li>Refresh the webpage for changes to take effect.</li>
+</ul>
+<h4 id="master-toggle">Master Toggle</h4>
+<ul>
+<li>Click the Tampermonkey icon and toggle the <strong>Enabled</strong>
+switch at the top to turn off all userscripts globally without disabling
+the extension itself.</li>
+</ul>
+<h4 id="dashboard-management">Dashboard Management</h4>
+<ul>
+<li>Click the Tampermonkey icon and select
+<strong>Dashboard</strong>.</li>
+<li>Go to the <strong>Installed Scripts</strong> tab.</li>
+<li>Click the green switch under the <strong>Enabled</strong> column
+next to any script to disable it indefinitely.</li>
+</ul>
+<hr />
+<h3 id="2-violentmonkey">2. Violentmonkey</h3>
+<h4 id="quick-toggle">Quick Toggle</h4>
+<ul>
+<li>Click the <strong>Violentmonkey icon</strong> in your browser
+toolbar.</li>
+<li>In the popup list, click the <strong>check mark</strong> or
+<strong>toggle button</strong> beside the specific script you want to
+pause.</li>
+<li>Reload the page to confirm the script is inactive.</li>
+</ul>
+<h4 id="dashboard-management-1">Dashboard Management</h4>
+<ul>
+<li>Click the Violentmonkey icon and select the <strong>Gear/Settings
+icon</strong> to open the Dashboard.</li>
+<li>Locate your script in the list and click the <strong>toggle
+switch</strong> on the left side to turn it off.</li>
+</ul>
+<hr />
+<h3 id="3-greasemonkey-firefox">3. Greasemonkey (Firefox)</h3>
+<h4 id="quick-toggle-1">Quick Toggle</h4>
+<ul>
+<li>Click the <strong>Greasemonkey icon</strong> in the Firefox
+toolbar.</li>
+<li>Uncheck the script listed under the active scripts section in the
+dropdown menu.</li>
+</ul>
+<h4 id="dashboard-management-2">Dashboard Management</h4>
+<ul>
+<li>Click the Greasemonkey icon and choose <strong>Manage
+Scripts</strong>.</li>
+<li>Click the <strong>Disable</strong> button next to the relevant
+script entry.</li>
+</ul>
+<hr />
+<h2 id="how-to-temporarily-blacklist-specific-domains">How to
+Temporarily Blacklist Specific Domains</h2>
+<p>If you only want a script to stop running on a specific domain
+without disabling it everywhere else, you can adjust its match rules
+directly:</p>
+<ol type="1">
+<li>Open your extension's <strong>Dashboard</strong>.</li>
+<li>Click <strong>Edit</strong> (or the pencil icon) next to the target
+userscript.</li>
+<li>Locate the metadata block at the top of the file (between
+<code>// ==UserScript==</code> and
+<code>// ==/UserScript==</code>).</li>
+<li>Add an <code>@exclude</code> rule targeting the domain you want to
+block:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// @exclude      https://example.com/*</span></span></code></pre></div>
+<ol start="5" type="1">
+<li>Save the changes. The script will automatically skip execution on
+that specific domain while continuing to run everywhere else.</li>
+</ol>
+<hr />
+<h2 id="how-to-uninstall-userscripts-permanently">How to Uninstall
+Userscripts Permanently</h2>
+<p>If a userscript is outdated or no longer required, uninstalling it
+removes all associated files and settings from your browser
+extension.</p>
+<ol type="1">
+<li>Open your extension's <strong>Dashboard</strong> (Tampermonkey,
+Violentmonkey, or Greasemonkey).</li>
+<li>Locate the script you want to delete.</li>
+<li>Click the <strong>Trash Can / Delete icon</strong> (or select
+<strong>Remove</strong> from the options menu).</li>
+<li>Confirm the deletion when prompted.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

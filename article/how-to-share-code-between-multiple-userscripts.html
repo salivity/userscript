@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Share Code Between Multiple Userscripts - userscript</title>
+    <meta name="description" content="Sharing code logic between multiple related userscripts improves maintainability, reduces code duplication, and streamlines updates across your scripts. This guide outlines the most effective techniques for modularizing and reusing logic across Tampermon">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-share-code-between-multiple-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Share Code Between Multiple Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-share-code-between-multiple-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Sharing code logic between multiple related userscripts improves maintainability, reduces code duplication, and streamlines updates across your scripts. This guide outlines the most effective techniques for modularizing and reusing logic across Tampermon" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-share-code-between-multiple-userscripts">How to Share
+Code Between Multiple Userscripts</h1>
+<p>Sharing code logic between multiple related userscripts improves
+maintainability, reduces code duplication, and streamlines updates
+across your scripts. This guide outlines the most effective techniques
+for modularizing and reusing logic across Tampermonkey, Violentmonkey,
+or Greasemonkey scripts. You will learn how to leverage metadata
+directives, modern build tools, shared storage, and browser-level APIs
+to keep your codebase clean and scalable.</p>
+<h2 id="use-the-require-metadata-directive">Use the
+<code>@require</code> Metadata Directive</h2>
+<p>The standard way to share utility functions or complex libraries
+across userscripts is through the <code>@require</code> header
+directive.</p>
+<ul>
+<li><strong>External Hosting:</strong> Host your shared JavaScript
+functions on a CDN, GitHub, raw Gist, or local development server.</li>
+<li><strong>Metadata Configuration:</strong> Add
+<code>@require https://your-domain.com/shared-logic.js</code> inside the
+<code>==UserScript==</code> block of each dependent script.</li>
+<li><strong>Execution Scope:</strong> The script manager downloads,
+caches, and executes the required file before running your main
+userscript, making all global functions inside the required script
+available immediately.</li>
+</ul>
+<h2 id="modularize-and-bundle-with-vite-or-webpack">Modularize and
+Bundle with Vite or Webpack</h2>
+<p>For local development across a complex suite of scripts, relying
+solely on <code>@require</code> can hinder rapid iteration. Using a
+module bundler like Vite, Webpack, or Rollup offers a superior
+workflow.</p>
+<ul>
+<li><strong>Shared Source Directory:</strong> Structure your project as
+a monorepo or standard project folder with a dedicated
+<code>src/common/</code> folder containing shared modules.</li>
+<li><strong>ES Imports:</strong> Import utility functions directly into
+script entry points using standard syntax
+(<code>import { formatData } from '../common/utils.js'</code>).</li>
+<li><strong>Automated Compilation:</strong> Configure the bundler to
+output compiled <code>.user.js</code> files. The bundler automatically
+embeds only the necessary shared code into each final output
+script.</li>
+</ul>
+<h2 id="create-a-core-controller-script-via-window-objects">Create a
+Core Controller Script via Window Objects</h2>
+<p>If your related userscripts execute on the same website domain, you
+can create a "Core" userscript that acts as an API provider for
+secondary scripts.</p>
+<ol type="1">
+<li><strong>Initialize Core Script:</strong> Set the core script to run
+early using <code>@run-at document-start</code>.</li>
+<li><strong>Expose Namespace:</strong> Attach your shared functions to
+<code>window</code> or <code>unsafeWindow</code> under a distinct
+namespace (e.g., <code>window.MyScriptCore = { ... }</code>).</li>
+<li><strong>Execute Secondary Scripts:</strong> Set secondary scripts to
+run later (e.g., <code>@run-at document-idle</code>), allowing them to
+invoke functions directly from <code>window.MyScriptCore</code>.</li>
+</ol>
+<h2 id="share-state-and-cache-with-storage-apis">Share State and Cache
+with Storage APIs</h2>
+<p>Sharing logic frequently requires sharing current state, user
+settings, or cached network requests between scripts.</p>
+<ul>
+<li><strong>Extension Storage:</strong> Use <code>GM_setValue</code> and
+<code>GM_getValue</code> to read and write shared variables securely
+across pages if supported by your script manager.</li>
+<li><strong>Web Storage API:</strong> Use
+<code>window.localStorage</code> or <code>window.sessionStorage</code>
+for lightweight, synchronous data sharing on identical domains.</li>
+<li><strong>Storage Event Listeners:</strong> Listen to state updates
+across scripts in real time using
+<code>window.addEventListener('storage', callback)</code>.</li>
+</ul>
+<h2 id="essential-maintenance-best-practices">Essential Maintenance Best
+Practices</h2>
+<ul>
+<li><strong>Namespace Global Variables:</strong> Wrap all shared code
+within dedicated namespaces or Immediately Invoked Function Expressions
+(IIFEs) to avoid polluting the target site's execution context.</li>
+<li><strong>Version Control Dependencies:</strong> When importing
+external scripts via <code>@require</code>, link to specific release
+tags or commit hashes to prevent silent breaking changes from impacting
+your scripts.</li>
+<li><strong>Provide Graceful Fallbacks:</strong> Add conditional checks
+to verify that shared functions or APIs exist before executing dependent
+logic, displaying clear console warnings if a shared component fails to
+load.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

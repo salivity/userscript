@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Manipulate SVG Elements Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts manipulate Scalable Vector Graphics (SVG) elements on web pages by leveraging standard JavaScript Document Object Model (DOM) APIs. Because inline SVGs exist directly within the HTML DOM tree, browser extensions like Tampermonkey or Violentmo">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-manipulate-svg-elements-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Manipulate SVG Elements Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-manipulate-svg-elements-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts manipulate Scalable Vector Graphics (SVG) elements on web pages by leveraging standard JavaScript Document Object Model (DOM) APIs. Because inline SVGs exist directly within the HTML DOM tree, browser extensions like Tampermonkey or Violentmo" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-manipulate-svg-elements-using-userscripts">How to
+Manipulate SVG Elements Using Userscripts</h1>
+<p>Userscripts manipulate Scalable Vector Graphics (SVG) elements on web
+pages by leveraging standard JavaScript Document Object Model (DOM)
+APIs. Because inline SVGs exist directly within the HTML DOM tree,
+browser extensions like Tampermonkey or Violentmonkey can run scripts
+that target, modify, create, or delete SVG tags, attributes, and styles
+dynamically in real time.</p>
+<h2 id="understanding-svg-accessibility-in-the-dom">Understanding SVG
+Accessibility in the DOM</h2>
+<p>Userscripts can only directly manipulate SVGs that are rendered as
+inline HTML (<code>&lt;svg&gt;...&lt;/svg&gt;</code>).</p>
+<p>If an SVG is embedded via an <code>&lt;img&gt;</code> tag or as a CSS
+<code>background-image</code>, it is treated as a rasterized or isolated
+asset, meaning its internal elements cannot be accessed or modified by
+DOM scripts. If an SVG is embedded using an <code>&lt;iframe&gt;</code>
+or <code>&lt;object&gt;</code> tag, the script must access the internal
+document using <code>element.contentDocument</code> (provided there are
+no cross-origin security restrictions).</p>
+<h2 id="selecting-svg-elements">Selecting SVG Elements</h2>
+<p>Userscripts select SVG elements using standard DOM query methods:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Selecting an SVG or a specific child element</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> svgElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;svg&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> pathElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;svg path.icon-layer&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Because SVG elements use their own XML namespace, standard HTML
+selectors work for finding elements, but creating new ones requires
+namespace handling.</p>
+<h2 id="modifying-attributes-and-styles">Modifying Attributes and
+Styles</h2>
+<p>Unlike standard HTML elements where properties can often be updated
+directly (e.g., <code>element.width</code>), SVG presentation properties
+are primarily controlled via attributes or CSS properties.</p>
+<h3 id="updating-attributes">Updating Attributes</h3>
+<p>To change shapes, paths, or positioning, use
+<code>setAttribute</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Changing the fill color and size of a circle</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> circle <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;circle&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>circle<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;fill&#39;</span><span class="op">,</span> <span class="st">&#39;#FF0000&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>circle<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;r&#39;</span><span class="op">,</span> <span class="st">&#39;50&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Altering a path definition</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> path <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;path&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>path<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;d&#39;</span><span class="op">,</span> <span class="st">&#39;M 10 10 H 90 V 90 H 10 Z&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="applying-styles">Applying Styles</h3>
+<p>SVG elements respond to standard CSS modifications via the
+<code>style</code> property:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> rect <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;rect&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>rect<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">stroke</span> <span class="op">=</span> <span class="st">&#39;blue&#39;</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>rect<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">strokeWidth</span> <span class="op">=</span> <span class="st">&#39;4px&#39;</span><span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>rect<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">transform</span> <span class="op">=</span> <span class="st">&#39;rotate(45deg)&#39;</span><span class="op">;</span></span></code></pre></div>
+<h2 id="creating-and-injecting-new-svg-elements">Creating and Injecting
+New SVG Elements</h2>
+<p>When adding new elements (like a <code>&lt;path&gt;</code>,
+<code>&lt;circle&gt;</code>, or <code>&lt;g&gt;</code>) inside an
+existing SVG canvas, userscripts must use
+<code>document.createElementNS</code> with the official SVG namespace
+URL (<code>http://www.w3.org/2000/svg</code>).</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> svgNamespace <span class="op">=</span> <span class="st">&quot;http://www.w3.org/2000/svg&quot;</span><span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> svgCanvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;svg&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Create a new circle element</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> newCircle <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElementNS</span>(svgNamespace<span class="op">,</span> <span class="st">&#39;circle&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>newCircle<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;cx&#39;</span><span class="op">,</span> <span class="st">&#39;30&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>newCircle<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;cy&#39;</span><span class="op">,</span> <span class="st">&#39;30&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>newCircle<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;r&#39;</span><span class="op">,</span> <span class="st">&#39;20&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>newCircle<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;fill&#39;</span><span class="op">,</span> <span class="st">&#39;green&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Append it to the SVG</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>svgCanvas<span class="op">.</span><span class="fu">appendChild</span>(newCircle)<span class="op">;</span></span></code></pre></div>
+<p>Using standard <code>document.createElement()</code> will render the
+element as an unknown HTML element rather than a valid SVG node, causing
+it to fail to display.</p>
+<h2 id="adding-event-listeners">Adding Event Listeners</h2>
+<p>Userscripts can attach interactive events directly to SVG elements to
+trigger custom features:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> targetPath <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;path#interactive-node&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>targetPath<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;click&#39;</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">alert</span>(<span class="st">&#39;SVG element clicked!&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">event</span><span class="op">.</span><span class="at">target</span><span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;fill&#39;</span><span class="op">,</span> <span class="st">&#39;yellow&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="handling-dynamically-rendered-svgs">Handling Dynamically
+Rendered SVGs</h2>
+<p>Modern web applications built with React, Vue, or Angular often
+render SVGs dynamically after the page loads. To manipulate SVGs that
+appear asynchronously, userscripts use a <code>MutationObserver</code>
+to watch for changes in the DOM tree.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations<span class="op">,</span> obs) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dynamicSvg <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;svg.dynamic-icon&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (dynamicSvg) {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        dynamicSvg<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;fill&#39;</span><span class="op">,</span> <span class="st">&#39;purple&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        obs<span class="op">.</span><span class="fu">disconnect</span>()<span class="op">;</span> <span class="co">// Stop observing once found and modified</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> {</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

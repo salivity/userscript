@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Integrate With NVDA and VoiceOver - userscript</title>
+    <meta name="description" content="Userscripts interact with screen readers like NVDA and VoiceOver by altering the Document Object Model (DOM) of a webpage in real time. Because screen readers generate their accessibility trees directly from the DOM, modifications made by custom JavaScri">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-integrate-with-nvda-and-voice-over">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Integrate With NVDA and VoiceOver - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-integrate-with-nvda-and-voice-over" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts interact with screen readers like NVDA and VoiceOver by altering the Document Object Model (DOM) of a webpage in real time. Because screen readers generate their accessibility trees directly from the DOM, modifications made by custom JavaScri" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-integrate-with-nvda-and-voiceover">How
+Userscripts Integrate With NVDA and VoiceOver</h1>
+<p>Userscripts interact with screen readers like NVDA and VoiceOver by
+altering the Document Object Model (DOM) of a webpage in real time.
+Because screen readers generate their accessibility trees directly from
+the DOM, modifications made by custom JavaScript—such as adding missing
+ARIA attributes, managing keyboard focus, or altering text content—are
+automatically exposed to assistive technologies. This integration allows
+users to fix inaccessible web interfaces, improve navigation, and create
+custom announcements without needing access to the web server's source
+code.</p>
+<h2 id="how-assistive-tools-read-web-content">How Assistive Tools Read
+Web Content</h2>
+<p>Screen readers do not inspect the visual rendering of a web page.
+Instead, they rely on the browser's Accessibility API, which builds an
+accessibility tree based on the DOM structure.</p>
+<p>When a webpage loads, the browser processes HTML, CSS, and
+JavaScript. NVDA (on Windows) and VoiceOver (on macOS and iOS)
+continuously monitor the accessibility tree for updates. If the DOM
+changes, the browser updates the accessibility tree, and the screen
+reader communicates these changes to the user via speech or braille
+output.</p>
+<h2 id="ways-userscripts-modify-the-accessibility-tree">Ways Userscripts
+Modify the Accessibility Tree</h2>
+<p>Userscripts execute custom JavaScript within the browser context.
+Because they have full access to the DOM, they can alter how screen
+readers interpret a page in several key ways:</p>
+<h3 id="1-adding-missing-aria-labels-and-roles">1. Adding Missing ARIA
+Labels and Roles</h3>
+<p>Many websites use non-semantic HTML, such as clickable
+<code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> elements without
+screen reader labels. A userscript can find these elements and inject
+the appropriate roles and accessible names:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Adding an ARIA role and label to a custom button</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> customButton <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.custom-save-btn&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (customButton) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  customButton<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;role&#39;</span><span class="op">,</span> <span class="st">&#39;button&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  customButton<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;aria-label&#39;</span><span class="op">,</span> <span class="st">&#39;Save changes&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>When this script runs, NVDA and VoiceOver immediately re-evaluate the
+element and announce it correctly as a interactive button rather than
+plain text.</p>
+<h3 id="2-managing-keyboard-focus-and-navigation">2. Managing Keyboard
+Focus and Navigation</h3>
+<p>Screen readers rely heavily on logical keyboard navigation.
+Userscripts can fix broken focus states by modifying the
+<code>tabindex</code> attribute or manually sending focus to newly
+opened elements, such as custom modal dialogs.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Making an unselectable element reachable via keyboard</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> modalHeader <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.modal-title&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (modalHeader) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  modalHeader<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;tabindex&#39;</span><span class="op">,</span> <span class="st">&#39;-1&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  modalHeader<span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="3-creating-live-regions-for-dynamic-updates">3. Creating Live
+Regions for Dynamic Updates</h3>
+<p>When a web page updates content dynamically (such as a live chat feed
+or search results), screen readers might not announce the change
+automatically. Userscripts can wrap dynamic content areas in ARIA live
+regions (<code>aria-live="polite"</code> or
+<code>aria-live="assertive"</code>).</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Converting a notification container into a live region</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> notificationArea <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#status-messages&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (notificationArea) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  notificationArea<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;aria-live&#39;</span><span class="op">,</span> <span class="st">&#39;polite&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  notificationArea<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;aria-atomic&#39;</span><span class="op">,</span> <span class="st">&#39;true&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Once applied, any text added to <code>#status-messages</code> will be
+read aloud automatically by both NVDA and VoiceOver.</p>
+<h3 id="4-removing-distracting-or-problematic-elements">4. Removing
+Distracting or Problematic Elements</h3>
+<p>Visual clutter, hidden decorative images without empty
+<code>alt</code> attributes, or unannounced popups can create a
+confusing experience for screen reader users. Userscripts can remove
+these elements from the DOM entirely or hide them explicitly using
+<code>aria-hidden="true"</code>.</p>
+<h2 id="handling-timing-and-dynamic-page-loads">Handling Timing and
+Dynamic Page Loads</h2>
+<p>Modern web applications frequently update content using AJAX or
+Single Page Application (SPA) frameworks. If a userscript runs before an
+element exists, the accessibility patch will fail.</p>
+<p>To ensure reliable integration with NVDA and VoiceOver on dynamic
+sites, userscripts typically use a <code>MutationObserver</code> to
+watch for DOM changes and apply accessibility fixes as soon as target
+elements are rendered:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> inaccessibleImage <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;img.icon-only&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (inaccessibleImage <span class="op">&amp;&amp;</span> <span class="op">!</span>inaccessibleImage<span class="op">.</span><span class="fu">hasAttribute</span>(<span class="st">&#39;alt&#39;</span>)) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    inaccessibleImage<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;alt&#39;</span><span class="op">,</span> <span class="st">&#39;Settings menu&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<h2 id="potential-limitations">Potential Limitations</h2>
+<p>While userscripts are powerful tools for accessibility remediation, a
+few technical constraints exist:</p>
+<ul>
+<li><strong>Shadow DOM Isolation:</strong> Elements contained within
+closed Shadow DOM trees cannot be easily selected or modified by
+standard content scripts, preventing userscripts from patching their
+accessibility properties.</li>
+<li><strong>Focus Traps:</strong> Incorrectly configured scripts can
+create focus traps, where keyboard navigation gets stuck inside a loop,
+disrupting the screen reader's linear navigation modes (such as NVDA's
+Browse Mode or VoiceOver's Quick Nav).</li>
+<li><strong>Timing Issues:</strong> If a script takes too long to
+execute, the screen reader may announce the original, inaccessible state
+of an element before the userscript has time to apply the fix.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

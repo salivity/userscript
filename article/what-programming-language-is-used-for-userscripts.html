@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Programming Language Is Used for Userscripts? - userscript</title>
+    <meta name="description" content="Userscripts are small, custom scripts that run directly inside your web browser to modify the appearance, layout, or functionality of web pages. The primary programming language used to write userscripts is JavaScript. By leveraging the same core languag">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-programming-language-is-used-for-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Programming Language Is Used for Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-programming-language-is-used-for-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts are small, custom scripts that run directly inside your web browser to modify the appearance, layout, or functionality of web pages. The primary programming language used to write userscripts is JavaScript. By leveraging the same core languag" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-programming-language-is-used-for-userscripts">What
+Programming Language Is Used for Userscripts?</h1>
+<p>Userscripts are small, custom scripts that run directly inside your
+web browser to modify the appearance, layout, or functionality of web
+pages. The primary programming language used to write userscripts is
+<strong>JavaScript</strong>. By leveraging the same core language that
+powers interactive web pages globally, developers and enthusiasts can
+use JavaScript alongside browser extensions like Tampermonkey,
+Violentmonkey, or Greasemonkey to manipulate the Document Object Model
+(DOM), automate repetitive tasks, and inject custom styles into
+virtually any website.</p>
+<hr />
+<h2 id="why-javascript-is-the-standard-for-userscripts">Why JavaScript
+Is the Standard for Userscripts</h2>
+<p>Web browsers natively understand and execute JavaScript. Because
+userscripts function by injecting code into an already loaded web page,
+JavaScript is the logical and necessary choice.</p>
+<h3 id="key-reasons-javascript-dominates-userscripts">Key Reasons
+JavaScript Dominates Userscripts</h3>
+<ul>
+<li><strong>Native Browser Support:</strong> Every modern browser
+features a built-in JavaScript engine, requiring no extra compilers or
+interpreters to run your scripts.</li>
+<li><strong>Direct DOM Access:</strong> JavaScript allows scripts to
+easily select, alter, add, or delete HTML elements and CSS styles on the
+fly.</li>
+<li><strong>Rich Ecosystem:</strong> Developers can draw from vast
+JavaScript resources, libraries, and frameworks when building complex
+userscripts.</li>
+</ul>
+<hr />
+<h2 id="how-userscripts-work-behind-the-scenes">How Userscripts Work
+Behind the Scenes</h2>
+<p>When you visit a web page, your browser downloads the HTML, CSS, and
+standard JavaScript provided by the site owner. A userscript manager
+extension intercepts this process to run your custom code safely within
+the context of that page.</p>
+<h3 id="the-metadata-block">The Metadata Block</h3>
+<p>Userscripts rely on a special comment section at the top of the file
+called the <strong>metadata block</strong>. This block tells the browser
+extension where and when to run the JavaScript code.</p>
+<blockquote>
+<p><strong>Example Metadata Block:</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Custom Fix</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// // @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+</blockquote>
+<hr />
+<h2 id="special-apis-available-to-userscripts">Special APIs Available to
+Userscripts</h2>
+<p>While standard web page JavaScript is restricted by security
+sandboxes to prevent cross-site issues, userscript managers provide
+extended APIs. These APIs allow JavaScript to perform tasks normally
+forbidden to standard page scripts:</p>
+<table>
+<thead>
+<tr>
+<th>API Function</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GM_xmlhttpRequest</code></td>
+<td>Makes cross-domain HTTP requests bypassing standard CORS
+limits.</td>
+</tr>
+<tr>
+<td><code>GM_setValue</code> / <code>GM_getValue</code></td>
+<td>Stores data persistently across browser sessions and different
+pages.</td>
+</tr>
+<tr>
+<td><code>GM_addStyle</code></td>
+<td>Injects custom CSS rules directly into the target page.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="can-you-use-other-languages">Can You Use Other Languages?</h2>
+<p>While the final script executed by the browser <strong>must</strong>
+be JavaScript, developers frequently write userscripts using languages
+that compile down to JavaScript:</p>
+<ul>
+<li><strong>TypeScript:</strong> Offers static typing and modern
+features, which are compiled into plain JavaScript before being added to
+a userscript manager.</li>
+<li><strong>CoffeeScript:</strong> A lightweight language that
+transpiles into JavaScript, though less common today.</li>
+</ul>
+<p>Ultimately, regardless of the tools used during development,
+<strong>JavaScript</strong> remains the fundamental language driving
+every userscripts engine.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

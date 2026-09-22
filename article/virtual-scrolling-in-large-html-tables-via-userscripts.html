@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Scrolling in Large HTML Tables via Userscripts - userscript</title>
+    <meta name="description" content="Rendering massive HTML tables containing thousands of DOM nodes causes severe page lag, excessive memory consumption, and unresponsive user interfaces. Userscripts solve this optimization problem by injecting virtual scrolling mechanics—a technique tha">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/virtual-scrolling-in-large-html-tables-via-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Virtual Scrolling in Large HTML Tables via Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/virtual-scrolling-in-large-html-tables-via-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Rendering massive HTML tables containing thousands of DOM nodes causes severe page lag, excessive memory consumption, and unresponsive user interfaces. Userscripts solve this optimization problem by injecting virtual scrolling mechanics—a technique tha" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="virtual-scrolling-in-large-html-tables-via-userscripts">Virtual
+Scrolling in Large HTML Tables via Userscripts</h1>
+<p>Rendering massive HTML tables containing thousands of DOM nodes
+causes severe page lag, excessive memory consumption, and unresponsive
+user interfaces. Userscripts solve this optimization problem by
+injecting virtual scrolling mechanics—a technique that replaces the
+browser's default table rendering with a dynamic system that renders
+only the rows currently visible inside the viewport. By capturing table
+data in memory, managing scroll events, and dynamically recycling DOM
+nodes, userscripts transform poorly optimized web pages into fast,
+responsive applications.</p>
+<h2 id="1-data-extraction-and-dom-clearance">1. Data Extraction and DOM
+Clearance</h2>
+<p>The first step a userscript takes is isolating the bloated HTML table
+and stripping its heavy DOM footprint.</p>
+<ol type="1">
+<li><strong>Table Interception:</strong> The script identifies the
+target <code>&lt;table&gt;</code> element using standard DOM selectors
+or a <code>MutationObserver</code> if the table renders
+dynamically.</li>
+<li><strong>Data Ingestion:</strong> The script parses all existing
+<code>&lt;tr&gt;</code> and <code>&lt;td&gt;</code> elements, converting
+their inner text, HTML content, attributes, and inline styles into an
+array of plain JavaScript objects stored safely in memory.</li>
+<li><strong>DOM Stripping:</strong> Once the data is secured in memory,
+the script empties the <code>&lt;tbody&gt;</code> container. Removing
+thousands of physical table rows immediately frees up significant
+browser memory and eliminates layout recalculation overhead.</li>
+</ol>
+<h2 id="2-container-wrapping-and-scroll-architecture">2. Container
+Wrapping and Scroll Architecture</h2>
+<p>Standard HTML tables adjust their height based on total content. To
+simulate native scrolling without rendering all rows, the userscript
+constructs a virtual container environment:</p>
+<ul>
+<li><strong>Viewport Wrapper:</strong> The script wraps the table (or
+its <code>&lt;tbody&gt;</code>) in a parent <code>div</code> set to a
+fixed height with <code>overflow-y: auto</code>.</li>
+<li><strong>Phantom Spacer:</strong> A dummy element (or top/bottom CSS
+padding) is added inside the wrapper. The height of this spacer is set
+to <code>Total Number of Rows × Fixed Row Height</code>. This ensures
+the scrollbar matches the true height of the full dataset, giving the
+user the visual feedback of a complete document.</li>
+</ul>
+<h2 id="3-real-time-viewport-calculations">3. Real-Time Viewport
+Calculations</h2>
+<p>When the user scrolls the wrapped container, a high-performance
+scroll event handler calculates which subset of data to render:</p>
+<ol type="1">
+<li><strong>Scroll Offset Detection:</strong> The script reads the
+container's <code>scrollTop</code> position inside a
+<code>requestAnimationFrame</code> loop to avoid layout thrashing.</li>
+<li><strong>Index Math:</strong> Using the scrollTop position and a
+uniform row height (e.g., 35px per row), the script calculates the
+visible window:
+<ul>
+<li><code>startIndex = Math.floor(scrollTop / rowHeight)</code></li>
+<li><code>endIndex = startIndex + Math.ceil(viewportHeight / rowHeight)</code></li>
+</ul></li>
+<li><strong>Buffer Allocation:</strong> A small buffer (e.g., 5 to 10
+rows above and below the viewport) is added to the render range to
+ensure smooth scrolling without visible white space during rapid
+scrolling.</li>
+</ol>
+<h2 id="4-dynamic-dom-node-patching">4. Dynamic DOM Node Patching</h2>
+<p>Instead of constantly creating and destroying DOM elements—which
+triggers garbage collection delays—userscripts use DOM recycling
+techniques:</p>
+<ul>
+<li><strong>Node Pool Creation:</strong> The script creates a minimal
+pool of <code>&lt;tr&gt;</code> elements equal to the maximum number of
+visible rows plus the buffer.</li>
+<li><strong>Content Injection:</strong> On every scroll tick, the script
+slices the master data array based on <code>startIndex</code> and
+<code>endIndex</code>, overwriting the <code>innerHTML</code> or text
+content of the existing pooled DOM nodes.</li>
+<li><strong>Position Offset:</strong> A CSS
+<code>transform: translateY(...)</code> or a dynamic
+<code>padding-top</code> on the parent container offsets the rendered
+rows so they align precisely with the current scrollbar position.</li>
+</ul>
+<h2 id="5-column-width-and-layout-synchronization">5. Column Width and
+Layout Synchronization</h2>
+<p>Converting a standard HTML table to a virtualized view can break
+original table formatting. Userscripts maintain visual parity through
+specific layout adjustments:</p>
+<ul>
+<li><strong>Fixed Layout Enforcement:</strong> The script applies
+<code>table-layout: fixed</code> to the <code>&lt;table&gt;</code>
+element to prevent columns from shifting width as different rows scroll
+into view.</li>
+<li><strong>Header Alignment:</strong> Column widths are explicitly
+measured from the original layout and mapped to the <code>&lt;th</code>
+header elements and pooled <code>&lt;td&gt;</code> cells using inline
+pixel widths.</li>
+<li><strong>Sticky Headers:</strong> The <code>&lt;thead&gt;</code>
+element is assigned <code>position: sticky; top: 0; z-index: 10;</code>
+so table headers remain visible while the body rows scroll beneath
+them.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

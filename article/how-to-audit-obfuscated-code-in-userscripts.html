@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Audit Obfuscated Code in Userscripts - userscript</title>
+    <meta name="description" content="Auditing obfuscated code in suspicious userscripts requires a systematic approach combining static code analysis, automated deobfuscation, dynamic debugging, and isolated sandboxing. Because obfuscation hides a script's true intent through variable renam">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-audit-obfuscated-code-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Audit Obfuscated Code in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-audit-obfuscated-code-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Auditing obfuscated code in suspicious userscripts requires a systematic approach combining static code analysis, automated deobfuscation, dynamic debugging, and isolated sandboxing. Because obfuscation hides a script's true intent through variable renam" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-audit-obfuscated-code-in-userscripts">How to Audit
+Obfuscated Code in Userscripts</h1>
+<p>Auditing obfuscated code in suspicious userscripts requires a
+systematic approach combining static code analysis, automated
+deobfuscation, dynamic debugging, and isolated sandboxing. Because
+obfuscation hides a script's true intent through variable renaming,
+string encoding, and control flow flattening, auditors must
+systematically unpack the source code to inspect network calls, DOM
+manipulations, and data access. Following this structured process allows
+security researchers to identify potential malware, data exfiltration,
+or unauthorized tracking safely.</p>
+<h2 id="step-1-isolate-the-environment">Step 1: Isolate the
+Environment</h2>
+<p>Before executing or inspecting a suspicious userscript, establish an
+isolated analysis environment to prevent accidental data loss or
+unauthorized network activity:</p>
+<ul>
+<li>Use a clean virtual machine or a dedicated browser profile with no
+saved credentials, cookies, or sensitive data.</li>
+<li>Disable auto-execution in your userscript manager (such as
+Tampermonkey or Violentmonkey) during the initial file import.</li>
+<li>Keep the network tab of your browser developer tools ready to log
+all requests before triggering any script execution.</li>
+</ul>
+<h2 id="step-2-format-and-beautify-the-code">Step 2: Format and Beautify
+the Code</h2>
+<p>Obfuscated code is often minified into a single line or stripped of
+meaningful white space.</p>
+<ul>
+<li>Use formatting tools like JS Beautifier or built-in browser
+developer tool formatters to restore indentation and line breaks.</li>
+<li>Identify basic structural patterns, such as large array definitions
+at the top of the file, self-executing functions (IIFEs), or heavy use
+of dynamic evaluation functions like <code>eval()</code>.</li>
+</ul>
+<h2 id="step-3-decode-and-unpack-strings">Step 3: Decode and Unpack
+Strings</h2>
+<p>Obfuscators frequently obscure sensitive items—such as domain names,
+API keys, and DOM selectors—inside encoded string arrays or lookup
+functions.</p>
+<ul>
+<li>Search for encoding mechanisms like Base64, Hexadecimal, ASCII
+character codes (<code>String.fromCharCode</code>), or string rotation
+routines.</li>
+<li>Resolve string arrays by replacing lookup function calls (e.g.,
+<code>_0x4a12(0x1)</code>) with their actual decoded string values.</li>
+<li>Utilize automated AST (Abstract Syntax Tree) deobfuscators or online
+tools like Synchrony to automate variable renaming and string
+substitution.</li>
+</ul>
+<h2 id="step-4-perform-dynamic-debugging">Step 4: Perform Dynamic
+Debugging</h2>
+<p>Static analysis can become impractical when dealing with complex
+control flow flattening. Dynamic analysis allows you to observe the code
+while it executes in a controlled manner.</p>
+<ul>
+<li>Open the browser Developer Tools (F12) in your isolated environment
+and switch to the Debugger tab.</li>
+<li>Set breakpoints on critical JavaScript sinks and APIs:
+<ul>
+<li><strong>Network requests:</strong> <code>fetch</code>,
+<code>XMLHttpRequest.prototype.send</code>, <code>WebSocket</code></li>
+<li><strong>Code execution:</strong> <code>eval</code>,
+<code>Function</code>, <code>setTimeout</code>,
+<code>setInterval</code></li>
+<li><strong>Data storage:</strong> <code>document.cookie</code>,
+<code>localStorage</code>, <code>sessionStorage</code></li>
+</ul></li>
+<li>Step through the execution line-by-line to observe how variables
+resolve and identify payload delivery paths.</li>
+</ul>
+<h2 id="step-5-monitor-network-and-dom-activity">Step 5: Monitor Network
+and DOM Activity</h2>
+<p>Determine the actual behavior of the script on the target web
+page.</p>
+<ul>
+<li><strong>Network Tab:</strong> Inspect outgoing HTTP requests. Pay
+close attention to destination URLs, custom headers, and payload bodies
+to ensure data is not being exfiltrated to unauthorized third-party
+servers.</li>
+<li><strong>DOM Modification:</strong> Monitor for dynamic script
+injection (e.g., appending external <code>&lt;script&gt;</code> tags to
+the document) or event listeners attached to sensitive inputs, such as
+password fields or credit card forms.</li>
+</ul>
+<h2 id="step-6-final-risk-assessment">Step 6: Final Risk Assessment</h2>
+<p>Evaluate the decoded behavior against the advertised features of the
+userscript:</p>
+<ul>
+<li>Check if external connections align with the documented
+functionality.</li>
+<li>Identify malicious patterns such as credential harvesting, session
+hijacking, ad injection, or silent updates that fetch remote unverified
+payloads.</li>
+<li>Mark any script that accesses sensitive resources without user
+consent as malicious.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

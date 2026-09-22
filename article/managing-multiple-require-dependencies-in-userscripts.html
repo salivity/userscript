@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managing Multiple @require Dependencies in Userscripts - userscript</title>
+    <meta name="description" content="Userscript managers such as Tampermonkey, Violentmonkey, and Greasemonkey handle external JavaScript dependencies using the @require metadata directive. When a userscript specifies multiple @require tags, the script manager fetches and caches all declare">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/managing-multiple-require-dependencies-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Managing Multiple @require Dependencies in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/managing-multiple-require-dependencies-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscript managers such as Tampermonkey, Violentmonkey, and Greasemonkey handle external JavaScript dependencies using the @require metadata directive. When a userscript specifies multiple @require tags, the script manager fetches and caches all declare" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="managing-multiple-require-dependencies-in-userscripts">Managing
+Multiple @require Dependencies in Userscripts</h1>
+<p>Userscript managers such as Tampermonkey, Violentmonkey, and
+Greasemonkey handle external JavaScript dependencies using the
+<code>@require</code> metadata directive. When a userscript specifies
+multiple <code>@require</code> tags, the script manager fetches and
+caches all declared libraries at installation, then executes them
+synchronously in the exact order they appear in the metadata block
+before running the main script.</p>
+<h2 id="execution-order-and-synchronous-loading">Execution Order and
+Synchronous Loading</h2>
+<p>Userscript managers process <code>@require</code> directives
+sequentially from top to bottom. This strict ordering is critical when
+managing libraries that rely on one another.</p>
+<p>For example, if a script relies on a framework and a plugin built for
+that framework, the framework must be listed first:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Dependency Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://example.com/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @require      https://code.jquery.com/jquery-3.6.0.min.js</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>In this setup, the manager guarantees that jQuery loads and attaches
+itself to the environment before the toast plugin runs. If the order
+were reversed, the plugin would fail because jQuery would not yet
+exist.</p>
+<h2 id="caching-and-installation-lifecycle">Caching and Installation
+Lifecycle</h2>
+<p>Unlike standard web pages that fetch script tags over the network on
+every page load, userscript managers fetch <code>@require</code>
+dependencies only when the script is installed or updated.</p>
+<ol type="1">
+<li><strong>Download:</strong> The user installs the script, and the
+manager downloads the user script and all linked <code>@require</code>
+files.</li>
+<li><strong>Storage:</strong> The raw source code of each dependency is
+stored locally in the extension's local storage.</li>
+<li><strong>Execution:</strong> On matching web pages, the manager
+injects the cached source code of each <code>@require</code> file
+sequentially, followed by the main userscript.</li>
+</ol>
+<p>Because libraries are cached locally, network latency does not delay
+individual page loads, and scripts can function offline after initial
+installation. If a <code>@require</code> URL fails to download during
+installation, the script installation will fail entirely.</p>
+<h2 id="scope-and-context-injection">Scope and Context Injection</h2>
+<p>Required scripts execute within the same context as the main
+userscript. Depending on the <code>@grant</code> settings used in the
+metadata block:</p>
+<ul>
+<li><strong>Sandboxed Context (<code>@grant</code> set to specific
+APIs):</strong> The required libraries execute within a isolated sandbox
+context (e.g., <code>GM</code> context). Global variables defined by
+required scripts (like <code>$</code> or <code>lodash</code>) are
+attached to the sandbox's global scope, making them accessible to
+subsequent required scripts and the main script, but hidden from the
+underlying web page.</li>
+<li><strong>Page Context (<code>@grant none</code>):</strong> The
+required libraries and the userscript execute directly in the page's
+standard <code>window</code> context, sharing scope with the host
+website.</li>
+</ul>
+<h2 id="managing-conflicting-or-duplicate-dependencies">Managing
+Conflicting or Duplicate Dependencies</h2>
+<p>The <code>@require</code> directive does not feature modern package
+management capabilities like automatic deduplication or semantic version
+resolution found in tools like npm.</p>
+<ul>
+<li><strong>No Automatic Resolution:</strong> If two required libraries
+internalize different versions of the same third-party utility, both
+will execute and potentially overwrite global variables unless the
+libraries use unique namespaces or non-conflicting builds.</li>
+<li><strong>Scope Pollution:</strong> Libraries that attach properties
+to <code>window</code> or <code>globalThis</code> will overwrite
+existing values if executed later in the <code>@require</code>
+chain.</li>
+</ul>
+<p>To prevent scope conflicts, developers should ensure that required
+libraries do not conflict in namespace or explicitly use libraries
+designed to operate within isolated environments.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

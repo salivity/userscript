@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Risks of Using innerHTML to Parse RSS Feeds - userscript</title>
+    <meta name="description" content="Using innerHTML to parse or display fetched RSS feeds in userscripts introduces critical Cross-Site Scripting (XSS) security risks. Because RSS feeds originate from external sources, their content must be treated as untrusted data. When a userscript assi">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/security-risks-of-using-inner-html-to-parse-rss-feeds">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Security Risks of Using innerHTML to Parse RSS Feeds - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/security-risks-of-using-inner-html-to-parse-rss-feeds" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Using innerHTML to parse or display fetched RSS feeds in userscripts introduces critical Cross-Site Scripting (XSS) security risks. Because RSS feeds originate from external sources, their content must be treated as untrusted data. When a userscript assi" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="security-risks-of-using-innerhtml-to-parse-rss-feeds">Security
+Risks of Using innerHTML to Parse RSS Feeds</h1>
+<p>Using <code>innerHTML</code> to parse or display fetched RSS feeds in
+userscripts introduces critical Cross-Site Scripting (XSS) security
+risks. Because RSS feeds originate from external sources, their content
+must be treated as untrusted data. When a userscript assigns raw RSS
+string data or HTML embedded within feed tags directly to an element's
+<code>innerHTML</code>, any executable JavaScript code contained in the
+feed is automatically executed by the browser within the context of the
+active web page.</p>
+<h2 id="the-mechanism-of-dom-based-xss-in-userscripts">The Mechanism of
+DOM-Based XSS in Userscripts</h2>
+<p>RSS feeds frequently include user-generated or HTML-formatted text
+inside elements like <code>&lt;description&gt;</code>,
+<code>&lt;content:encoded&gt;</code>, or <code>&lt;title&gt;</code>.
+Attackers can easily craft malicious RSS feeds that contain hidden
+script tags or HTML elements with executable attribute handlers, such as
+<code>&lt;img src="x" onerror="alert('XSS')"&gt;</code>.</p>
+<p>When a userscript fetches this payload and directly assigns it to
+<code>innerHTML</code>, the browser evaluates the string as markup. This
+triggers DOM-based XSS, allowing the attacker's script to execute in the
+user's browser.</p>
+<h2
+id="high-privilege-exploitation-in-userscript-managers">High-Privilege
+Exploitation in Userscript Managers</h2>
+<p>Vulnerabilities in userscripts are often far more dangerous than
+standard web page XSS due to the elevated capabilities provided by
+userscript managers like Tampermonkey or Violentmonkey:</p>
+<ul>
+<li><strong>Privilege Escalation:</strong> Many userscripts request
+special API permissions (such as <code>GM_xmlhttpRequest</code>). An
+attacker who successfully executes code through an
+<code>innerHTML</code> vulnerability can abuse these APIs to make
+arbitrary background requests, bypass standard Cross-Origin Resource
+Sharing (CORS) restrictions, and access external networks.</li>
+<li><strong>Data Exfiltration:</strong> Malicious code running inside
+the script context can steal sensitive session cookies, local storage
+items, personal data, and API tokens associated with the host
+website.</li>
+<li><strong>Cross-Site Actions:</strong> The injected script can perform
+unauthorized actions on behalf of the logged-in user, such as changing
+account settings, posting content, or initiating transfers.</li>
+</ul>
+<h2 id="secure-alternatives-for-rss-parsing">Secure Alternatives for RSS
+Parsing</h2>
+<p>To prevent script injection, developers should avoid using
+<code>innerHTML</code> for parsing or rendering external feed data.</p>
+<h3 id="use-domparser-for-xml-processing">Use DOMParser for XML
+Processing</h3>
+<p>Instead of treating the RSS feed as plain HTML or a raw string, use
+the browser's built-in <code>DOMParser</code> interface to safely parse
+XML:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> parser <span class="op">=</span> <span class="kw">new</span> <span class="fu">DOMParser</span>()<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> xmlDoc <span class="op">=</span> parser<span class="op">.</span><span class="fu">parseFromString</span>(rssData<span class="op">,</span> <span class="st">&quot;text/xml&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> title <span class="op">=</span> xmlDoc<span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&quot;title&quot;</span>)<span class="op">.</span><span class="at">textContent</span><span class="op">;</span></span></code></pre></div>
+<h3 id="safely-inject-content-using-textcontent">Safely Inject Content
+Using textContent</h3>
+<p>When updating the user interface with values extracted from the RSS
+feed, assign strings using <code>textContent</code> or
+<code>innerText</code> rather than <code>innerHTML</code>. This ensures
+that any HTML tags or script elements are rendered purely as plain text
+rather than executed as code:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> titleElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&quot;h3&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>titleElement<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> itemTitle<span class="op">;</span> <span class="co">// Safe from XSS</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(titleElement)<span class="op">;</span></span></code></pre></div>
+<h3 id="sanitize-html-if-markup-is-required">Sanitize HTML If Markup Is
+Required</h3>
+<p>If the RSS feed contains intentionally formatted HTML that must be
+rendered on the page, the content must be sanitized using a dedicated
+HTML sanitization library (such as DOMPurify) before being passed to
+<code>innerHTML</code>:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> cleanHTML <span class="op">=</span> DOMPurify<span class="op">.</span><span class="fu">sanitize</span>(rawFeedContent)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>element<span class="op">.</span><span class="at">innerHTML</span> <span class="op">=</span> cleanHTML<span class="op">;</span> <span class="co">// Safe rendered HTML</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

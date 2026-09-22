@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>querySelectorAll vs getElementsByClassName: Which Is Faster? - userscript</title>
+    <meta name="description" content="When developing userscripts, choosing the right method to query the Document Object Model (DOM) is critical for performance, especially on script-heavy or complex web pages. Comparing querySelectorAll and getElementsByClassName reveals distinct differenc">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/query-selector-all-vs-get-elements-by-class-name-which-is-faster">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="querySelectorAll vs getElementsByClassName: Which Is Faster? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/query-selector-all-vs-get-elements-by-class-name-which-is-faster" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When developing userscripts, choosing the right method to query the Document Object Model (DOM) is critical for performance, especially on script-heavy or complex web pages. Comparing querySelectorAll and getElementsByClassName reveals distinct differenc" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="queryselectorall-vs-getelementsbyclassname-which-is-faster">querySelectorAll
+vs getElementsByClassName: Which Is Faster?</h1>
+<p>When developing userscripts, choosing the right method to query the
+Document Object Model (DOM) is critical for performance, especially on
+script-heavy or complex web pages. Comparing
+<code>querySelectorAll</code> and <code>getElementsByClassName</code>
+reveals distinct differences in execution speed, return types, and
+flexibility. While <code>querySelectorAll</code> offers powerful CSS
+selector matching, <code>getElementsByClassName</code> is consistently
+faster due to its specialized nature and live collection returns. This
+guide explores the benchmark differences, memory implications, and
+practical recommendations for optimizing DOM queries in your
+userscripts.</p>
+<h2 id="performance-and-execution-speed">Performance and Execution
+Speed</h2>
+<p><code>getElementsByClassName</code> is natively optimized for a
+single task: searching elements by their class name. Because it does not
+require parsing complex CSS selector strings, browser engines execute it
+substantially faster—often 2 to 6 times faster than
+<code>querySelectorAll</code> in performance benchmarks.</p>
+<p>In contrast, <code>querySelectorAll</code> invokes the browser's
+internal CSS selector parsing engine to evaluate the string before
+searching the DOM. This added layer of abstraction introduces
+computational overhead for every call.</p>
+<h2 id="live-vs-static-collections">Live vs. Static Collections</h2>
+<p>A key technical distinction between these two methods lies in how
+they manage search results:</p>
+<ul>
+<li><strong><code>getElementsByClassName</code> returns a live
+<code>HTMLCollection</code></strong>: This collection updates
+automatically when matching elements are added or removed from the DOM.
+Generating a live collection requires less memory and processing upfront
+because the browser does not need to construct a static array-like
+structure at the moment of execution.</li>
+<li><strong><code>querySelectorAll</code> returns a static
+<code>NodeList</code></strong>: This method takes a frozen snapshot of
+matching elements at the exact moment of execution. Constructing this
+static list requires immediate, full traversal of matching DOM nodes,
+resulting in higher initial CPU and memory costs.</li>
+</ul>
+<h2 id="selector-flexibility-vs-code-complexity">Selector Flexibility
+vs. Code Complexity</h2>
+<p>While <code>getElementsByClassName</code> is superior in raw speed,
+its utility is restricted entirely to class names. If a userscript needs
+to target elements based on attributes, pseudo-classes, or multi-level
+relationships (for example,
+<code>div.feed-item &gt; a.link[target="_blank"]</code>),
+<code>getElementsByClassName</code> requires multiple chained calls and
+manual filtering loops.</p>
+<p>In complex traversal scenarios, <code>querySelectorAll</code> is
+often more efficient overall. A single <code>querySelectorAll</code>
+execution is cleaner and faster than executing multiple JavaScript loops
+to filter through an <code>HTMLCollection</code>.</p>
+<h2 id="practical-recommendations-for-userscripts">Practical
+Recommendations for Userscripts</h2>
+<p>To maintain high performance in userscript managers like Tampermonkey
+or Violentmonkey, follow these guidelines:</p>
+<ol type="1">
+<li><strong>Use <code>getElementsByClassName</code> for simple class
+lookups</strong>: When targeting elements purely by class name (e.g.,
+<code>document.getElementsByClassName('comment-box')</code>), prioritize
+this method over <code>querySelectorAll('.comment-box')</code>.</li>
+<li><strong>Use <code>querySelectorAll</code> for complex CSS
+patterns</strong>: When queries rely on attribute selectors,
+parent-child relationships, or pseudo-selectors, use
+<code>querySelectorAll</code>.</li>
+<li><strong>Cache DOM queries</strong>: Avoid calling either method
+inside high-frequency loops, event listeners (like <code>scroll</code>
+or <code>mousemove</code>), or <code>setInterval</code> callbacks. Store
+the query result in a variable whenever possible.</li>
+<li><strong>Narrow the search scope</strong>: Call the query method on a
+specific parent element rather than the root <code>document</code>
+(e.g., <code>parentElement.getElementsByClassName('target')</code>) to
+minimize search depth.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

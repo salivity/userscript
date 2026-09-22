@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Risks of Using eval() in Userscripts - userscript</title>
+    <meta name="description" content="Using eval() in userscripts poses severe security risks, primarily by enabling Arbitrary Code Execution (ACE) and Cross-Site Scripting (XSS) vulnerabilities. Because userscripts run in a privileged or semi-privileged context within the browser, dynamical">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/security-risks-of-using-eval-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Security Risks of Using eval() in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/security-risks-of-using-eval-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Using eval() in userscripts poses severe security risks, primarily by enabling Arbitrary Code Execution (ACE) and Cross-Site Scripting (XSS) vulnerabilities. Because userscripts run in a privileged or semi-privileged context within the browser, dynamical" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="security-risks-of-using-eval-in-userscripts">Security Risks of
+Using eval() in Userscripts</h1>
+<p>Using <code>eval()</code> in userscripts poses severe security risks,
+primarily by enabling Arbitrary Code Execution (ACE) and Cross-Site
+Scripting (XSS) vulnerabilities. Because userscripts run in a privileged
+or semi-privileged context within the browser, dynamically executing
+untrusted code can compromise sensitive user data, bypass browser
+security boundaries, and expose host websites to malicious attacks. This
+article examines why <code>eval()</code> is dangerous in userscripts,
+the specific attack vectors involved, and safer alternatives for
+developers.</p>
+<h2 id="the-core-danger-of-eval">The Core Danger of eval()</h2>
+<p>The <code>eval()</code> function evaluates a string as JavaScript
+code within the current execution context. In standard web development,
+<code>eval()</code> is discouraged because it opens vectors for code
+injection. In userscripts—such as those run via Tampermonkey,
+Violentmonkey, or Greasemonkey—the risk is amplified because userscripts
+often operate with elevated permissions that standard web scripts do not
+possess.</p>
+<h2 id="key-security-implications">Key Security Implications</h2>
+<h3 id="1-privilege-escalation">1. Privilege Escalation</h3>
+<p>Userscripts frequently use powerful extension APIs (such as
+<code>GM_xmlhttpRequest</code>, <code>GM_setValue</code>, or
+<code>GM_cookie</code>). If a script executes an untrusted string via
+<code>eval()</code>, an attacker can gain control over these special
+functions. This allows the injected code to perform cross-origin network
+requests, read restricted cookies, or alter persistent extension
+storage.</p>
+<h3 id="2-arbitrary-code-execution-ace">2. Arbitrary Code Execution
+(ACE)</h3>
+<p>If a userscript fetches remote data (like an external configuration
+file or an API response) and passes it through <code>eval()</code>, any
+compromise of the remote server or network transport allows an attacker
+to inject arbitrary code. The injected code will run automatically
+whenever the userscript executes.</p>
+<h3 id="3-bypassing-content-security-policy-csp">3. Bypassing Content
+Security Policy (CSP)</h3>
+<p>Modern websites use Content Security Policies (CSP) to restrict which
+scripts can run, often blocking inline scripts and <code>eval()</code>.
+However, userscript managers frequently run scripts in an isolated
+context that bypasses the page's CSP. Using <code>eval()</code> inside a
+userscript effectively creates a loophole, allowing dangerous code
+execution on a page that was otherwise protected by strict security
+headers.</p>
+<h3 id="4-data-exfiltration-and-session-hijacking">4. Data Exfiltration
+and Session Hijacking</h3>
+<p>Once malicious code executes inside the userscript context, it has
+full access to the Document Object Model (DOM) of the host page. The
+attacker can read sensitive information displayed on the screen, capture
+user inputs (like credentials or credit card numbers), access
+<code>localStorage</code> and <code>sessionStorage</code>, and
+exfiltrate this data to a remote server.</p>
+<h2 id="common-scenarios-where-eval-is-misused">Common Scenarios Where
+eval() Is Misused</h2>
+<ul>
+<li><strong>Parsing Data:</strong> Developers sometimes use
+<code>eval()</code> to parse JSON responses from APIs instead of
+<code>JSON.parse()</code>. If the response contains executable code
+rather than plain data, it executes immediately.</li>
+<li><strong>Dynamic Function Execution:</strong> Calling dynamic
+functions based on user input or page content by evaluating strings
+(e.g., <code>eval("function_" + input + "()")</code>).</li>
+<li><strong>Loading Remote Modules:</strong> Attempting to dynamically
+load and run external scripts at runtime by fetching them as text and
+evaluating them.</li>
+</ul>
+<h2 id="safer-alternatives-to-eval">Safer Alternatives to eval()</h2>
+<ul>
+<li><strong>Use JSON.parse() for Data:</strong> Always use
+<code>JSON.parse()</code> when processing structured data. It safely
+converts strings to objects without executing code.</li>
+<li><strong>Use Object Mapping for Dynamic Code:</strong> Replace
+dynamic code calls with lookup objects or maps:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> actions <span class="op">=</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">actionA</span><span class="op">:</span> () <span class="kw">=&gt;</span> { <span class="co">/* ... */</span> }<span class="op">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">actionB</span><span class="op">:</span> () <span class="kw">=&gt;</span> { <span class="co">/* ... */</span> }</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (actions[userInput]) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    actions[userInput]()<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></li>
+<li><strong>Declare Dependencies Explicitly:</strong> In userscripts,
+use the <code>@require</code> metadata header to import external
+libraries securely at installation time rather than fetching and
+evaluating them dynamically at runtime.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block Image Constructor Tracking Beacons in Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can successfully intercept and block tracking beacons sent using the JavaScript Image() constructor. By injecting code at document-start, a userscript can override the global window.Image constructor or modify the property descriptor of HTMLI">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/block-image-constructor-tracking-beacons-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Block Image Constructor Tracking Beacons in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/block-image-constructor-tracking-beacons-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can successfully intercept and block tracking beacons sent using the JavaScript Image() constructor. By injecting code at document-start, a userscript can override the global window.Image constructor or modify the property descriptor of HTMLI" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="block-image-constructor-tracking-beacons-in-userscripts">Block
+Image Constructor Tracking Beacons in Userscripts</h1>
+<p>Userscripts can successfully intercept and block tracking beacons
+sent using the JavaScript <code>Image()</code> constructor. By injecting
+code at <code>document-start</code>, a userscript can override the
+global <code>window.Image</code> constructor or modify the property
+descriptor of <code>HTMLImageElement.prototype.src</code>. This allows
+userscripts to inspect outgoing image request URLs, compare them against
+filtering rules, and prevent tracking pixels from firing before the
+browser makes the network request.</p>
+<h2 id="how-image-constructor-tracking-works">How Image Constructor
+Tracking Works</h2>
+<p>Websites and analytics services often track user activity by
+instantiating an image in JavaScript without appending it to the
+Document Object Model (DOM):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> beacon <span class="op">=</span> <span class="kw">new</span> <span class="fu">Image</span>()<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>beacon<span class="op">.</span><span class="at">src</span> <span class="op">=</span> <span class="st">&quot;https://example.com/track?user=123&quot;</span><span class="op">;</span></span></code></pre></div>
+<p>Assigning a URL to the <code>src</code> property immediately prompts
+the browser to issue an HTTP GET request to the target server,
+transmitting telemetry data included in the URL parameters.</p>
+<h2 id="methods-for-intercepting-image-beacons">Methods for Intercepting
+Image Beacons</h2>
+<p>To block these requests, a userscript must run before the web page
+executes its own scripts (<code>@run-at document-start</code>). There
+are two primary techniques to achieve this.</p>
+<h3 id="1-overriding-the-global-image-constructor">1. Overriding the
+Global <code>Image</code> Constructor</h3>
+<p>You can replace the native <code>window.Image</code> constructor with
+a custom Proxy or wrapper function. When the page calls
+<code>new Image()</code>, your wrapper intercepts the call, monitors
+attempts to set the <code>src</code> property, and cancels or redirects
+requests matching tracking patterns.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Intercepting window.Image</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> NativeImage <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">Image</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">Image</span> <span class="op">=</span> <span class="kw">function</span>(width<span class="op">,</span> height) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> img <span class="op">=</span> <span class="kw">new</span> <span class="fu">NativeImage</span>(width<span class="op">,</span> height)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">new</span> <span class="bu">Proxy</span>(img<span class="op">,</span> {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">set</span>(target<span class="op">,</span> property<span class="op">,</span> value) {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (property <span class="op">===</span> <span class="st">&#39;src&#39;</span> <span class="op">&amp;&amp;</span> <span class="kw">typeof</span> value <span class="op">===</span> <span class="st">&#39;string&#39;</span>) {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> (value<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;tracking-domain.com&#39;</span>) <span class="op">||</span> value<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;/analytics/&#39;</span>)) {</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&#39;Blocked tracking beacon:&#39;</span><span class="op">,</span> value)<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// Prevent the network request by returning true without setting src</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span> </span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>            target[property] <span class="op">=</span> value<span class="op">;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="2-patching-htmlimageelementprototype">2. Patching
+<code>HTMLImageElement.prototype</code></h3>
+<p>Because <code>new Image()</code> returns an instance of
+<code>HTMLImageElement</code>, altering the <code>src</code> property
+descriptor on <code>HTMLImageElement.prototype</code> ensures that
+requests created via both <code>document.createElement('img')</code> and
+<code>new Image()</code> are intercepted.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Patching HTMLImageElement prototype</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalSrcDescriptor <span class="op">=</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">getOwnPropertyDescriptor</span>(<span class="bu">HTMLImageElement</span><span class="op">.</span><span class="at">prototype</span><span class="op">,</span> <span class="st">&#39;src&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(<span class="bu">HTMLImageElement</span><span class="op">.</span><span class="at">prototype</span><span class="op">,</span> <span class="st">&#39;src&#39;</span><span class="op">,</span> {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">set</span>(value) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="kw">typeof</span> value <span class="op">===</span> <span class="st">&#39;string&#39;</span> <span class="op">&amp;&amp;</span> <span class="fu">isTrackingUrl</span>(value)) {</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&#39;Blocked tracking beacon:&#39;</span><span class="op">,</span> value)<span class="op">;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Assign a blank tracking-safe data URI instead</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            originalSrcDescriptor<span class="op">.</span><span class="at">set</span><span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> <span class="st">&#39;data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        originalSrcDescriptor<span class="op">.</span><span class="at">set</span><span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> value)<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">get</span>() {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> originalSrcDescriptor<span class="op">.</span><span class="at">get</span><span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span>)<span class="op">;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">isTrackingUrl</span>(url) {</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> url<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;tracker.js&#39;</span>) <span class="op">||</span> url<span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;/pixel.gif&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="critical-technical-considerations">Critical Technical
+Considerations</h2>
+<ul>
+<li><strong>Execution Timing:</strong> The userscript metadata must
+contain <code>// @run-at document-start</code>. If the script executes
+after the page scripts run, the site may have already saved a reference
+to the unpatched <code>window.Image</code>.</li>
+<li><strong>Isolated World Limits:</strong> In standard browser
+extension environments (like Tampermonkey or Violentmonkey), userscripts
+run in an isolated JavaScript context. To effectively intercept
+page-level script instantiations, the modification must be injected
+directly into the main page context using <code>unsafeWindow</code> or
+by appending a <code>&lt;script&gt;</code> tag to
+<code>document.documentElement</code>.</li>
+<li><strong>Alternative Tracking Methods:</strong> Blocking
+<code>Image()</code> only prevents beaconing via image requests. Sites
+can also use <code>navigator.sendBeacon()</code>, <code>fetch()</code>,
+<code>XMLHttpRequest</code>, or
+<code>&lt;link rel="prefetch"&gt;</code>. Comprehensive blocking
+requires wrapping these alternative APIs in addition to the
+<code>Image</code> constructor.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

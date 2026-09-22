@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscript Limitations in Sandboxed Cross-Origin Iframes - userscript</title>
+    <meta name="description" content="Userscripts provide immense power to customize web pages, but strict security policies like cross-origin sandboxed iframes severely restrict their capabilities. When a userscript attempts to interact with an iframe originating from a different domain—e">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscript-limitations-in-sandboxed-cross-origin-iframes">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscript Limitations in Sandboxed Cross-Origin Iframes - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscript-limitations-in-sandboxed-cross-origin-iframes" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts provide immense power to customize web pages, but strict security policies like cross-origin sandboxed iframes severely restrict their capabilities. When a userscript attempts to interact with an iframe originating from a different domain—e" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="userscript-limitations-in-sandboxed-cross-origin-iframes">Userscript
+Limitations in Sandboxed Cross-Origin Iframes</h1>
+<p>Userscripts provide immense power to customize web pages, but strict
+security policies like cross-origin sandboxed iframes severely restrict
+their capabilities. When a userscript attempts to interact with an
+iframe originating from a different domain—especially one enforcing
+strict sandbox attributes—browser security models block direct DOM
+manipulation, script execution, and data extraction. This article breaks
+down the primary technical limitations userscripts face in these
+environments, including browser isolation mechanics, origin
+restrictions, and context-injection boundaries.</p>
+<h2 id="direct-dom-access-blocked-by-same-origin-policy">Direct DOM
+Access Blocked by Same-Origin Policy</h2>
+<p>The foundational barrier is the browser's Same-Origin Policy (SOP).
+When a userscript runs in the context of the main parent page, it cannot
+directly access the <code>contentDocument</code> or
+<code>contentWindow</code> of a cross-origin iframe.</p>
+<p>Attempting to read elements, modify HTML, or inspect variables inside
+the iframe yields a <code>DOMException</code> (Permission denied). The
+browser explicitly prevents the parent frame's JavaScript context from
+reading or writing data across different protocols, domains, or
+ports.</p>
+<h2 id="restrictions-imposed-by-the-sandbox-attribute">Restrictions
+Imposed by the <code>sandbox</code> Attribute</h2>
+<p>The HTML5 <code>sandbox</code> attribute restricts what content
+within an iframe can do. When an iframe uses a strict
+<code>sandbox</code> attribute (e.g.,
+<code>&lt;iframe src="..." sandbox&gt;</code> without permissive flags),
+it applies several hard limits that affect userscripts:</p>
+<ul>
+<li><strong>No Script Execution (<code>allow-scripts</code>
+missing):</strong> If the sandbox attribute omits
+<code>allow-scripts</code>, JavaScript cannot execute inside the iframe
+at all. Even if a userscript manager attempts to inject a script
+directly into the iframe's DOM, the browser will refuse to execute
+it.</li>
+<li><strong>Forced Unique Origin (<code>allow-same-origin</code>
+missing):</strong> Without <code>allow-same-origin</code>, the browser
+treats the iframe content as being from a unique, opaque origin
+(<code>null</code>). This cuts off access to local storage, cookies,
+session storage, and IndexedDB, rendering state persistence impossible
+inside the frame.</li>
+</ul>
+<h2 id="injection-failures-with-target-matching">Injection Failures with
+Target Matching</h2>
+<p>Userscript managers (such as Tampermonkey, Violentmonkey, or
+Greasemonkey) rely on metadata directives like <code>@match</code> and
+<code>@include</code> to determine where scripts should run.</p>
+<ol type="1">
+<li><strong>Context Isolation:</strong> Unless the script header
+explicitly contains <code>@allFrames true</code> or <code>@match</code>
+rules that cover the iframe's specific URL, the userscript manager will
+only execute the script in the top-level parent window.</li>
+<li><strong>Opaque and Special URLs:</strong> Sandboxed frames often
+utilize <code>data:</code>, <code>blob:</code>, or
+<code>about:blank</code> URLs. Standard <code>@match</code> patterns
+fail to evaluate these pseudo-protocols correctly, preventing the
+extension from hooking into the document creation lifecycle.</li>
+<li><strong>Restricted Extension APIs:</strong> In locked-down
+environments, browser extension APIs may be restricted from executing
+<code>chrome.tabs.executeScript</code> or similar injection mechanisms
+against secure or isolated frames.</li>
+</ol>
+<h2 id="inter-frame-communication-barriers">Inter-Frame Communication
+Barriers</h2>
+<p>Under normal conditions, frames communicate across origins using the
+<code>window.postMessage</code> API. In strictly sandboxed cross-origin
+iframes, this communication channel is heavily impaired:</p>
+<ul>
+<li>If the iframe blocks script execution, it cannot set up event
+listeners for <code>message</code> events sent from the top-level
+userscript.</li>
+<li>If the sandbox prohibits <code>allow-top-navigation</code>, the
+iframe cannot trigger URL changes or navigate the main page.</li>
+<li>Opaque origins make verifying <code>event.origin</code> difficult,
+causing rigid security checks in target applications to reject incoming
+messages.</li>
+</ul>
+<h2 id="privileged-api-gm_-restrictions">Privileged API (GM_*)
+Restrictions</h2>
+<p>Userscripts often rely on elevated grant APIs provided by script
+managers, such as <code>GM_xmlhttpRequest</code>,
+<code>GM_getValue</code>, or <code>GM_setValue</code>.</p>
+<p>If a script manages to inject into a sandboxed iframe, these
+privileged functions may be disabled or break. Many userscript managers
+restrict extensions from exposing cross-domain API bridges to contexts
+running with a <code>null</code> origin or inside untrusted sandboxes to
+prevent privilege escalation attacks.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

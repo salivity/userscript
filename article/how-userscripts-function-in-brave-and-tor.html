@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Function in Brave and Tor - userscript</title>
+    <meta name="description" content="Userscripts are client-side JavaScript programs that modify the appearance, functionality, and behavior of web pages in real time. On privacy-focused browsers like Brave and Tor, userscripts function primarily through specialized extension managers like">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-function-in-brave-and-tor">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Function in Brave and Tor - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-function-in-brave-and-tor" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts are client-side JavaScript programs that modify the appearance, functionality, and behavior of web pages in real time. On privacy-focused browsers like Brave and Tor, userscripts function primarily through specialized extension managers like" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-function-in-brave-and-tor">How Userscripts
+Function in Brave and Tor</h1>
+<p>Userscripts are client-side JavaScript programs that modify the
+appearance, functionality, and behavior of web pages in real time. On
+privacy-focused browsers like Brave and Tor, userscripts function
+primarily through specialized extension managers like Violentmonkey or
+Tampermonkey, but their execution is heavily governed by each browser's
+underlying architecture, strict security settings, and fingerprinting
+protections.</p>
+<h2 id="the-role-of-userscript-managers">The Role of Userscript
+Managers</h2>
+<p>Browsers do not natively execute userscripts out of the box. To run
+them, users install a script manager extension. The script manager acts
+as a mediator: it injects the custom JavaScript into designated target
+web pages after or during DOM loading. It also provides an API (such as
+<code>GM_xmlhttpRequest</code> or <code>GM_setValue</code>) that allows
+scripts to perform cross-origin requests or store data locally,
+bypassing standard web page sandbox limitations.</p>
+<h2 id="how-userscripts-function-in-brave">How Userscripts Function in
+Brave</h2>
+<p>Because Brave is built on the Chromium engine, userscript execution
+in Brave is nearly identical to Chrome, with a few privacy-specific
+caveats:</p>
+<ul>
+<li><strong>Extension Compatibility:</strong> Brave fully supports
+WebExtensions from the Chrome Web Store. Installing script managers like
+Violentmonkey or Tampermonkey works natively.</li>
+<li><strong>Brave Shields Interaction:</strong> Brave’s built-in shield
+system blocks trackers, cross-site cookies, and third-party scripts. If
+a userscript attempts to fetch resources or scripts from a domain
+blocked by Brave Shields, the browser will drop the request unless an
+exception is made.</li>
+<li><strong>Manifest V3 Impact:</strong> As Chromium transitions to
+Manifest V3, script managers in Brave must adapt to stricter background
+script limitations, which can alter how dynamic user scripts are
+registered and executed.</li>
+</ul>
+<h2 id="how-userscripts-function-in-tor-browser">How Userscripts
+Function in Tor Browser</h2>
+<p>Tor Browser is based on Firefox Extended Support Release (ESR) and is
+hardened specifically to prevent tracking, deanonymization, and browser
+fingerprinting. Running userscripts in Tor introduces distinct
+operational challenges:</p>
+<ul>
+<li><strong>Security Levels and JavaScript Restrictions:</strong> Tor
+features three main security levels (Standard, Safer, and Safest). At
+higher security levels, JavaScript is restricted or entirely disabled on
+non-HTTPS or general sites. If JavaScript is disabled by NoScript or Tor
+settings, userscripts cannot execute.</li>
+<li><strong>Extension Installation Warnings:</strong> The Tor Project
+explicitly discourages installing additional browser extensions,
+including userscript managers. Extensions alter the browser's behavior
+and HTTP headers, creating a unique signature that makes the user easily
+fingerprintable across the network.</li>
+<li><strong>Network Routing:</strong> Script managers rely on the
+browser's internal network stack. In Tor, any network requests initiated
+by a userscript (such as <code>GM_xmlhttpRequest</code>) are routed
+through the Tor circuit, ensuring the user's real IP address remains
+hidden. However, poorly coded scripts that attempt direct WebSocket or
+external protocol connections could theoretically pose security
+risks.</li>
+</ul>
+<h2 id="privacy-and-security-risks">Privacy and Security Risks</h2>
+<p>While userscripts allow deep customization and ad-blocking
+enhancements, using them on privacy-centric browsers carries inherent
+risks:</p>
+<ol type="1">
+<li><strong>Fingerprinting:</strong> Modifying DOM elements, loading
+custom fonts, or changing page response times creates detectable
+anomalies that scripts on host websites can track.</li>
+<li><strong>Malicious Code:</strong> Userscripts run with elevated
+privileges compared to regular site scripts. A malicious script can read
+sensitive form data, intercept session tokens, or track browsing
+activity across multiple sites.</li>
+<li><strong>Data Exfiltration:</strong> If a userscript sends telemetry
+or data back to an external server, it undermines the privacy defenses
+established by Brave or Tor.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

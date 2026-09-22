@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Trigger Desktop Notifications - userscript</title>
+    <meta name="description" content="Yes, userscripts can trigger desktop notifications for web events using built-in browser capabilities or specialized functions provided by script managers like Tampermonkey, Violentmonkey, and Greasemonkey. By tapping into these APIs, a userscript can ru">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-trigger-desktop-notifications">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Trigger Desktop Notifications - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-trigger-desktop-notifications" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can trigger desktop notifications for web events using built-in browser capabilities or specialized functions provided by script managers like Tampermonkey, Violentmonkey, and Greasemonkey. By tapping into these APIs, a userscript can ru" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-trigger-desktop-notifications">How Userscripts
+Trigger Desktop Notifications</h1>
+<p>Yes, userscripts can trigger desktop notifications for web events
+using built-in browser capabilities or specialized functions provided by
+script managers like Tampermonkey, Violentmonkey, and Greasemonkey. By
+tapping into these APIs, a userscript can run in the background and
+alert you to specific events—such as new messages, price changes, or
+page updates—even when the target tab is not actively focused.</p>
+<h2 id="methods-for-triggering-notifications">Methods for Triggering
+Notifications</h2>
+<p>There are two primary methods for generating desktop notifications
+through a userscript: the native Web Notifications API and
+script-manager-specific APIs.</p>
+<h3 id="1-using-the-gm_notification-api-recommended">1. Using the
+<code>GM_notification</code> API (Recommended)</h3>
+<p>The most reliable way to trigger desktop notifications from a
+userscript is using the <code>GM_notification</code> function. This API
+is supported by most major userscript managers and integrates directly
+with the operating system's native notification system.</p>
+<p><strong>Advantages of <code>GM_notification</code>:</strong></p>
+<ul>
+<li>Bypasses the need for domain-specific web notification
+permissions.</li>
+<li>Can send notifications even if the webpage itself blocks or does not
+support web notifications.</li>
+<li>Works smoothly across cross-origin requests and background
+tasks.</li>
+</ul>
+<p><strong>Implementation Example:</strong></p>
+<p>To use <code>GM_notification</code>, you must first request
+permission in the metadata block of your userscript:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Desktop Notification Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_notification</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Trigger the notification on a specific event</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_notification</span>({</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">title</span><span class="op">:</span> <span class="st">&#39;Event Detected&#39;</span><span class="op">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">text</span><span class="op">:</span> <span class="st">&#39;A specific web event occurred on the page.&#39;</span><span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">image</span><span class="op">:</span> <span class="st">&#39;https://example.com/icon.png&#39;</span><span class="op">,</span> <span class="co">// Optional icon URL</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">timeout</span><span class="op">:</span> <span class="dv">5000</span><span class="op">,</span> <span class="co">// Duration in milliseconds (0 for persistent)</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">onclick</span><span class="op">:</span> <span class="kw">function</span>() {</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">window</span><span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span> <span class="co">// Focus the tab when clicked</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="2-using-the-native-web-notifications-api">2. Using the Native
+Web Notifications API</h3>
+<p>Userscripts can also utilize the standard HTML5 Notifications API
+(<code>new Notification()</code>). However, this approach relies on the
+current webpage's context and permissions.</p>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Requires explicit permission granted by the user to the specific
+website domain.</li>
+<li>May be blocked if the website's Content Security Policy (CSP)
+restricts notification scripts.</li>
+</ul>
+<p><strong>Implementation Example:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Request permission if not already granted</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="bu">Notification</span><span class="op">.</span><span class="at">permission</span> <span class="op">===</span> <span class="st">&#39;default&#39;</span>) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">Notification</span><span class="op">.</span><span class="fu">requestPermission</span>()<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Trigger notification if permission is granted</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="bu">Notification</span><span class="op">.</span><span class="at">permission</span> <span class="op">===</span> <span class="st">&#39;granted&#39;</span>) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">new</span> <span class="bu">Notification</span>(<span class="st">&#39;Web Event Triggered&#39;</span><span class="op">,</span> {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">body</span><span class="op">:</span> <span class="st">&#39;The event condition was met.&#39;</span><span class="op">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">icon</span><span class="op">:</span> <span class="st">&#39;https://example.com/icon.png&#39;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="key-requirements-and-setup">Key Requirements and Setup</h2>
+<p>For desktop notifications to work correctly via userscripts, ensure
+the following conditions are met:</p>
+<ol type="1">
+<li><strong>System-Level Permissions:</strong> Your web browser must
+have permission to send notifications within your operating system
+settings (Windows, macOS, or Linux).</li>
+<li><strong>Browser Focus:</strong> If notifications do not appear,
+check if your OS is currently in "Do Not Disturb" or "Focus" mode, which
+suppresses incoming alerts.</li>
+<li><strong>Correct <code>@grant</code> Directives:</strong> When using
+manager APIs, ensure <code>@grant GM_notification</code> is explicitly
+stated in the userscript header, or the function will remain
+undefined.</li>
+</ol>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<ul>
+<li><strong>Monitoring Page Changes:</strong> Receiving an alert when an
+out-of-stock item becomes available.</li>
+<li><strong>Auction and Ticket Bidding:</strong> Getting notified when a
+bid is placed or a ticket queue opens.</li>
+<li><strong>Chat and Messaging:</strong> Receiving desktop alerts for
+incoming messages on web apps that lack native desktop notification
+features.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

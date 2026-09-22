@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Block WebRTC to Prevent IP Leaks - userscript</title>
+    <meta name="description" content="WebRTC (Web Real-Time Communication) enables direct peer-to-peer audio, video, and data sharing between browsers, but it can accidentally expose a user's real public and local IP addresses even when using a VPN or proxy. Userscripts prevent these IP leak">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-block-web-rtc-to-prevent-ip-leaks">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Block WebRTC to Prevent IP Leaks - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-block-web-rtc-to-prevent-ip-leaks" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="WebRTC (Web Real-Time Communication) enables direct peer-to-peer audio, video, and data sharing between browsers, but it can accidentally expose a user's real public and local IP addresses even when using a VPN or proxy. Userscripts prevent these IP leak" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-block-webrtc-to-prevent-ip-leaks">How
+Userscripts Block WebRTC to Prevent IP Leaks</h1>
+<p>WebRTC (Web Real-Time Communication) enables direct peer-to-peer
+audio, video, and data sharing between browsers, but it can accidentally
+expose a user's real public and local IP addresses even when using a VPN
+or proxy. Userscripts prevent these IP leaks by intercepting JavaScript
+API calls before WebRTC connections are established, either by
+neutralizing the <code>RTCPeerConnection</code> object entirely,
+overriding its data channel methods, or filtering out ICE candidate data
+containing IP addresses.</p>
+<h2 id="why-webrtc-leaks-ip-addresses">Why WebRTC Leaks IP
+Addresses</h2>
+<p>WebRTC uses Interactive Connectivity Establishment (ICE) protocols to
+discover the most direct path between two peers. To do this, the browser
+queries STUN (Session Traversal Utilities for NAT) servers to discover
+its public IP address and gathers local network IP addresses.</p>
+<p>Because WebRTC operates directly inside the browser's JavaScript
+engine, these STUN requests can bypass standard browser proxy settings.
+If a web application executes WebRTC code, it can read these gathered IP
+addresses via JavaScript and send them to a remote server, leaking your
+real IP address despite an active proxy.</p>
+<h2 id="how-userscripts-intercept-webrtc-monkey-patching">How
+Userscripts Intercept WebRTC (Monkey Patching)</h2>
+<p>Userscripts run inside the browser context and have access to the
+global <code>window</code> object. They intercept WebRTC by using a
+technique called <strong>monkey patching</strong>—overriding native
+browser functions and constructors with custom implementations before
+the webpage's own scripts can execute them.</p>
+<h3 id="1-completely-disabling-rtcpeerconnection">1. Completely
+Disabling <code>RTCPeerConnection</code></h3>
+<p>The most straightforward way a userscript prevents leaks is by
+deleting or overwriting the standard <code>RTCPeerConnection</code>
+constructor (and its legacy vendor-prefixed versions like
+<code>webkitRTCPeerConnection</code> and
+<code>mozRTCPeerConnection</code>).</p>
+<p>When a webpage tries to instantiate a WebRTC connection:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Native code overridden by userscript</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">RTCPeerConnection</span> <span class="op">=</span> <span class="kw">undefined</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">webkitRTCPeerConnection</span> <span class="op">=</span> <span class="kw">undefined</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">mozRTCPeerConnection</span> <span class="op">=</span> <span class="kw">undefined</span><span class="op">;</span></span></code></pre></div>
+<p>If the webpage attempts to call <code>new RTCPeerConnection()</code>,
+the browser throws an error, completely halting any WebRTC
+initialization and preventing data channel creation.</p>
+<h3 id="2-intercepting-and-neutralizing-data-channels">2. Intercepting
+and Neutralizing Data Channels</h3>
+<p>If a user wants to preserve certain WebRTC functionalities while
+specifically blocking data transfers, the userscript can wrap the native
+<code>RTCPeerConnection</code> and disable the
+<code>createDataChannel</code> method.</p>
+<p>The script stores a reference to the original constructor, modifies
+its prototype, and prevents data channel creation:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> OriginalPeerConnection <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">RTCPeerConnection</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">RTCPeerConnection</span> <span class="op">=</span> <span class="kw">function</span>(<span class="op">...</span>args) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> pc <span class="op">=</span> <span class="kw">new</span> <span class="fu">OriginalPeerConnection</span>(<span class="op">...</span>args)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Override createDataChannel to block data channel creation</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    pc<span class="op">.</span><span class="at">createDataChannel</span> <span class="op">=</span> <span class="kw">function</span>() {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&quot;WebRTC data channel creation blocked by userscript.&quot;</span>)<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pc<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>By returning <code>null</code> or a dummy object, the webpage cannot
+open arbitrary data streams to external peers.</p>
+<h3 id="3-filtering-ice-candidates">3. Filtering ICE Candidates</h3>
+<p>To allow WebRTC to function without revealing sensitive network info,
+userscripts can monitor and filter ICE candidates. When WebRTC discovers
+an IP address, it triggers the <code>onicecandidate</code> event.</p>
+<p>Userscripts intercept this event listener or modify
+<code>addIceCandidate</code> to scrub IP address strings:</p>
+<ul>
+<li><strong>Local IPs (e.g., 192.168.x.x, 10.x.x.x):</strong> Redacted
+to prevent internal network mapping.</li>
+<li><strong>Public IPs:</strong> Blocked if they match the user's real
+non-proxied interface.</li>
+</ul>
+<p>If an ICE candidate containing a raw IP address is generated, the
+userscript drops the candidate event so it is never transmitted over the
+signaling server.</p>
+<h2 id="crucial-requirement-execution-timing">Crucial Requirement:
+Execution Timing</h2>
+<p>For a userscript to effectively block WebRTC leaks, it must run
+<strong>before</strong> any scripts on the target website execute.</p>
+<p>Userscripts achieve this by setting the metadata directive:</p>
+<pre class="text"><code>// @run-at document-start</code></pre>
+<p>If the script runs at <code>document-end</code> or
+<code>document-idle</code>, the webpage may have already initialized the
+<code>RTCPeerConnection</code> object, gathered ICE candidates, and
+transmitted the user's real IP address. Running at
+<code>document-start</code> ensures that the monkey patch is active
+before any page scripts load.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

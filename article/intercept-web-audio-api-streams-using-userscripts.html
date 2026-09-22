@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intercept Web Audio API Streams Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can successfully intercept and modify audio streams played through the Web Audio API by overriding standard browser interfaces before a target webpage executes its scripts. By executing at document-start and monkey-patching core Web Audio obj">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/intercept-web-audio-api-streams-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Intercept Web Audio API Streams Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/intercept-web-audio-api-streams-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can successfully intercept and modify audio streams played through the Web Audio API by overriding standard browser interfaces before a target webpage executes its scripts. By executing at document-start and monkey-patching core Web Audio obj" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="intercept-web-audio-api-streams-using-userscripts">Intercept Web
+Audio API Streams Using Userscripts</h1>
+<p>Userscripts can successfully intercept and modify audio streams
+played through the Web Audio API by overriding standard browser
+interfaces before a target webpage executes its scripts. By executing at
+<code>document-start</code> and monkey-patching core Web Audio objects
+like <code>AudioContext</code>, <code>webkitAudioContext</code>, and
+<code>AudioNode.prototype.connect</code>, a userscript can seamlessly
+insert custom processing nodes, adjust volume levels, apply audio
+filters, or extract real-time frequency data from any web
+application.</p>
+<h2 id="how-userscript-interception-works">How Userscript Interception
+Works</h2>
+<p>To manipulate Web Audio streams, a userscript must run before the
+application initializes its audio engine. Userscript managers (such as
+Tampermonkey or Violentmonkey) enable this via the
+<code>@run-at document-start</code> directive.</p>
+<p>The core technique relies on
+<strong>monkey-patching</strong>—replacing standard JavaScript Web Audio
+API constructors with modified versions:</p>
+<ol type="1">
+<li><strong>Overriding <code>AudioContext</code>:</strong> The script
+wraps the original <code>window.AudioContext</code> (and
+<code>window.webkitAudioContext</code>) constructor to catch the
+creation of any new audio context.</li>
+<li><strong>Injecting Processing Nodes:</strong> When an
+<code>AudioContext</code> is instantiated, the userscript can create its
+own audio nodes, such as a <code>GainNode</code>,
+<code>BiquadFilterNode</code>, or <code>AudioWorkletNode</code>.</li>
+<li><strong>Rerouting the Graph:</strong> By monkey-patching
+<code>AudioNode.prototype.connect</code>, the script intercepts
+connections between nodes and redirects the output stream through custom
+processors before sending the final signal to
+<code>AudioContext.destination</code>.</li>
+</ol>
+<h2 id="practical-modifications-you-can-perform">Practical Modifications
+You Can Perform</h2>
+<p>Once a userscript intercepts an audio stream, it gains complete
+programmatic control over the Web Audio graph:</p>
+<ul>
+<li><strong>Custom Volume Control &amp; Equalization:</strong> Insert
+gain or equalizer nodes to boost quiet audio, reduce harsh frequencies,
+or add spatial panning to sites lacking built-in controls.</li>
+<li><strong>Audio Recording &amp; Export:</strong> Tap into the output
+using a <code>MediaStreamAudioDestinationNode</code> paired with the
+<code>MediaRecorder</code> API to capture clean, lossless audio directly
+to a file.</li>
+<li><strong>Visualization &amp; Analysis:</strong> Attach an
+<code>AnalyserNode</code> to compute real-time Fast Fourier Transform
+(FFT) data for visualizers or audio metering.</li>
+<li><strong>DSP &amp; Real-Time FX:</strong> Use
+<code>AudioWorklet</code> to apply custom digital signal processing
+(DSP) algorithms, such as distortion, compression, pitch shifting, or
+reverb.</li>
+</ul>
+<h2 id="basic-implementation-pattern">Basic Implementation Pattern</h2>
+<p>Below is the standard JavaScript pattern used inside a userscript to
+intercept an <code>AudioContext</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Web Audio Interceptor</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-start</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use strict&#39;</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> OriginalAudioContext <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">AudioContext</span> <span class="op">||</span> <span class="bu">window</span><span class="op">.</span><span class="at">webkitAudioContext</span><span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">function</span> <span class="fu">InterceptedAudioContext</span>(<span class="op">...</span>args) {</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> context <span class="op">=</span> <span class="kw">new</span> <span class="fu">OriginalAudioContext</span>(<span class="op">...</span>args)<span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Create a custom filter node</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> filter <span class="op">=</span> context<span class="op">.</span><span class="fu">createBiquadFilter</span>()<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        filter<span class="op">.</span><span class="at">type</span> <span class="op">=</span> <span class="st">&#39;lowpass&#39;</span><span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        filter<span class="op">.</span><span class="at">frequency</span><span class="op">.</span><span class="at">value</span> <span class="op">=</span> <span class="dv">1000</span><span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Override the destination connection path</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> originalConnect <span class="op">=</span> <span class="bu">AudioNode</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">connect</span><span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        context<span class="op">.</span><span class="at">destination</span><span class="op">.</span><span class="at">_intercepted</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Redirect signals going to speaker output through the filter</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="bu">AudioNode</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">connect</span> <span class="op">=</span> <span class="kw">function</span>(destination<span class="op">,</span> <span class="op">...</span>connectArgs) {</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (destination <span class="op">===</span> context<span class="op">.</span><span class="at">destination</span> <span class="op">&amp;&amp;</span> <span class="op">!</span><span class="kw">this</span><span class="op">.</span><span class="at">_isCustomNode</span>) {</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                originalConnect<span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> filter)<span class="op">;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>                originalConnect<span class="op">.</span><span class="fu">call</span>(filter<span class="op">,</span> context<span class="op">.</span><span class="at">destination</span>)<span class="op">;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> destination<span class="op">;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> originalConnect<span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> destination<span class="op">,</span> <span class="op">...</span>connectArgs)<span class="op">;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        }<span class="op">;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> context<span class="op">;</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    InterceptedAudioContext<span class="op">.</span><span class="at">prototype</span> <span class="op">=</span> OriginalAudioContext<span class="op">.</span><span class="at">prototype</span><span class="op">;</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="bu">window</span><span class="op">.</span><span class="at">AudioContext</span> <span class="op">=</span> InterceptedAudioContext<span class="op">;</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">window</span><span class="op">.</span><span class="at">webkitAudioContext</span> <span class="op">=</span> InterceptedAudioContext<span class="op">;</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="limitations-and-edge-cases">Limitations and Edge Cases</h2>
+<p>While userscripts work reliably for standard Web Audio API pipelines,
+developers must account for specific technical edge cases:</p>
+<ul>
+<li><strong>Cross-Origin (CORS) Restrictions:</strong> If the site loads
+audio files from an external domain into an <code>&lt;audio&gt;</code>
+tag and passes them via <code>createMediaElementSource()</code>,
+cross-origin security rules may mute the audio unless proper CORS
+headers (<code>Access-Control-Allow-Origin</code>) are returned by the
+asset server.</li>
+<li><strong>Encrypted Media (DRM):</strong> Audio streams protected by
+Encrypted Media Extensions (EME), such as high-bitrate streams on major
+streaming platforms, pass through hardware-level decryption and bypass
+the accessible JavaScript Web Audio pipeline entirely.</li>
+<li><strong>AudioWorklet Isolation:</strong> <code>AudioWorklet</code>
+scripts run in a separate global scope. Intercepting custom worklet
+processors requires overriding
+<code>AudioContext.prototype.audioWorklet.addModule</code> to rewrite or
+append custom code to the worklet file before it loads.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

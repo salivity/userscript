@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Intercept and Modify URL Parameters - userscript</title>
+    <meta name="description" content="Userscripts intercept and modify URL parameters before a web page fully loads by executing at the earliest stage of document creation using execution hooks like @run-at document-start. By running before the browser parses the HTML or fires network reques">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-intercept-and-modify-url-parameters">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Intercept and Modify URL Parameters - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-intercept-and-modify-url-parameters" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts intercept and modify URL parameters before a web page fully loads by executing at the earliest stage of document creation using execution hooks like @run-at document-start. By running before the browser parses the HTML or fires network reques" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-intercept-and-modify-url-parameters">How
+Userscripts Intercept and Modify URL Parameters</h1>
+<p>Userscripts intercept and modify URL parameters before a web page
+fully loads by executing at the earliest stage of document creation
+using execution hooks like <code>@run-at document-start</code>. By
+running before the browser parses the HTML or fires network requests for
+page assets, a userscript can evaluate the current URL, manipulate its
+query parameters using native JavaScript APIs, and trigger an immediate
+redirection or state change before the user sees the original page
+content.</p>
+<h2 id="execution-timing-with-run-at-document-start">Execution Timing
+with <code>@run-at document-start</code></h2>
+<p>The foundational requirement for intercepting a URL before page load
+is timing. Userscript managers (such as Tampermonkey, Violentmonkey, or
+Greasemonkey) allow scripts to define metadata headers that control when
+the script runs.</p>
+<p>By setting the metadata tag to <code>@run-at document-start</code>,
+the userscript manager injects the script into the page context before
+the DOM is constructed, before external scripts are fetched, and before
+images or stylesheets load.</p>
+<h2 id="parsing-and-modifying-urls">Parsing and Modifying URLs</h2>
+<p>Once injected at document start, the script accesses the current web
+address through <code>window.location.href</code> or
+<code>window.location.search</code>. To parse and update parameters
+cleanly, userscripts utilize the browser's built-in <code>URL</code> and
+<code>URLSearchParams</code> interfaces:</p>
+<ol type="1">
+<li><strong>Parsing:</strong> The script creates a new <code>URL</code>
+object using <code>window.location.href</code>.</li>
+<li><strong>Modification:</strong> It uses <code>URLSearchParams</code>
+methods (such as <code>.set()</code>, <code>.delete()</code>, or
+<code>.append()</code>) to alter, strip, or add targeted parameters
+(like tracking IDs, query tags, or layout flags).</li>
+<li><strong>Serialization:</strong> The updated search parameters are
+compiled back into a full URL string using
+<code>url.toString()</code>.</li>
+</ol>
+<h2 id="redirecting-the-browser-before-render">Redirecting the Browser
+Before Render</h2>
+<p>If the parameters need to be changed on the initial page navigation
+itself, modifying the <code>window.location</code> object directly
+causes the browser to abandon the current page load and request the
+modified URL immediately.</p>
+<p>Using <code>window.location.replace(newUrl)</code> is the standard
+approach because it performs the redirect immediately and replaces the
+current entry in the browser's session history. This prevents the user
+from hitting a redirect loop when pressing the browser's "Back" button.
+Because this check happens at <code>document-start</code>, the original
+page content never renders to the screen.</p>
+<h2 id="intercepting-dynamic-in-page-requests">Intercepting Dynamic
+In-Page Requests</h2>
+<p>Beyond initial page navigation, pages often make internal
+asynchronous network calls (such as fetching data via <code>fetch</code>
+or <code>XMLHttpRequest</code>). Userscripts running at
+<code>document-start</code> can intercept and modify the parameters of
+these subresource URLs by "monkey-patching" the browser's global network
+methods:</p>
+<ul>
+<li><strong>Overriding <code>window.fetch</code>:</strong> The script
+replaces the native <code>fetch</code> function with a custom wrapper
+function. When the page calls <code>fetch(url)</code>, the script parses
+the URL argument, modifies the query parameters, and passes the updated
+URL to the original <code>fetch</code> function.</li>
+<li><strong>Overriding
+<code>XMLHttpRequest.prototype.open</code>:</strong> The script
+intercepts calls to <code>xhr.open()</code>, inspects the request URL
+parameter, updates it, and passes the altered URL back to the native
+<code>open</code> method before the network connection opens.</li>
+</ul>
+<p>Through early execution metadata, native URL manipulation interfaces,
+and function overriding, userscripts gain complete control over incoming
+and outgoing network parameters before any page rendering takes
+place.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

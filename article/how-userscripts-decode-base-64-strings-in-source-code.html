@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Decode Base64 Strings in Source Code - userscript</title>
+    <meta name="description" content="Userscripts running on browser extensions like Tampermonkey or Violentmonkey often extract and reveal data hidden within a website's source code. Web developers frequently use Base64 encoding to conceal API keys, hidden links, dynamic content, or media f">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-decode-base-64-strings-in-source-code">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Decode Base64 Strings in Source Code - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-decode-base-64-strings-in-source-code" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts running on browser extensions like Tampermonkey or Violentmonkey often extract and reveal data hidden within a website's source code. Web developers frequently use Base64 encoding to conceal API keys, hidden links, dynamic content, or media f" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-decode-base64-strings-in-source-code">How
+Userscripts Decode Base64 Strings in Source Code</h1>
+<p>Userscripts running on browser extensions like Tampermonkey or
+Violentmonkey often extract and reveal data hidden within a website's
+source code. Web developers frequently use Base64 encoding to conceal
+API keys, hidden links, dynamic content, or media files within HTML
+elements or inline scripts. This guide explains how userscripts locate
+these obfuscated Base64 strings, parse them from the DOM, and decode
+them using standard browser JavaScript APIs.</p>
+<h2 id="1-finding-the-base64-string-in-the-page-source">1. Finding the
+Base64 String in the Page Source</h2>
+<p>Before a userscript can decode a Base64 string, it must first extract
+the string from the DOM or inline scripts. Userscripts typically use
+standard Web APIs or regular expressions to locate this data.</p>
+<ul>
+<li><strong>Targeting Specific HTML Elements:</strong> If the Base64
+data resides in a data attribute or hidden tag, the script targets it
+directly:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> hiddenElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.hidden-data&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> base64String <span class="op">=</span> hiddenElement<span class="op">.</span><span class="fu">getAttribute</span>(<span class="st">&#39;data-encoded&#39;</span>)<span class="op">;</span></span></code></pre></div></li>
+<li><strong>Scanning Script Tags or Page HTML:</strong> If the data is
+embedded directly inside an inline <code>&lt;script&gt;</code> tag or
+variable, the script parses the page source using Regular Expressions:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> pageSource <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span><span class="op">.</span><span class="at">innerHTML</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> match <span class="op">=</span> pageSource<span class="op">.</span><span class="fu">match</span>(<span class="ss">/const hiddenToken = </span><span class="sc">[&quot;&#39;]([A-Za-z0-9+/=]+)[&quot;&#39;]</span><span class="ss">/</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> base64String <span class="op">=</span> match <span class="op">?</span> match[<span class="dv">1</span>] <span class="op">:</span> <span class="kw">null</span><span class="op">;</span></span></code></pre></div></li>
+</ul>
+<h2 id="2-standard-decoding-using-atob">2. Standard Decoding Using
+<code>atob()</code></h2>
+<p>JavaScript provides a built-in function called <code>atob()</code>
+(ASCII to binary) designed specifically to decode Base64-encoded ASCII
+strings.</p>
+<p>Once the string is extracted, decoding it into a standard ASCII text
+string requires a single line of code:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> decodedData <span class="op">=</span> <span class="fu">atob</span>(base64String)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(decodedData)<span class="op">;</span></span></code></pre></div>
+<h2 id="3-handling-unicode-utf-8-strings">3. Handling Unicode (UTF-8)
+Strings</h2>
+<p>The native <code>atob()</code> function throws an error if the
+decoded Base64 string contains characters outside the Latin1 character
+range (such as non-English characters or emojis).</p>
+<p>To safely decode Base64 strings containing UTF-8 characters,
+userscripts use <code>Uint8Array</code> combined with
+<code>TextDecoder</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">decodeBase64UTF8</span>(base64) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> binaryString <span class="op">=</span> <span class="fu">atob</span>(base64)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> bytes <span class="op">=</span> <span class="kw">new</span> <span class="bu">Uint8Array</span>(binaryString<span class="op">.</span><span class="at">length</span>)<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> binaryString<span class="op">.</span><span class="at">length</span><span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    bytes[i] <span class="op">=</span> binaryString<span class="op">.</span><span class="fu">charCodeAt</span>(i)<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">new</span> <span class="fu">TextDecoder</span>()<span class="op">.</span><span class="fu">decode</span>(bytes)<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="4-decoding-base64-into-media-or-files">4. Decoding Base64 into
+Media or Files</h2>
+<p>Sometimes the Base64 string represents binary files like images,
+audio, or PDFs rather than plain text. Userscripts convert these strings
+into usable web elements in two ways:</p>
+<ol type="1">
+<li><strong>Data URLs:</strong> Modern browsers can directly parse
+Base64 strings as image or media sources without manual decoding:
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> img <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;img&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>img<span class="op">.</span><span class="at">src</span> <span class="op">=</span> <span class="vs">`data:image/png;base64,</span><span class="sc">${</span>base64String<span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(img)<span class="op">;</span></span></code></pre></div></li>
+<li><strong>Blobs for Downloads:</strong> To convert the Base64 string
+into a downloadable file, the userscript converts the decoded bytes into
+a <code>Blob</code>:
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> binary <span class="op">=</span> <span class="fu">atob</span>(base64String)<span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> array <span class="op">=</span> <span class="kw">new</span> <span class="bu">Uint8Array</span>(binary<span class="op">.</span><span class="at">length</span>)<span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> binary<span class="op">.</span><span class="at">length</span><span class="op">;</span> i<span class="op">++</span>) {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  array[i] <span class="op">=</span> binary<span class="op">.</span><span class="fu">charCodeAt</span>(i)<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> blob <span class="op">=</span> <span class="kw">new</span> <span class="bu">Blob</span>([array]<span class="op">,</span> { <span class="dt">type</span><span class="op">:</span> <span class="st">&#39;application/pdf&#39;</span> })<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> downloadUrl <span class="op">=</span> URL<span class="op">.</span><span class="fu">createObjectURL</span>(blob)<span class="op">;</span></span></code></pre></div></li>
+</ol>
+<h2 id="5-handling-dynamically-loaded-content">5. Handling Dynamically
+Loaded Content</h2>
+<p>Websites often load hidden encoded strings asynchronously using AJAX
+or WebSocket connections after the initial page load. To capture these
+strings as they appear in the source code, userscripts employ a
+<code>MutationObserver</code>:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations) <span class="kw">=&gt;</span> {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> targetElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#dynamic-encoded-content&#39;</span>)<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (targetElement) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> decoded <span class="op">=</span> <span class="fu">atob</span>(targetElement<span class="op">.</span><span class="at">textContent</span>)<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Decoded content:&#39;</span><span class="op">,</span> decoded)<span class="op">;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    observer<span class="op">.</span><span class="fu">disconnect</span>()<span class="op">;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

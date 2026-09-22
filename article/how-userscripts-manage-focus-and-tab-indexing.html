@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Manage Focus and Tab Indexing - userscript</title>
+    <meta name="description" content="Userscripts often alter existing websites by injecting custom HTML elements like buttons, sidebars, forms, or modal dialogs into the document object model (DOM). To ensure these newly added elements are fully functional and accessible via keyboard, users">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-manage-focus-and-tab-indexing">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Manage Focus and Tab Indexing - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-manage-focus-and-tab-indexing" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts often alter existing websites by injecting custom HTML elements like buttons, sidebars, forms, or modal dialogs into the document object model (DOM). To ensure these newly added elements are fully functional and accessible via keyboard, users" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-manage-focus-and-tab-indexing">How Userscripts
+Manage Focus and Tab Indexing</h1>
+<p>Userscripts often alter existing websites by injecting custom HTML
+elements like buttons, sidebars, forms, or modal dialogs into the
+document object model (DOM). To ensure these newly added elements are
+fully functional and accessible via keyboard, userscript developers must
+explicitly manage keyboard focus and tab indexing. This article explains
+how userscripts control navigation order using the <code>tabindex</code>
+attribute, programmatically trigger focus with JavaScript, isolate focus
+within Shadow DOM containers, and handle keyboard traps to maintain a
+smooth user experience alongside host page scripts.</p>
+<h2 id="controlling-keyboard-access-with-tab-indexing">Controlling
+Keyboard Access with Tab Indexing</h2>
+<p>When a userscript injects interactive elements into a webpage,
+browser default behavior determines whether those elements are reachable
+via the <code>Tab</code> key. Native interactive elements (such as
+<code>&lt;button&gt;</code>, <code>&lt;input&gt;</code>, and
+<code>&lt;a&gt;</code>) automatically enter the tab sequence. However,
+if a userscript injects non-standard elements like
+<code>&lt;div&gt;</code> or <code>&lt;span&gt;</code> styled as
+controls, they will be skipped during keyboard navigation.</p>
+<p>Developers fix this by setting the <code>tabindex</code>
+attribute:</p>
+<ul>
+<li><strong><code>tabindex="0"</code></strong>: Inserts the custom
+element into the page's natural tab order based on its position in the
+DOM tree. This allows users to navigate to the injected element using
+the <code>Tab</code> key.</li>
+<li><strong><code>tabindex="-1"</code></strong>: Prevents the element
+from being reached via sequential <code>Tab</code> navigation while
+still allowing it to receive focus programmatically using JavaScript
+(<code>element.focus()</code>).</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Creating a focusable custom button element</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> customBtn <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>customBtn<span class="op">.</span><span class="at">className</span> <span class="op">=</span> <span class="st">&#39;my-userscript-button&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>customBtn<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;tabindex&#39;</span><span class="op">,</span> <span class="st">&#39;0&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>customBtn<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;role&#39;</span><span class="op">,</span> <span class="st">&#39;button&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>customBtn<span class="op">.</span><span class="at">innerText</span> <span class="op">=</span> <span class="st">&#39;Custom Action&#39;</span><span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(customBtn)<span class="op">;</span></span></code></pre></div>
+<h2 id="programmatically-directing-user-focus">Programmatically
+Directing User Focus</h2>
+<p>When an injected element appears on the screen—such as a custom modal
+or dropdown menu—it is standard practice to shift focus directly to that
+element so the user can interact with it immediately.</p>
+<p>Userscripts achieve this by calling the <code>.focus()</code> method
+on the injected DOM element after it has been inserted into the
+document:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> inputField <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#userscript-search-input&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>inputField<span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span></code></pre></div>
+<p>If elements are injected dynamically or asynchronously, the DOM must
+finish updating before calling <code>.focus()</code>. Running
+<code>.focus()</code> inside a <code>requestAnimationFrame</code> or
+<code>setTimeout</code> callback guarantees that the element is rendered
+and ready to accept focus.</p>
+<h2 id="using-shadow-dom-to-avoid-styling-and-focus-conflicts">Using
+Shadow DOM to Avoid Styling and Focus Conflicts</h2>
+<p>Injecting UI components directly into the host DOM can lead to
+conflicts with host scripts listening for focus events. To mitigate
+this, complex userscripts often use the <strong>Shadow DOM</strong>.</p>
+<p>By attaching a Shadow Root
+(<code>element.attachShadow({ mode: 'open' })</code>), the userscript
+isolates its internal structure. When managing tab indexing inside a
+Shadow DOM:</p>
+<ul>
+<li>Focus flows into the shadow root according to the placement of the
+host element in the main document.</li>
+<li>Internal tab navigation follows the standard DOM order inside the
+shadow tree.</li>
+<li><code>document.activeElement</code> on the main page will reference
+the shadow host element, protecting internal sub-elements from unwanted
+host script interference.</li>
+</ul>
+<h2 id="implementing-focus-traps-in-injected-modals">Implementing Focus
+Traps in Injected Modals</h2>
+<p>If a userscript injects a modal overlay, keyboard users must not be
+able to tab out of the modal into the underlying host page. To restrict
+movement within the injected component, developers build a <strong>focus
+trap</strong>.</p>
+<p>A basic focus trap algorithm in a userscript works as follows:</p>
+<ol type="1">
+<li>Query all focusable elements (<code>button</code>,
+<code>input</code>, <code>[tabindex="0"]</code>) inside the injected
+container.</li>
+<li>Listen for the <code>keydown</code> event specifically tracking the
+<code>Tab</code> key.</li>
+<li>If the user presses <code>Tab</code> while on the last focusable
+element, shift focus back to the first focusable element.</li>
+<li>If the user presses <code>Shift + Tab</code> while on the first
+focusable element, shift focus to the last element.</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>modalContainer<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;keydown&#39;</span><span class="op">,</span> (e) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">key</span> <span class="op">!==</span> <span class="st">&#39;Tab&#39;</span>) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> focusables <span class="op">=</span> modalContainer<span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">&#39;button, input, [tabindex=&quot;0&quot;]&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> first <span class="op">=</span> focusables[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> last <span class="op">=</span> focusables[focusables<span class="op">.</span><span class="at">length</span> <span class="op">-</span> <span class="dv">1</span>]<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">shiftKey</span> <span class="op">&amp;&amp;</span> <span class="bu">document</span><span class="op">.</span><span class="at">activeElement</span> <span class="op">===</span> first) {</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        last<span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        e<span class="op">.</span><span class="fu">preventDefault</span>()<span class="op">;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (<span class="op">!</span>e<span class="op">.</span><span class="at">shiftKey</span> <span class="op">&amp;&amp;</span> <span class="bu">document</span><span class="op">.</span><span class="at">activeElement</span> <span class="op">===</span> last) {</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        first<span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        e<span class="op">.</span><span class="fu">preventDefault</span>()<span class="op">;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="restoring-focus-to-the-host-page">Restoring Focus to the Host
+Page</h2>
+<p>When a user closes an injected panel or finishes an interaction, the
+script should return focus to the host page element that was active
+before the userscript was triggered.</p>
+<p>Userscripts handle this by caching
+<code>document.activeElement</code> prior to executing the focus shift
+and calling <code>.focus()</code> on the saved element upon closing the
+script's UI:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Save the host page&#39;s active element</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> previousActiveElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="at">activeElement</span><span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Open userscript UI and focus it</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>myInjectedModal<span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">// On close event</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">closeModal</span>() {</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    myInjectedModal<span class="op">.</span><span class="fu">remove</span>()<span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Restore focus to original element</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (previousActiveElement <span class="op">&amp;&amp;</span> <span class="kw">typeof</span> previousActiveElement<span class="op">.</span><span class="at">focus</span> <span class="op">===</span> <span class="st">&#39;function&#39;</span>) {</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        previousActiveElement<span class="op">.</span><span class="fu">focus</span>()<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

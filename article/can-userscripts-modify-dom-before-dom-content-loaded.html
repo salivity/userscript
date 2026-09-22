@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Modify DOM Before DOMContentLoaded? - userscript</title>
+    <meta name="description" content="Yes, userscripts can modify the Document Object Model (DOM) before the DOMContentLoaded event fires. By configuring the script's metadata block with the @run-at document-start or @run-at document-body directives, userscript managers execute your code bef">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-modify-dom-before-dom-content-loaded">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Modify DOM Before DOMContentLoaded? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-modify-dom-before-dom-content-loaded" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can modify the Document Object Model (DOM) before the DOMContentLoaded event fires. By configuring the script's metadata block with the @run-at document-start or @run-at document-body directives, userscript managers execute your code bef" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-modify-dom-before-domcontentloaded">Can
+Userscripts Modify DOM Before DOMContentLoaded?</h1>
+<p>Yes, userscripts can modify the Document Object Model (DOM) before
+the <code>DOMContentLoaded</code> event fires. By configuring the
+script's metadata block with the <code>@run-at document-start</code> or
+<code>@run-at document-body</code> directives, userscript managers
+execute your code before the HTML document finishes parsing. This allows
+developers to inject styles, modify early-parsed elements, or set up
+observers to alter incoming elements the exact moment they enter the DOM
+tree.</p>
+<h2 id="understanding-userscript-execution-timings">Understanding
+Userscript Execution Timings</h2>
+<p>Userscript managers like Tampermonkey, Violentmonkey, and
+Greasemonkey offer the <code>@run-at</code> header to control script
+timing relative to the page loading lifecycle:</p>
+<ul>
+<li><strong><code>@run-at document-start</code></strong>: Executes the
+script before any HTML parsing begins or page scripts are executed.</li>
+<li><strong><code>@run-at document-body</code></strong>: Executes the
+moment the <code>&lt;body&gt;</code> element is created in the DOM, but
+before <code>DOMContentLoaded</code>.</li>
+<li><strong><code>@run-at document-end</code></strong>: Executes after
+or around the <code>DOMContentLoaded</code> event when the layout is
+fully parsed.</li>
+</ul>
+<p>To alter the page before the <code>DOMContentLoaded</code> event
+triggers, you must set <code>@run-at</code> to either
+<code>document-start</code> or <code>document-body</code>.</p>
+<h2 id="techniques-for-early-dom-modification">Techniques for Early DOM
+Modification</h2>
+<p>Because the entire HTML structure is not available at
+<code>document-start</code>, standard element selectors like
+<code>document.querySelector('#my-element')</code> may return
+<code>null</code>. You can overcome this using two techniques:</p>
+<h3 id="1-manipulating-root-elements">1. Manipulating Root Elements</h3>
+<p>Even at <code>document-start</code>, the <code>document</code> object
+and <code>document.documentElement</code> (<code>&lt;html&gt;</code>)
+are accessible. You can immediately append custom
+<code>&lt;style&gt;</code> elements or script tags to
+<code>document.documentElement</code> or <code>document.head</code>
+before any content renders. This is ideal for hiding elements
+immediately to prevent a Flash of Unstyled Content (FOUC).</p>
+<h3 id="2-using-mutationobserver">2. Using
+<code>MutationObserver</code></h3>
+<p>To target specific page elements as the browser streams and parses
+HTML, pair <code>@run-at document-start</code> with a
+<code>MutationObserver</code>.</p>
+<p>A <code>MutationObserver</code> watches the document for incoming
+nodes. As the browser constructs the DOM, the observer catches elements
+the instant they are added to the document tree. You can then alter,
+replace, or remove those elements instantly, well before the parsing
+phase completes and triggers <code>DOMContentLoaded</code>.</p>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<ul>
+<li><strong>Preventing FOUC:</strong> Inject custom CSS immediately so
+undesirable layout elements or popups never show on screen.</li>
+<li><strong>Script Interception:</strong> Modify or disable inline page
+scripts before the browser can run them.</li>
+<li><strong>Overriding Global APIs:</strong> Hijack or patch browser
+functions (like <code>fetch</code>, <code>XMLHttpRequest</code>, or
+<code>console.log</code>) before the target website's scripts load and
+reference them.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

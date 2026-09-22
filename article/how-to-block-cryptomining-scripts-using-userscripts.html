@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Block Cryptomining Scripts Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can effectively detect and block cryptomining scripts on malicious or compromised websites. By executing custom JavaScript inside your web browser, userscripts can monitor web activity, intercept network connections, and neutralize unauthoriz">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-block-cryptomining-scripts-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Block Cryptomining Scripts Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-block-cryptomining-scripts-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can effectively detect and block cryptomining scripts on malicious or compromised websites. By executing custom JavaScript inside your web browser, userscripts can monitor web activity, intercept network connections, and neutralize unauthoriz" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-block-cryptomining-scripts-using-userscripts">How to
+Block Cryptomining Scripts Using Userscripts</h1>
+<p>Userscripts can effectively detect and block cryptomining scripts on
+malicious or compromised websites. By executing custom JavaScript inside
+your web browser, userscripts can monitor web activity, intercept
+network connections, and neutralize unauthorized drive-by cryptomining
+before it drains your system's hardware resources. This article breaks
+down how userscripts identify cryptojacking attempts, their key
+advantages and limitations, and how to effectively deploy them for
+browser security.</p>
+<h2 id="how-userscripts-identify-and-block-cryptominers">How Userscripts
+Identify and Block Cryptominers</h2>
+<p>Cryptojacking scripts rely on specific browser APIs and network
+connections to perform heavy mathematical calculations and send mined
+data back to a command server. Userscripts block these activities using
+several direct mechanisms:</p>
+<ul>
+<li><strong>Domain and Script Source Filtering:</strong> Most web-based
+cryptominers load external JavaScript files from dedicated mining
+domains. Userscripts can inspect the Document Object Model (DOM) as the
+page loads and automatically block or remove <code>&lt;script&gt;</code>
+elements linked to known mining hosts.</li>
+<li><strong>Intercepting WebSockets and Network Requests:</strong>
+Mining scripts frequently use WebSockets or standard asynchronous
+requests (<code>fetch</code> and <code>XMLHttpRequest</code>) to
+maintain low-latency communication with mining pools. Userscripts can
+override the browser's default network constructors to inspect and block
+connection attempts aimed at mining endpoints.</li>
+<li><strong>Neutralizing Global Mining Objects:</strong> Commercial
+mining scripts often attach specific global functions or objects (such
+as <code>CoinHive</code> or <code>Client.Anonymous</code>) to the
+<code>window</code> object. A userscript configured to run at
+<code>document-start</code> can define dummy versions of these objects
+beforehand, preventing the actual miner from initializing.</li>
+<li><strong>Restricting Web Workers and WebAssembly:</strong> Efficient
+browser mining relies heavily on Web Workers for multithreading and
+WebAssembly (Wasm) for near-native execution speed. Userscripts can hook
+into the <code>Worker</code> and <code>WebAssembly</code> constructors
+to restrict unauthorized scripts from launching multi-threaded
+calculation processes.</li>
+</ul>
+<h2
+id="advantages-of-using-userscripts-for-cryptomining-defense">Advantages
+of Using Userscripts for Cryptomining Defense</h2>
+<p>Using custom userscripts through script managers like Tampermonkey,
+Violentmonkey, or Greasemonkey offers distinct benefits:</p>
+<ol type="1">
+<li><strong>Customizable Behavioral Rules:</strong> Unlike static domain
+blocklists, userscripts allow you to write dynamic logic to detect
+behavioral patterns associated with cryptomining, such as sudden spikes
+in Web Worker creation.</li>
+<li><strong>Lightweight Performance:</strong> Userscripts run directly
+within the existing browser script manager without requiring the memory
+overhead of a dedicated, standalone browser extension.</li>
+<li><strong>Early Execution Injection:</strong> By setting execution
+directives to <code>document-start</code>, userscripts inject defense
+mechanisms before the target webpage's inline scripts execute, stopping
+miners before they begin consuming CPU cycles.</li>
+</ol>
+<h2 id="limitations-of-userscript-based-protection">Limitations of
+Userscript-Based Protection</h2>
+<p>While effective, relying solely on userscripts for cryptomining
+defense has a few technical limitations:</p>
+<ul>
+<li><strong>Code Obfuscation:</strong> Malicious site operators
+frequently obfuscate their code and self-host scripts on continuously
+changing domain names, making pattern-based userscript matching harder
+to maintain.</li>
+<li><strong>Browser Sandbox Limits:</strong> Userscripts operate
+entirely within the browser sandbox and cannot block network requests at
+the system level or defend against cryptomining malware running outside
+the browser.</li>
+<li><strong>Manual Upkeep:</strong> Custom scripts require manual
+updates to stay effective against evolving cryptojacking techniques,
+whereas dedicated ad blockers update their filter lists
+automatically.</li>
+</ul>
+<h2 id="combining-userscripts-with-broader-protections">Combining
+Userscripts with Broader Protections</h2>
+<p>For maximum security against web-based cryptomining, userscripts work
+best as part of a defense-in-depth strategy:</p>
+<ul>
+<li>Use userscripts to handle specific site behaviors, block inline
+miners, or monitor WebSocket connections in real time.</li>
+<li>Pair userscripts with network-level blockers or extensions like
+uBlock Origin, which incorporate community-maintained blocklists (such
+as NoCoin) to filter out known mining domains before any scripts
+load.</li>
+<li>Keep your web browser updated so that built-in security features and
+process isolations remain fully active against resource abuse.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

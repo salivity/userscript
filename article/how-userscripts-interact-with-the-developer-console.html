@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Interact With the Developer Console - userscript</title>
+    <meta name="description" content="Userscripts interact with a browser's developer console primarily by sharing the same DOM, utilizing standard console logging methods, and operating within isolated execution contexts. While userscripts output logs directly to the console panel just like">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-interact-with-the-developer-console">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Interact With the Developer Console - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-interact-with-the-developer-console" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts interact with a browser's developer console primarily by sharing the same DOM, utilizing standard console logging methods, and operating within isolated execution contexts. While userscripts output logs directly to the console panel just like" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-interact-with-the-developer-console">How
+Userscripts Interact With the Developer Console</h1>
+<p>Userscripts interact with a browser's developer console primarily by
+sharing the same DOM, utilizing standard console logging methods, and
+operating within isolated execution contexts. While userscripts output
+logs directly to the console panel just like native page scripts, their
+variables and functions exist in a separate scope. Understanding this
+relationship requires looking at shared logging, execution context
+switching, object access, and debugging techniques within browser
+Developer Tools (DevTools).</p>
+<h2 id="console-logging-and-output">Console Logging and Output</h2>
+<p>Userscripts trigger standard JavaScript console methods such as
+<code>console.log()</code>, <code>console.warn()</code>,
+<code>console.error()</code>, and <code>console.table()</code>.</p>
+<p>When a userscript runs a logging command:</p>
+<ul>
+<li>The output appears directly in the main DevTools
+<strong>Console</strong> tab alongside the host page's messages.</li>
+<li>Most userscript managers (such as Tampermonkey or Violentmonkey)
+prefix the log output with the script's name or an extension identifier
+to help distinguish userscript logs from page logs.</li>
+<li>Log levels and filtering applied in the console settings affect
+userscript logs the same way they affect native page logs.</li>
+</ul>
+<h2 id="execution-contexts-isolated-worlds">Execution Contexts (Isolated
+Worlds)</h2>
+<p>Browsers run userscripts in an "isolated world"—a clean execution
+environment separate from the web page's main JavaScript context. This
+isolation prevents variable conflicts and security leaks between the web
+page and extension scripts.</p>
+<p>Because of this separation:</p>
+<ul>
+<li><strong>Default Console Scope:</strong> By default, typing a
+variable name into the DevTools command line evaluates it in the page's
+<code>top</code> execution context, not the userscript's context.</li>
+<li><strong>Context Switching:</strong> To inspect a userscript's live
+variables interactively, open the context dropdown in the DevTools
+console (usually labeled "top" by default) and select the specific frame
+or extension environment corresponding to your userscript manager.</li>
+</ul>
+<h2 id="accessing-page-objects-and-unsafewindow">Accessing Page Objects
+and <code>unsafeWindow</code></h2>
+<p>While userscripts share the web page's Document Object Model (DOM),
+their access to the page's global <code>window</code> object is
+restricted.</p>
+<ul>
+<li><strong>DOM Access:</strong> Any DOM modifications (like
+<code>document.querySelector</code> or element creation) performed by a
+userscript reflect immediately in the <strong>Elements</strong> tab of
+DevTools.</li>
+<li><strong>Page JavaScript Access:</strong> The userscript cannot
+natively read or modify global JavaScript variables defined by the web
+page.</li>
+<li><strong><code>unsafeWindow</code>:</strong> Userscript managers
+provide an <code>unsafeWindow</code> object to bridge this gap. Logging
+<code>unsafeWindow</code> to the console exposes the host page's actual
+global scope, allowing developers to inspect page-level variables
+directly from the userscript.</li>
+</ul>
+<h2 id="debugging-userscripts-in-devtools">Debugging Userscripts in
+DevTools</h2>
+<p>Userscripts can be debugged using the standard
+<strong>Sources</strong> (or <strong>Debugger</strong>) tab in
+DevTools:</p>
+<ol type="1">
+<li><strong>Breakpoints:</strong> You can locate the userscript file
+inside the Sources tree (often under <code>top</code> -&gt;
+<code>user-script:...</code> or under the extension's storage node) and
+set manual breakpoints.</li>
+<li><strong><code>debugger;</code> Statement:</strong> Placing a
+<code>debugger;</code> statement inside a userscript forces DevTools to
+pause execution at that exact line, provided the developer console is
+open.</li>
+<li><strong>Network Tab:</strong> Network requests made via standard
+<code>fetch()</code> or <code>XMLHttpRequest</code> inside a userscript
+show up in the DevTools <strong>Network</strong> tab. Requests made
+using specialized headers like <code>GM_xmlhttpRequest</code> may
+execute background tasks that appear under the extension background
+context rather than the current page tab.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

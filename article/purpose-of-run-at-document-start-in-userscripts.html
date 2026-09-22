@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purpose of @run-at document-start in Userscripts - userscript</title>
+    <meta name="description" content="The @run-at document-start directive in userscripts specifies that a script must execute as early as possible, before the browser parses the HTML document or loads any external sub-resources like images or scripts. Its primary purpose is to allow develop">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/purpose-of-run-at-document-start-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Purpose of @run-at document-start in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/purpose-of-run-at-document-start-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @run-at document-start directive in userscripts specifies that a script must execute as early as possible, before the browser parses the HTML document or loads any external sub-resources like images or scripts. Its primary purpose is to allow develop" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="purpose-of-run-at-document-start-in-userscripts">Purpose of
+@run-at document-start in Userscripts</h1>
+<p>The <code>@run-at document-start</code> directive in userscripts
+specifies that a script must execute as early as possible, before the
+browser parses the HTML document or loads any external sub-resources
+like images or scripts. Its primary purpose is to allow developers to
+modify a web page's environment, block unwanted scripts, or inject
+styles before any part of the page renders to the screen.</p>
+<h2 id="how-run-at-document-start-works">How
+<code>@run-at document-start</code> Works</h2>
+<p>When a browser loads a web page, it follows a specific sequence:
+fetching the HTML, parsing DOM nodes, loading external assets, and
+rendering the visual layout. Userscript managers (such as Tampermonkey
+or Violentmonkey) default to running scripts at
+<code>document-idle</code> or <code>document-end</code>, which occur
+after the DOM has already loaded.</p>
+<p>By setting <code>@run-at document-start</code>, you override this
+default behavior. The script manager injects and executes your script
+immediately after the document object is created, but before the browser
+parses any HTML tags or executes the website's native JavaScript.</p>
+<h2 id="primary-use-cases">Primary Use Cases</h2>
+<h3 id="1-preventing-flash-of-unstyled-content-fouc">1. Preventing Flash
+of Unstyled Content (FOUC)</h3>
+<p>If your script modifies page styling—such as applying a dark theme or
+hiding annoying elements—injecting styles late in the page load process
+causes the original site to "flash" briefly before your styles take
+effect. Using <code>document-start</code> ensures custom CSS rules are
+active before the visual elements are rendered.</p>
+<h3 id="2-overriding-native-apis-and-functions">2. Overriding Native
+APIs and Functions</h3>
+<p>To modify or intercept native JavaScript functions (such as
+<code>window.fetch</code>, <code>XMLHttpRequest</code>, or
+<code>console.log</code>), your code must run before the target website
+calls those functions. Applying <code>document-start</code> guarantees
+your modifications take effect before page scripts begin executing.</p>
+<h3 id="3-blocking-external-scripts-and-ad-networks">3. Blocking
+External Scripts and Ad Networks</h3>
+<p>By running before the document body parses, a userscript can redefine
+global objects, adjust document properties, or register early event
+listeners to block unwanted tracking scripts or advertisements from
+loading.</p>
+<h3 id="4-early-page-redirects">4. Early Page Redirects</h3>
+<p>If your script automatically redirects a user from one URL to another
+(for example, bypassing a landing page), executing at
+<code>document-start</code> avoids wasting bandwidth loading assets on
+the original page.</p>
+<h2 id="critical-technical-considerations">Critical Technical
+Considerations</h2>
+<p>Because the script runs before the DOM is built, attempting to access
+or manipulate HTML elements directly will fail.</p>
+<ul>
+<li><strong>DOM Elements Are Unavailable:</strong> Objects like
+<code>document.body</code> or <code>document.head</code> are typically
+<code>null</code> when the script begins.</li>
+<li><strong>Adding Styles Early:</strong> To insert custom CSS at
+<code>document-start</code>, target
+<code>document.documentElement</code> (the <code>&lt;html&gt;</code>
+element) rather than <code>document.head</code>.</li>
+<li><strong>Handling Late Execution:</strong> If your script needs to
+modify specific HTML elements after setting up early hooks, use a
+<code>MutationObserver</code> or listen for the
+<code>DOMContentLoaded</code> event within your script.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

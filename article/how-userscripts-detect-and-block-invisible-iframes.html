@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Detect and Block Invisible Iframes - userscript</title>
+    <meta name="description" content="Adware and malicious scripts frequently inject invisible <iframe> elements into web pages to secretly generate fraudulent ad impressions, execute clickjacking attacks, or track users without their consent. Userscripts combat these threats by leveraging b">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-detect-and-block-invisible-iframes">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Detect and Block Invisible Iframes - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-detect-and-block-invisible-iframes" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Adware and malicious scripts frequently inject invisible <iframe> elements into web pages to secretly generate fraudulent ad impressions, execute clickjacking attacks, or track users without their consent. Userscripts combat these threats by leveraging b" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-detect-and-block-invisible-iframes">How
+Userscripts Detect and Block Invisible Iframes</h1>
+<p>Adware and malicious scripts frequently inject invisible
+<code>&lt;iframe&gt;</code> elements into web pages to secretly generate
+fraudulent ad impressions, execute clickjacking attacks, or track users
+without their consent. Userscripts combat these threats by leveraging
+browser extension APIs and the Document Object Model (DOM) to
+continuously scan web pages for suspicious hidden frames, intercept
+creation attempts before execution, and neutralize the malicious
+code.</p>
+<h2 id="how-userscripts-identify-malicious-invisible-iframes">How
+Userscripts Identify Malicious Invisible Iframes</h2>
+<p>Adware developers use various tricks to hide iframes from human eyes
+while keeping them functional for the browser. Userscripts detect these
+hidden elements through specific attributes and behavior patterns.</p>
+<h3 id="1-detecting-hidden-css-and-styling-attributes">1. Detecting
+Hidden CSS and Styling Attributes</h3>
+<p>Invisible iframes are typically styled to occupy zero visual space.
+Userscripts inspect the DOM for <code>&lt;iframe&gt;</code> tags
+containing suspicious inline styles or CSS properties, such as:</p>
+<ul>
+<li><strong>Zero Dimensions:</strong> <code>width: 0px</code>,
+<code>height: 0px</code>, <code>width: 1px</code>, or
+<code>height: 1px</code>.</li>
+<li><strong>Visibility Toggles:</strong> <code>display: none</code> or
+<code>visibility: hidden</code>.</li>
+<li><strong>Opacity Suppression:</strong> <code>opacity: 0</code> or
+<code>filter: alpha(opacity=0)</code>.</li>
+<li><strong>Off-Screen Positioning:</strong> Absolute positioning with
+extreme negative offsets, like <code>left: -9999px</code> or
+<code>top: -9999px</code>.</li>
+<li><strong>Z-Index Manipulation:</strong> Sending the iframe behind the
+main page content using negative <code>z-index</code> values.</li>
+</ul>
+<h3 id="2-monitoring-dynamic-dom-mutations">2. Monitoring Dynamic DOM
+Mutations</h3>
+<p>Adware often injects hidden iframes dynamically after the page loads
+to bypass static ad blockers. Userscripts use the standard JavaScript
+<code>MutationObserver</code> API to monitor DOM changes in real
+time.</p>
+<p>Whenever a new node is added to the page, the
+<code>MutationObserver</code> callback fires, allowing the userscript to
+immediately evaluate if the newly added element is an
+<code>&lt;iframe&gt;</code> and inspect its properties before it can
+complete its network requests or scripts.</p>
+<h3 id="3-analyzing-source-urls-and-attributes">3. Analyzing Source URLs
+and Attributes</h3>
+<p>Userscripts cross-reference the <code>src</code> attribute of
+detected iframes against lists of known ad servers, tracking domains, or
+malicious URLs. Additionally, iframes lacking a valid <code>src</code>
+or those dynamically writing code via <code>srcdoc</code> or
+<code>javascript:</code> URIs are flagged for closer inspection.</p>
+<hr />
+<h2
+id="techniques-userscripts-use-to-neutralize-hidden-iframes">Techniques
+Userscripts Use to Neutralize Hidden Iframes</h2>
+<p>Once a userscript identifies an unauthorized or invisible iframe, it
+employs several strategies to neutralize the threat.</p>
+<h3 id="1-dom-removal">1. DOM Removal</h3>
+<p>The simplest method is immediate removal. Upon detection, the
+userscript deletes the frame element directly from the DOM tree.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  mutations<span class="op">.</span><span class="fu">forEach</span>((mutation) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    mutation<span class="op">.</span><span class="at">addedNodes</span><span class="op">.</span><span class="fu">forEach</span>((node) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (node<span class="op">.</span><span class="at">tagName</span> <span class="op">===</span> <span class="st">&#39;IFRAME&#39;</span> <span class="op">&amp;&amp;</span> <span class="fu">isSuspicious</span>(node)) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        node<span class="op">.</span><span class="fu">remove</span>()<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<h3 id="2-overriding-documentcreateelement">2. Overriding
+<code>document.createElement</code></h3>
+<p>To prevent the iframe from ever entering the DOM, advanced
+userscripts intercept the native JavaScript methods used to create
+elements. By wrapping <code>document.createElement</code>, the script
+can inspect attempts to build <code>&lt;iframe&gt;</code> elements and
+return a dummy object or null instead.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalCreateElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span> <span class="op">=</span> <span class="kw">function</span> (tagName<span class="op">,</span> options) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (tagName<span class="op">.</span><span class="fu">toLowerCase</span>() <span class="op">===</span> <span class="st">&#39;iframe&#39;</span>) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Intercept and return a modified or benign element</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> dummyIframe <span class="op">=</span> originalCreateElement<span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> <span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dummyIframe<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> originalCreateElement<span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> tagName<span class="op">,</span> options)<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="3-neutralizing-the-frame-payload">3. Neutralizing the Frame
+Payload</h3>
+<p>If removing the iframe disrupts main page functionality, userscripts
+can neutralize the frame's contents instead of deleting the tag:</p>
+<ul>
+<li><strong>Source Redirection:</strong> Overwriting the
+<code>src</code> attribute with <code>about:blank</code> to cancel the
+malicious network request.</li>
+<li><strong>Sandbox Enforcement:</strong> Adding a restrictive
+<code>sandbox</code> attribute (e.g., <code>sandbox=""</code>) to the
+iframe to disable JavaScript execution, forms, and popup permissions
+inside the hidden frame.</li>
+<li><strong>Property Freezing:</strong> Using
+<code>Object.defineProperty</code> to block adware scripts from
+dynamically changing the iframe's <code>src</code> or style properties
+after creation.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

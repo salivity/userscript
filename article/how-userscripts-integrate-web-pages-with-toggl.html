@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Integrate Web Pages with Toggl - userscript</title>
+    <meta name="description" content="Userscripts enhance web productivity by injecting custom JavaScript into specific web pages to automate tasks and bridge third-party tools. When integrated with time-tracking platforms like Toggl, userscripts scrape data such as task names and project ID">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-integrate-web-pages-with-toggl">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Integrate Web Pages with Toggl - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-integrate-web-pages-with-toggl" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts enhance web productivity by injecting custom JavaScript into specific web pages to automate tasks and bridge third-party tools. When integrated with time-tracking platforms like Toggl, userscripts scrape data such as task names and project ID" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-integrate-web-pages-with-toggl">How Userscripts
+Integrate Web Pages with Toggl</h1>
+<p>Userscripts enhance web productivity by injecting custom JavaScript
+into specific web pages to automate tasks and bridge third-party tools.
+When integrated with time-tracking platforms like Toggl, userscripts
+scrape data such as task names and project IDs directly from the
+Document Object Model (DOM) of web applications like GitHub, Jira, or
+custom dashboards. They then insert dynamic UI elements, like a custom
+"Start Timer" button, which communicates directly with Toggl’s REST API
+or browser extension API to start, stop, and log time entries without
+requiring users to switch tabs.</p>
+<h2 id="core-mechanisms-of-userscript-integration">Core Mechanisms of
+Userscript Integration</h2>
+<p>Userscripts operate through browser extensions like Tampermonkey or
+Violentmonkey. To connect a web page to Toggl, a userscript relies on
+three primary components:</p>
+<h3 id="1-dom-scraping-and-data-extraction">1. DOM Scraping and Data
+Extraction</h3>
+<p>Before sending data to Toggl, the script must identify the relevant
+context on the current web page.</p>
+<ul>
+<li><strong>Target Identification:</strong> Using CSS selectors or XPath
+expressions, the script locates specific HTML elements containing task
+names, ticket IDs, or project tags.</li>
+<li><strong>Data Parsing:</strong> The script extracts the text content
+(e.g., "Fix issue #102") and formats it into standard strings suitable
+for Toggl's data structure.</li>
+</ul>
+<h3 id="2-ui-injection">2. UI Injection</h3>
+<p>To create a seamless workflow, the userscript modifies the existing
+web page's user interface.</p>
+<ul>
+<li><strong>Element Creation:</strong> The script creates standard HTML
+elements, such as a <code>&lt;button&gt;</code> or custom SVG icon
+styled to match either the host web page or Toggl's design.</li>
+<li><strong>Placement:</strong> The button is appended next to task
+headers, action menus, or input fields using standard DOM insertion
+methods (<code>appendChild</code>, <code>insertBefore</code>).</li>
+</ul>
+<h3 id="3-api-communication">3. API Communication</h3>
+<p>Once the user interacts with the injected UI element, the script
+communicates with Toggl using one of two methods:</p>
+<ul>
+<li><p><strong>Direct REST API Calls:</strong> The userscript sends HTTP
+requests directly to Toggl's API endpoint
+(<code>https://api.track.toggl.com/api/v9/me/time_entries</code>).</p>
+<ul>
+<li>The user provides their Toggl API token, which is stored securely in
+the userscript manager's storage via <code>GM_setValue</code>.</li>
+<li>The script uses <code>GM_xmlhttpRequest</code> or standard
+JavaScript <code>fetch</code> to handle cross-origin requests (CORS) and
+transmit payload data containing the task description, project ID, and
+tags.</li>
+</ul></li>
+<li><p><strong>Browser Extension Messaging:</strong> If the official
+Toggl Track browser extension is installed, userscripts can fire
+standard DOM events or window messages (<code>window.postMessage</code>)
+that the official extension listens for, triggering the official timer
+overlay without needing raw API keys in the userscript code.</p></li>
+</ul>
+<h2 id="standard-execution-workflow">Standard Execution Workflow</h2>
+<ol type="1">
+<li><strong>Page Load:</strong> The userscript manager detects a URL
+match based on the script's <code>@match</code> rules.</li>
+<li><strong>DOM Mutation Watching:</strong> Using
+<code>MutationObserver</code>, the script listens for changes in dynamic
+web applications (like single-page apps) to ensure injected buttons
+remain present even when navigating between pages without a full
+reload.</li>
+<li><strong>Button Generation:</strong> The script appends the tracking
+button to the DOM.</li>
+<li><strong>Trigger Event:</strong> Clicking the button triggers an
+asynchronous function that gathers task parameters.</li>
+<li><strong>State Update:</strong> The script toggles the button's
+visual appearance (e.g., changing color from grey to green) to indicate
+an active running timer, updating dynamically based on response headers
+from Toggl.</li>
+</ol>
+<h2 id="advantages-of-using-userscripts-for-time-tracking">Advantages of
+Using Userscripts for Time Tracking</h2>
+<ul>
+<li><strong>Custom Support for Internal Tools:</strong> While official
+browser extensions cover mainstream software, userscripts allow teams to
+add Toggl functionality to proprietary, internal company
+dashboards.</li>
+<li><strong>Automated Data Formatting:</strong> Scripts can enforce
+strict naming conventions by combining elements (such as
+<code>[Project Code] + Task Title</code>) before submitting the entry to
+Toggl.</li>
+<li><strong>Lightweight Footprint:</strong> Userscripts run only on
+defined URLs, reducing overall browser memory consumption compared to
+running multiple standalone extension integrations.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

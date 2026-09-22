@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Modify Browser Autocomplete Suggestions? - userscript</title>
+    <meta name="description" content="Userscripts cannot directly modify, style, or manipulate the browser's native autocomplete UI because those suggestions are rendered in a secure layer outside the page's Document Object Model (DOM). However, userscripts can control form behavior by disab">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-modify-browser-autocomplete-suggestions">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Modify Browser Autocomplete Suggestions? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-modify-browser-autocomplete-suggestions" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts cannot directly modify, style, or manipulate the browser's native autocomplete UI because those suggestions are rendered in a secure layer outside the page's Document Object Model (DOM). However, userscripts can control form behavior by disab" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-modify-browser-autocomplete-suggestions">Can
+Userscripts Modify Browser Autocomplete Suggestions?</h1>
+<p>Userscripts cannot directly modify, style, or manipulate the
+browser's native autocomplete UI because those suggestions are rendered
+in a secure layer outside the page's Document Object Model (DOM).
+However, userscripts can control form behavior by disabling native
+autocomplete entirely, programmatically filling inputs, or replacing
+default suggestions with custom, script-generated dropdown menus. This
+guide explains the security boundaries of native autocomplete and the
+practical workarounds available to script developers.</p>
+<h2 id="why-native-autocomplete-is-restricted">Why Native Autocomplete
+Is Restricted</h2>
+<p>Modern web browsers separate the web page's DOM from the browser's
+native user interface for security and privacy reasons. Native
+autocomplete popups—such as saved addresses, passwords, credit cards,
+and search histories—are part of the browser's internal UI (often
+rendered via privileged shadow DOM or desktop-level UI overlays).</p>
+<p>Because userscripts operate within the web page context (or an
+isolated page-level sandbox), they lack the privileges required to
+access or modify:</p>
+<ul>
+<li>The visual layout, font, or colors of the native dropdown menu.</li>
+<li>The specific items listed inside the native autocomplete
+suggestions.</li>
+<li>The filtering algorithms the browser uses to display saved
+entries.</li>
+</ul>
+<p>Preventing scripts from reading native autocomplete lists protects
+sensitive personal data from malicious scripts or cross-site scripting
+(XSS) attacks.</p>
+<h2 id="how-userscripts-can-control-form-autocomplete">How Userscripts
+Can Control Form Autocomplete</h2>
+<p>While direct modification of native menus is impossible, userscripts
+can alter input fields to bypass or replace native behavior
+entirely.</p>
+<h3 id="1-disabling-native-autocomplete">1. Disabling Native
+Autocomplete</h3>
+<p>To prevent the browser from showing its default dropdown, a
+userscript can dynamically change the <code>autocomplete</code>
+attribute of target form inputs:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> input <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#target-input&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>input<span class="op">.</span><span class="fu">setAttribute</span>(<span class="st">&#39;autocomplete&#39;</span><span class="op">,</span> <span class="st">&#39;off&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>For stubborn browsers that ignore <code>autocomplete="off"</code>,
+setting <code>autocomplete="new-password"</code> or using unique string
+values (like <code>autocomplete="disabled-by-script"</code>) often
+forces the browser to suppress its native UI.</p>
+<h3 id="2-creating-custom-autocomplete-dropdowns">2. Creating Custom
+Autocomplete Dropdowns</h3>
+<p>If you need customized suggestions, the standard approach is to
+disable native autocomplete and build a custom HTML/CSS dropdown:</p>
+<ol type="1">
+<li><strong>Suppress Native UI:</strong> Set
+<code>autocomplete="off"</code> on the <code>&lt;input&gt;</code>
+element.</li>
+<li><strong>Listen for Input Events:</strong> Attach an
+<code>input</code> event listener to monitor user typing.</li>
+<li><strong>Inject Custom Markup:</strong> Dynamically create a
+<code>&lt;div&gt;</code> styled to look like a dropdown positioned
+directly beneath the input field.</li>
+<li><strong>Populate and Handle Selection:</strong> Insert your own
+suggestion items into the <code>&lt;div&gt;</code> and update the
+input's value when a user clicks a custom suggestion.</li>
+</ol>
+<h3 id="3-pre-filling-and-programmatic-injection">3. Pre-Filling and
+Programmatic Injection</h3>
+<p>If your goal is simply to fill fields with specific values
+automatically, you do not need an interactive dropdown. A userscript can
+listen for page load or focus events and assign values directly:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> usernameField <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#username&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (usernameField) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    usernameField<span class="op">.</span><span class="at">value</span> <span class="op">=</span> <span class="st">&#39;MyCustomValue&#39;</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    usernameField<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">Event</span>(<span class="st">&#39;input&#39;</span><span class="op">,</span> { <span class="dt">bubbles</span><span class="op">:</span> <span class="kw">true</span> }))<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Triggering the <code>input</code> and <code>change</code> events
+ensures that modern JavaScript frameworks (like React, Vue, or Angular)
+detect the updated value.</p>
+<h2 id="summary">Summary</h2>
+<p>Userscripts cannot alter native browser autocomplete popups due to
+browser security models that isolate internal UI elements from web page
+scripts. To customize the autocomplete experience, developers must
+disable the native autocomplete attribute on form fields and construct
+custom, DOM-based suggestion menus using JavaScript and CSS.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

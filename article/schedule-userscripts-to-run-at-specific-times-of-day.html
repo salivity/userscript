@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Userscripts to Run at Specific Times of Day - userscript</title>
+    <meta name="description" content="Userscripts cannot be scheduled using standard userscript manager settings like @match or @include, but they can easily be configured to run only during specific times of the day by adding a time-check directly into the script's JavaScript code. By lever">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/schedule-userscripts-to-run-at-specific-times-of-day">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Schedule Userscripts to Run at Specific Times of Day - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/schedule-userscripts-to-run-at-specific-times-of-day" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts cannot be scheduled using standard userscript manager settings like @match or @include, but they can easily be configured to run only during specific times of the day by adding a time-check directly into the script's JavaScript code. By lever" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="schedule-userscripts-to-run-at-specific-times-of-day">Schedule
+Userscripts to Run at Specific Times of Day</h1>
+<p>Userscripts cannot be scheduled using standard userscript manager
+settings like <code>@match</code> or <code>@include</code>, but they can
+easily be configured to run only during specific times of the day by
+adding a time-check directly into the script's JavaScript code. By
+leveraging native JavaScript <code>Date</code> functions, you can
+restrict a script's execution to precise time windows, such as standard
+working hours or late-night sessions. This guide explains how userscript
+execution timing works and provides a simple code implementation to
+control when your scripts run.</p>
+<h2 id="why-userscript-managers-lack-native-time-triggers">Why
+Userscript Managers Lack Native Time Triggers</h2>
+<p>Popular userscript managers like Tampermonkey, Violentmonkey, and
+Greasemonkey rely on metadata block headers (such as
+<code>@match</code>, <code>@include</code>, and <code>@run-at</code>) to
+determine <em>where</em> and <em>when during page load</em> a script
+should execute.</p>
+<p>However, these metadata rules only inspect URLs and DOM loading
+states; they do not evaluate temporal conditions like the local time or
+day of the week. Because of this, time-based filtering must be handled
+programmatically inside the script itself.</p>
+<h2 id="how-to-restrict-script-execution-by-time">How to Restrict Script
+Execution by Time</h2>
+<p>To make a userscript active only during a specific time frame, insert
+a time condition at the very top of your main function or execution
+block. If the current time falls outside your specified range, the
+script can exit immediately using a <code>return</code> statement.</p>
+<h3 id="basic-time-check-example">Basic Time-Check Example</h3>
+<p>Here is a simple pattern to allow a script to run only between 9:00
+AM and 5:00 PM (09:00 to 17:00 in 24-hour time):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Time-Restricted Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/exec-code==</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use strict&#39;</span><span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> now <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> currentHour <span class="op">=</span> now<span class="op">.</span><span class="fu">getHours</span>()<span class="op">;</span> <span class="co">// Returns 0-23</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> START_HOUR <span class="op">=</span> <span class="dv">9</span><span class="op">;</span>  <span class="co">// 9:00 AM</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> END_HOUR <span class="op">=</span> <span class="dv">17</span><span class="op">;</span>   <span class="co">// 5:00 PM</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check if current time is outside the target window</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (currentHour <span class="op">&lt;</span> START_HOUR <span class="op">||</span> currentHour <span class="op">&gt;=</span> END_HOUR) {</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Userscript inactive: Outside specified execution hours.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span> <span class="co">// Stop execution</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Main script logic goes below</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Userscript is running within the allowed time frame.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="advanced-time-filters">Advanced Time Filters</h2>
+<p>You can expand the conditional logic to accommodate more specific
+constraints, such as operating only on weekdays or during precise minute
+intervals.</p>
+<h3 id="restricting-to-weekdays-only">Restricting to Weekdays Only</h3>
+<p>Use the <code>.getDay()</code> method to restrict execution to Monday
+through Friday (where Sunday is <code>0</code> and Saturday is
+<code>6</code>):</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> dayOfWeek <span class="op">=</span> now<span class="op">.</span><span class="fu">getDay</span>()<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> isWeekend <span class="op">=</span> (dayOfWeek <span class="op">===</span> <span class="dv">0</span> <span class="op">||</span> dayOfWeek <span class="op">===</span> <span class="dv">6</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (isWeekend) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">;</span> <span class="co">// Do not run on weekends</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="checking-specific-minutes">Checking Specific Minutes</h3>
+<p>If you need a window that doesn't start or end on an exact hour
+(e.g., 8:30 AM to 4:15 PM), convert the time into total minutes past
+midnight:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> now <span class="op">=</span> <span class="kw">new</span> <span class="bu">Date</span>()<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> currentMinutes <span class="op">=</span> (now<span class="op">.</span><span class="fu">getHours</span>() <span class="op">*</span> <span class="dv">60</span>) <span class="op">+</span> now<span class="op">.</span><span class="fu">getMinutes</span>()<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> startMinutes <span class="op">=</span> (<span class="dv">8</span> <span class="op">*</span> <span class="dv">60</span>) <span class="op">+</span> <span class="dv">30</span><span class="op">;</span>  <span class="co">// 8:30 AM = 510 minutes</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> endMinutes <span class="op">=</span> (<span class="dv">16</span> <span class="op">*</span> <span class="dv">60</span>) <span class="op">+</span> <span class="dv">15</span><span class="op">;</span>   <span class="co">// 4:15 PM = 975 minutes</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (currentMinutes <span class="op">&lt;</span> startMinutes <span class="op">||</span> currentMinutes <span class="op">&gt;</span> endMinutes) {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">;</span> <span class="co">// Exit if outside 8:30 AM - 4:15 PM</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="summary">Summary</h2>
+<p>While browser extensions do not offer built-in schedule settings for
+userscripts, adding a few lines of native JavaScript at the start of
+your script effectively controls when it operates. If the condition
+fails, the script exits instantly without affecting page performance or
+modifying web content.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

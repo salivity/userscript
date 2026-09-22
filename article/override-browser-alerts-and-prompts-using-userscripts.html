@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Override Browser Alerts and Prompts Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can successfully modify, suppress, or completely replace standard browser dialogs like alert(), prompt(), and confirm(). Because these native dialogs are methods attached to the global window object in JavaScript, a userscript can alter their">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/override-browser-alerts-and-prompts-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Override Browser Alerts and Prompts Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/override-browser-alerts-and-prompts-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can successfully modify, suppress, or completely replace standard browser dialogs like alert(), prompt(), and confirm(). Because these native dialogs are methods attached to the global window object in JavaScript, a userscript can alter their" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="override-browser-alerts-and-prompts-using-userscripts">Override
+Browser Alerts and Prompts Using Userscripts</h1>
+<p>Userscripts can successfully modify, suppress, or completely replace
+standard browser dialogs like <code>alert()</code>,
+<code>prompt()</code>, and <code>confirm()</code>. Because these native
+dialogs are methods attached to the global <code>window</code> object in
+JavaScript, a userscript can alter their default behavior by redefining
+the corresponding properties. This article explains how userscripts hook
+into these functions, the technical methods used to customize or silence
+them, and key edge cases to consider when implementing these
+modifications.</p>
+<h2 id="understanding-the-mechanism">Understanding the Mechanism</h2>
+<p>Browser dialogs are exposed through three primary functions on the
+global scope:</p>
+<ul>
+<li><code>window.alert()</code>: Displays a message box with an "OK"
+button.</li>
+<li><code>window.confirm()</code>: Displays a message box with "OK" and
+"Cancel" buttons, returning <code>true</code> or
+<code>false</code>.</li>
+<li><code>window.prompt()</code>: Displays a message box requesting text
+input, returning the entered string or <code>null</code>.</li>
+</ul>
+<p>Because these methods are mutable properties of the
+<code>window</code> object, JavaScript allows developers to overwrite
+them with custom functions.</p>
+<h2 id="how-userscripts-override-dialogs">How Userscripts Override
+Dialogs</h2>
+<p>Userscripts run within extensions like Tampermonkey, Violentmonkey,
+or Greasemonkey. Depending on the script's execution context, you must
+target either the standard <code>window</code> object or the page's
+original scope (<code>unsafeWindow</code>).</p>
+<h3 id="1-simple-overrides-no-sandbox--grant-none">1. Simple Overrides
+(No Sandbox / Grant None)</h3>
+<p>If your userscript includes <code>@grant none</code>, it runs
+directly in the page context. You can reassign the functions
+directly:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Silence all alerts</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">alert</span> <span class="op">=</span> <span class="kw">function</span>(message) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Suppressed alert:&quot;</span><span class="op">,</span> message)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Automatically accept all confirmation dialogs</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">confirm</span> <span class="op">=</span> <span class="kw">function</span>(message) {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Auto-confirmed dialog:&quot;</span><span class="op">,</span> message)<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span> </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">// Provide a default answer to all prompts</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="at">prompt</span> <span class="op">=</span> <span class="kw">function</span>(message<span class="op">,</span> defaultValue) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Auto-filled prompt:&quot;</span><span class="op">,</span> message)<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> defaultValue <span class="op">||</span> <span class="st">&quot;Default Response&quot;</span><span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="2-sandbox-overrides-using-unsafewindow">2. Sandbox Overrides
+using <code>unsafeWindow</code></h3>
+<p>If your script uses elevated grants (such as
+<code>@grant GM_getValue</code>), it operates within a sandboxed
+context. Modifying <code>window</code> in a sandboxed script will not
+affect the web page's scripts. To bypass this, target
+<code>unsafeWindow</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Overriding via unsafeWindow in a sandboxed environment</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>unsafeWindow<span class="op">.</span><span class="at">alert</span> <span class="op">=</span> <span class="kw">function</span>(msg) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Blocked site alert:&quot;</span><span class="op">,</span> msg)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<ul>
+<li><strong>Suppressing Annoying Popups:</strong> Web applications
+sometimes trigger repeated alerts. Redefining <code>window.alert</code>
+to a no-op function (<code>function() {}</code>) completely silences
+them.</li>
+<li><strong>Automating Workflows:</strong> By forcing
+<code>window.confirm</code> to always return <code>true</code> or
+<code>false</code>, userscripts can automate repetitive modal
+interactions without manual clicks.</li>
+<li><strong>Custom UI Replacement:</strong> Developers can intercept
+call parameters from <code>alert()</code> or <code>confirm()</code> and
+display custom, styled HTML modals instead of the browser's native
+blocking dialogs.</li>
+</ul>
+<h2 id="critical-considerations-and-limitations">Critical Considerations
+and Limitations</h2>
+<h3 id="execution-timing-run-at">Execution Timing
+(<code>@run-at</code>)</h3>
+<p>To ensure a userscript overrides dialogs before the web page executes
+its own code, set the header directive to run early:</p>
+<pre class="text"><code>// ==UserScript==
+// @run-at document-start
+// ==UserScript==</code></pre>
+<p>If the web page defines its own references to
+<code>window.alert</code> before your userscript runs, the page may
+retain access to the native function.</p>
+<h3 id="inline-scripts-and-caching">Inline Scripts and Caching</h3>
+<p>If a web page caches the native dialog before your script runs (e.g.,
+<code>const nativeAlert = window.alert</code>), overriding
+<code>window.alert</code> later will not prevent the cached function
+from executing. Running at <code>document-start</code> mitigates this
+issue.</p>
+<h3 id="iframes">iFrames</h3>
+<p>Overriding functions on the top-level <code>window</code> object does
+not automatically affect <code>&lt;iframe&gt;</code> elements hosted on
+the page. If a website triggers alerts from within an iframe, the
+userscript must target the iframe's <code>contentWindow</code> or be
+configured to run on all subframes using the <code>@subframe</code>
+header directive.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Modify Z-Index to Remove Popups - userscript</title>
+    <meta name="description" content="Userscripts bypass intrusive modal overlays and popups by programmatically modifying the CSS z-index property and related rendering rules of webpage elements. Modal overlays typically rely on high z-index values combined with absolute or fixed positionin">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-modify-z-index-to-remove-popups">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Modify Z-Index to Remove Popups - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-modify-z-index-to-remove-popups" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts bypass intrusive modal overlays and popups by programmatically modifying the CSS z-index property and related rendering rules of webpage elements. Modal overlays typically rely on high z-index values combined with absolute or fixed positionin" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-modify-z-index-to-remove-popups">How Userscripts
+Modify Z-Index to Remove Popups</h1>
+<p>Userscripts bypass intrusive modal overlays and popups by
+programmatically modifying the CSS <code>z-index</code> property and
+related rendering rules of webpage elements. Modal overlays typically
+rely on high <code>z-index</code> values combined with absolute or fixed
+positioning to sit on top of primary site content and block interaction.
+By executing browser-side JavaScript via extensions like Tampermonkey or
+Violentmonkey, userscripts can lower the stacking layer of the overlay,
+elevate the stacking layer of the main content, or disable the overlay
+entirely, thereby restoring normal browsing and scrolling
+capabilities.</p>
+<h3 id="understanding-css-stacking-and-modal-overlays">Understanding CSS
+Stacking and Modal Overlays</h3>
+<p>Web browsers render elements in a visual hierarchy called a stacking
+context. The CSS <code>z-index</code> property determines where an
+element sits along the depth axis. Modal popups and paywall backdrops
+typically set extremely high <code>z-index</code> values—such as
+<code>9999</code> or <code>2147483647</code> (the maximum 32-bit
+integer)—to ensure they cover all underlying page content.</p>
+<h3 id="lowering-or-resetting-the-overlay-z-index">Lowering or Resetting
+the Overlay Z-Index</h3>
+<p>The most direct method a userscript uses to bypass an overlay is
+targeting the element via the Document Object Model (DOM) and reducing
+its <code>z-index</code>.</p>
+<p>When a script locates the overlay container, it alters the element's
+inline style directly:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> overlay <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.modal-overlay&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (overlay) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    overlay<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">zIndex</span> <span class="op">=</span> <span class="st">&#39;-9999&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    overlay<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">pointerEvents</span> <span class="op">=</span> <span class="st">&#39;none&#39;</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>By assigning a negative <code>z-index</code>, the script forces the
+browser to render the overlay underneath the page content layer. Setting
+<code>pointer-events: none</code> ensures that clicks pass straight
+through the obscured element to the content beneath.</p>
+<h3 id="elevating-main-content-z-index">Elevating Main Content
+Z-Index</h3>
+<p>If an overlay cannot easily be removed without breaking page
+functionality, userscripts take the opposite approach by promoting the
+actual content layer above the overlay.</p>
+<p>To elevate an element along the z-axis, it must have a CSS
+<code>position</code> value other than <code>static</code> (such as
+<code>relative</code>, <code>absolute</code>, or <code>fixed</code>).
+The script sets both the positioning and a higher
+<code>z-index</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mainContent <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;main&#39;</span>) <span class="op">||</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#content&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (mainContent) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    mainContent<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">position</span> <span class="op">=</span> <span class="st">&#39;relative&#39;</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    mainContent<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">zIndex</span> <span class="op">=</span> <span class="st">&#39;999999&#39;</span><span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This forces the browser rendering engine to draw the main content
+above the dimming backdrop or popup container, making the obstruction
+ineffective.</p>
+<h3 id="restoring-scroll-behavior">Restoring Scroll Behavior</h3>
+<p>Modal popups frequently lock page scrolling by applying CSS rules to
+the <code>&lt;body&gt;</code> or <code>&lt;html&gt;</code> tags, such as
+<code>overflow: hidden</code>. Even if the <code>z-index</code> is
+successfully manipulated, the page remains unscrollable unless this
+restriction is lifted.</p>
+<p>Userscripts clear these scroll locks alongside z-index
+adjustments:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">overflow</span> <span class="op">=</span> <span class="st">&#39;auto&#39;</span><span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span><span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">overflow</span> <span class="op">=</span> <span class="st">&#39;auto&#39;</span><span class="op">;</span></span></code></pre></div>
+<h3 id="handling-dynamic-popups-with-mutationobserver">Handling Dynamic
+Popups with MutationObserver</h3>
+<p>Many modern websites load popups asynchronously after user
+interaction or on a time delay. To manipulate the <code>z-index</code>
+of elements that do not exist when the page initially loads, userscripts
+utilize the <code>MutationObserver</code> API.</p>
+<p>A <code>MutationObserver</code> monitors changes to the DOM tree and
+automatically adjusts CSS properties whenever new modal nodes are
+inserted into the document:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> popup <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.dynamic-popup&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (popup) {</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        popup<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">zIndex</span> <span class="op">=</span> <span class="st">&#39;-1&#39;</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">overflow</span> <span class="op">=</span> <span class="st">&#39;auto&#39;</span><span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<p>Through these targeted DOM and CSS manipulations, userscripts provide
+an automated, precise mechanism to reorder page layers and neutralize
+web overlays.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

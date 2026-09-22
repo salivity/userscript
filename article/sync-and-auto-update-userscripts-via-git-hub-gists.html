@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync and Auto-Update Userscripts via GitHub Gists - userscript</title>
+    <meta name="description" content="Yes, userscripts can be automatically synced and updated using GitHub Gists by leveraging the metadata header within the script and the built-in features of popular browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey. By storing the scri">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/sync-and-auto-update-userscripts-via-git-hub-gists">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sync and Auto-Update Userscripts via GitHub Gists - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/sync-and-auto-update-userscripts-via-git-hub-gists" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can be automatically synced and updated using GitHub Gists by leveraging the metadata header within the script and the built-in features of popular browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey. By storing the scri" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="sync-and-auto-update-userscripts-via-github-gists">Sync and
+Auto-Update Userscripts via GitHub Gists</h1>
+<p>Yes, userscripts can be automatically synced and updated using GitHub
+Gists by leveraging the metadata header within the script and the
+built-in features of popular browser extensions like Tampermonkey,
+Violentmonkey, or Greasemonkey. By storing the script code in a Gist and
+referencing its raw file URL, you can distribute seamless background
+updates to any browser running the script manager.</p>
+<h2 id="how-github-gist-syncing-works">How GitHub Gist Syncing
+Works</h2>
+<p>Userscript managers rely on specific metadata blocks at the top of a
+script to check for newer code versions. To set up automatic updates via
+GitHub Gists, you include the <code>@updateURL</code> and
+<code>@downloadURL</code> metadata headers pointing directly to the raw
+file link of your Gist.</p>
+<p>When a userscript manager performs its periodic update check, it
+compares the local script's <code>@version</code> tag against the
+<code>@version</code> tag found at the remote <code>@updateURL</code>.
+If the remote version number is higher, the browser extension
+automatically downloads and updates the script.</p>
+<h2 id="step-by-step-setup-process">Step-by-Step Setup Process</h2>
+<ol type="1">
+<li><strong>Create the Gist:</strong> Upload your userscript code to
+GitHub Gists, ensuring the filename ends with
+<code>.user.js</code>.</li>
+<li><strong>Obtain the Raw Link:</strong> Click the "Raw" button on the
+Gist page to get the direct file link.</li>
+<li><strong>Remove the Commit Hash:</strong> Standard Gist raw URLs
+include a specific commit hash, which freezes the link to a single
+revision. Remove the commit hash from the URL structure so it always
+points to the latest revision.</li>
+<li><strong>Add Metadata Headers:</strong> Insert the modified raw URL
+into the metadata block of your script:
+<ul>
+<li><code>// @updateURL https://gist.githubusercontent.com/username/gist_id/raw/script.user.js</code></li>
+<li><code>// @downloadURL https://gist.githubusercontent.com/username/gist_id/raw/script.user.js</code></li>
+</ul></li>
+<li><strong>Increment Version Numbers:</strong> Every time you push a
+change to your Gist, increase the <code>@version</code> value (for
+example, change <code>1.0.0</code> to <code>1.0.1</code>).</li>
+</ol>
+<h2 id="syncing-across-multiple-devices">Syncing Across Multiple
+Devices</h2>
+<p>For end users wanting to sync their installed userscripts across
+multiple devices, script managers like Tampermonkey and Violentmonkey
+offer native cloud sync features. Enabling sync via services such as
+Google Drive, Dropbox, or OneDrive within the extension settings allows
+your entire collection of installed scripts, including those sourced
+from Gists, to stay synchronized across all your web browsers.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

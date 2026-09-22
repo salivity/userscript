@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Context Menus with GM_unregisterMenuCommand - userscript</title>
+    <meta name="description" content="Userscripts use GMunregisterMenuCommand alongside GMregisterMenuCommand to alter, replace, or remove custom menu items in real time based on user interactions and state changes. By capturing the unique identifier returned when registering a command, deve">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/dynamic-context-menus-with-gm-unregister-menu-command">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Dynamic Context Menus with GM_unregisterMenuCommand - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/dynamic-context-menus-with-gm-unregister-menu-command" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts use GMunregisterMenuCommand alongside GMregisterMenuCommand to alter, replace, or remove custom menu items in real time based on user interactions and state changes. By capturing the unique identifier returned when registering a command, deve" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="dynamic-context-menus-with-gm_unregistermenucommand">Dynamic
+Context Menus with GM_unregisterMenuCommand</h1>
+<p>Userscripts use <code>GM_unregisterMenuCommand</code> alongside
+<code>GM_registerMenuCommand</code> to alter, replace, or remove custom
+menu items in real time based on user interactions and state changes. By
+capturing the unique identifier returned when registering a command,
+developers can later pass that ID to
+<code>GM_unregisterMenuCommand</code> to clear the entry from the script
+manager's menu. This process enables dynamic UI patterns—such as toggle
+switches, state updates, and context-aware actions—without requiring a
+page reload.</p>
+<h2 id="understanding-the-menu-management-apis">Understanding the Menu
+Management APIs</h2>
+<p>Userscript managers like Tampermonkey, Violentmonkey, and
+Greasemonkey provide custom APIs to inject actions directly into the
+browser extension's menu.</p>
+<ul>
+<li><strong><code>GM_registerMenuCommand(caption, onClickFunc, accessKey)</code></strong>:
+Adds a menu item with the specified label and click callback. It returns
+a unique command ID.</li>
+<li><strong><code>GM_unregisterMenuCommand(commandID)</code></strong>:
+Accepts the unique command ID as a parameter and removes the
+corresponding item from the user script context menu immediately.</li>
+</ul>
+<p>To use these APIs, your userscript header must include the
+appropriate <code>@grant</code> metadata tags:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Dynamic Menu Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_registerMenuCommand</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_unregisterMenuCommand</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="common-use-cases-for-dynamic-context-menus">Common Use Cases for
+Dynamic Context Menus</h2>
+<h3 id="1-toggling-state-settings">1. Toggling State Settings</h3>
+<p>Instead of maintaining separate menu items for enabling and disabling
+a feature, a userscript can switch between states using a single menu
+slot. When clicked, the existing command is unregistered, and a command
+with updated text (e.g., changing "Enable Dark Mode" to "Disable Dark
+Mode") is registered in its place.</p>
+<h3 id="2-displaying-live-status-or-counters">2. Displaying Live Status
+or Counters</h3>
+<p>Menu commands can display current internal states, such as a counter,
+a timer, or an active profile name. When the state changes, the script
+unregisters the old menu label and registers a new label reflecting the
+updated value.</p>
+<h3 id="3-context-sensitive-action-lists">3. Context-Sensitive Action
+Lists</h3>
+<p>In single-page applications (SPAs) or dynamic websites, available
+options change based on the active view. A script can clear irrelevant
+options using <code>GM_unregisterMenuCommand</code> and register
+context-specific options suited to the current page state.</p>
+<h2 id="implementation-pattern">Implementation Pattern</h2>
+<p>The standard implementation pattern involves storing the registered
+command's ID in a variable, then using a handler function to clear and
+replace it whenever state changes occur.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> menuCommandId <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> isFeatureActive <span class="op">=</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">updateMenu</span>() {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Remove the previous command if it exists</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (menuCommandId <span class="op">!==</span> <span class="kw">null</span>) {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">GM_unregisterMenuCommand</span>(menuCommandId)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Determine the updated label based on current state</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> label <span class="op">=</span> isFeatureActive <span class="op">?</span> <span class="st">&quot;Deactivate Feature&quot;</span> <span class="op">:</span> <span class="st">&quot;Activate Feature&quot;</span><span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Register the new command and save its unique ID</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    menuCommandId <span class="op">=</span> <span class="fu">GM_registerMenuCommand</span>(label<span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        isFeatureActive <span class="op">=</span> <span class="op">!</span>isFeatureActive<span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Execute feature logic here...</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Refresh the menu command to reflect the state change</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">updateMenu</span>()<span class="op">;</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co">// Initial menu creation</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">updateMenu</span>()<span class="op">;</span></span></code></pre></div>
+<h2 id="key-considerations">Key Considerations</h2>
+<ul>
+<li><strong>ID Storage</strong>: Always store the command ID returned by
+<code>GM_registerMenuCommand</code>. Passing invalid IDs or undefined
+variables to <code>GM_unregisterMenuCommand</code> will result in the
+command failing to unregister.</li>
+<li><strong>Compatibility Check</strong>: Ensure target script engines
+support <code>GM_unregisterMenuCommand</code>. You can safely check
+availability using
+<code>typeof GM_unregisterMenuCommand === 'function'</code>.</li>
+<li><strong>Execution Frequency</strong>: Avoid calling unregister and
+register functions inside high-frequency loops. Limit updates to actual
+user interactions or event-driven state transitions to prevent
+unnecessary script manager recalculations.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

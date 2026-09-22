@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Handle CORS Preflight Requests - userscript</title>
+    <meta name="description" content="Userscripts handle Cross-Origin Resource Sharing (CORS) preflight requests differently depending on whether they use standard web APIs or privileged userscript manager APIs. While standard fetch() or XMLHttpRequest calls executed within the page context">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-handle-cors-preflight-requests">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Handle CORS Preflight Requests - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-handle-cors-preflight-requests" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts handle Cross-Origin Resource Sharing (CORS) preflight requests differently depending on whether they use standard web APIs or privileged userscript manager APIs. While standard fetch() or XMLHttpRequest calls executed within the page context" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-handle-cors-preflight-requests">How Userscripts
+Handle CORS Preflight Requests</h1>
+<p>Userscripts handle Cross-Origin Resource Sharing (CORS) preflight
+requests differently depending on whether they use standard web APIs or
+privileged userscript manager APIs. While standard <code>fetch()</code>
+or <code>XMLHttpRequest</code> calls executed within the page context
+trigger browser-enforced CORS <code>OPTIONS</code> preflight checks,
+specialized APIs like <code>GM_xmlhttpRequest</code> execute requests
+through the browser extension’s privileged background context. This
+background execution bypasses browser CORS enforcement entirely,
+preventing the browser from sending preflight requests to external
+servers.</p>
+<h2 id="standard-in-page-requests-vs-privileged-apis">Standard In-Page
+Requests vs. Privileged APIs</h2>
+<p>When a userscript uses standard JavaScript methods
+(<code>window.fetch</code> or <code>window.XMLHttpRequest</code>), the
+request runs directly inside the web page's security context. If the
+request attempts to access a cross-origin resource with custom headers,
+non-simple HTTP methods (like <code>PUT</code> or <code>DELETE</code>),
+or non-simple content types (like <code>application/json</code>), the
+browser automatically initiates a CORS preflight <code>OPTIONS</code>
+request. If the server does not explicitly allow the origin via
+<code>Access-Control-Allow-Origin</code> and related headers, the
+request fails.</p>
+<p>To avoid these restrictions, userscript managers (such as
+Tampermonkey, Violentmonkey, and Greasemonkey) provide privileged
+network APIs, most notably <code>GM_xmlhttpRequest</code> (or
+<code>GM.xmlHttpRequest</code> in GM4+).</p>
+<h2 id="how-gm_xmlhttprequest-eliminates-preflights">How
+GM_xmlhttpRequest Eliminates Preflights</h2>
+<p><code>GM_xmlhttpRequest</code> bypasses CORS preflight checks through
+a specific mechanism:</p>
+<ol type="1">
+<li><strong>Context Switching:</strong> Instead of initiating the HTTP
+request from the web page's context, <code>GM_xmlhttpRequest</code>
+passes the request details across the extension bridge to the userscript
+manager's background process or service worker.</li>
+<li><strong>Privileged Network Calls:</strong> Extension background
+scripts possess broader network permissions compared to standard web
+pages. When the extension executes the request, the browser treats it as
+a privileged extension request rather than a cross-origin web page
+request.</li>
+<li><strong>No Preflight Sent:</strong> Because extension-level requests
+are exempt from same-origin policy restrictions, the browser sends the
+actual request directly without first dispatching an
+<code>OPTIONS</code> preflight request, regardless of headers or HTTP
+methods used.</li>
+<li><strong>Response Delivery:</strong> Once the external server
+responds, the extension forwards the response data back to the
+userscript running in the page tab.</li>
+</ol>
+<h2 id="implementing-privileged-requests">Implementing Privileged
+Requests</h2>
+<p>To use this mechanism, a userscript must explicitly request
+permission in its metadata block using the <code>@grant</code>
+directive:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         External Data Fetcher</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_xmlhttpRequest</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @connect      api.external-domain.com</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_xmlhttpRequest</span>({</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&quot;POST&quot;</span><span class="op">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">url</span><span class="op">:</span> <span class="st">&quot;https://api.external-domain.com/data&quot;</span><span class="op">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Content-Type&quot;</span><span class="op">:</span> <span class="st">&quot;application/json&quot;</span><span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Custom-Header&quot;</span><span class="op">:</span> <span class="st">&quot;value&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">data</span><span class="op">:</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">key</span><span class="op">:</span> <span class="st">&quot;value&quot;</span> })<span class="op">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">onload</span><span class="op">:</span> <span class="kw">function</span>(response) {</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Data received:&quot;</span><span class="op">,</span> response<span class="op">.</span><span class="at">responseText</span>)<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="security-controls-with-the-connect-directive">Security Controls
+with the @connect Directive</h2>
+<p>Although CORS preflight checks are bypassed, modern userscript
+managers enforce their own domain-level security layer using the
+<code>@connect</code> directive.</p>
+<p>If a script attempts to call <code>GM_xmlhttpRequest</code> targeting
+a domain not listed in its <code>@connect</code> rules, the userscript
+manager prompts the user to manually grant or deny access to that
+domain. This ensures that while browser-level CORS preflights are
+avoided, users maintain explicit control over which external domains a
+script can communicate with.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

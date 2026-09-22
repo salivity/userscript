@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Interact With Extension Backgrounds? - userscript</title>
+    <meta name="description" content="Userscripts cannot directly access or interact with a browser extension's background script due to security sandboxing and context isolation. Because userscripts execute in the context of a web page or a limited content script environment, they lack acce">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-interact-with-extension-backgrounds">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Interact With Extension Backgrounds? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-interact-with-extension-backgrounds" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts cannot directly access or interact with a browser extension's background script due to security sandboxing and context isolation. Because userscripts execute in the context of a web page or a limited content script environment, they lack acce" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-interact-with-extension-backgrounds">Can
+Userscripts Interact With Extension Backgrounds?</h1>
+<p>Userscripts cannot directly access or interact with a browser
+extension's background script due to security sandboxing and context
+isolation. Because userscripts execute in the context of a web page or a
+limited content script environment, they lack access to privileged
+extension APIs. However, indirect communication between a userscript and
+an extension's background context is possible through shared DOM events,
+window messaging, or explicitly configured extension endpoints.</p>
+<h2 id="why-direct-interaction-is-restricted">Why Direct Interaction Is
+Restricted</h2>
+<p>Browsers enforce strict security boundaries to separate web page
+content from browser extensions. This isolation relies on three main
+barriers:</p>
+<ul>
+<li><strong>Execution Contexts:</strong> Userscripts run either in the
+"page context" (the website's own JavaScript environment) or an
+"isolated content script context." Background scripts run in an
+isolated, privileged extension environment with access to powerful
+<code>chrome.*</code> or <code>browser.*</code> APIs.</li>
+<li><strong>Content Security Policies (CSP):</strong> Restrictions
+prevent scripts on a webpage from invoking background extension
+functions to protect users from malicious scripts hijacking extension
+privileges.</li>
+<li><strong>Scope Separation:</strong> The global <code>window</code>
+object of a web page is completely separate from the background page or
+background service worker of an extension.</li>
+</ul>
+<h2 id="methods-for-indirect-communication">Methods for Indirect
+Communication</h2>
+<p>While direct calls to background functions are impossible, developers
+can bridge the gap using specific communication techniques depending on
+control over the extension.</p>
+<h3 id="1-the-externally_connectable-manifest-property">1. The
+<code>externally_connectable</code> Manifest Property</h3>
+<p>If you develop or modify the target browser extension, you can
+configure its <code>manifest.json</code> file to accept direct messages
+from specific web pages where the userscript runs.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;externally_connectable&quot;</span><span class="er">:</span> <span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;matches&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;https://example.com/*&quot;</span><span class="ot">]</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>A userscript running in the page context of
+<code>https://example.com</code> can then send messages directly to the
+extension's background script using:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> EXTENSION_ID <span class="op">=</span> <span class="st">&quot;your-extension-id-here&quot;</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">chrome</span> <span class="op">&amp;&amp;</span> chrome<span class="op">.</span><span class="at">runtime</span> <span class="op">&amp;&amp;</span> chrome<span class="op">.</span><span class="at">runtime</span><span class="op">.</span><span class="at">sendMessage</span>) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  chrome<span class="op">.</span><span class="at">runtime</span><span class="op">.</span><span class="fu">sendMessage</span>(EXTENSION_ID<span class="op">,</span> { <span class="dt">action</span><span class="op">:</span> <span class="st">&quot;getData&quot;</span> }<span class="op">,</span> response <span class="kw">=&gt;</span> {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Response from background:&quot;</span><span class="op">,</span> response)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="2-custom-dom-events">2. Custom DOM Events</h3>
+<p>When an extension uses a content script injected into the same page
+as a userscript, the two scripts can communicate using custom DOM events
+on the shared <code>document</code> object.</p>
+<ul>
+<li><p><strong>Userscript Side (Sending):</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> <span class="bu">event</span> <span class="op">=</span> <span class="kw">new</span> <span class="bu">CustomEvent</span>(<span class="st">&quot;UserscriptToExtension&quot;</span><span class="op">,</span> { </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">detail</span><span class="op">:</span> { <span class="dt">payload</span><span class="op">:</span> <span class="st">&quot;Hello from userscript&quot;</span> } </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="bu">event</span>)<span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Extension Content Script Side (Relaying to
+Background):</strong></p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&quot;UserscriptToExtension&quot;</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Content script forwards the data to the background script</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  chrome<span class="op">.</span><span class="at">runtime</span><span class="op">.</span><span class="fu">sendMessage</span>(<span class="bu">event</span><span class="op">.</span><span class="at">detail</span>)<span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></li>
+</ul>
+<h3 id="3-window-message-passing-postmessage">3. Window Message Passing
+(<code>postMessage</code>)</h3>
+<p>Userscripts running in the page context can transmit messages via
+<code>window.postMessage</code>. A content script from the extension
+listens for these messages and forwards them to the background service
+worker.</p>
+<ul>
+<li><p><strong>Userscript:</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">postMessage</span>({ <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;FROM_USERSCRIPT&quot;</span><span class="op">,</span> <span class="dt">text</span><span class="op">:</span> <span class="st">&quot;Fetch Status&quot;</span> }<span class="op">,</span> <span class="st">&quot;*&quot;</span>)<span class="op">;</span></span></code></pre></div></li>
+<li><p><strong>Extension Content Script:</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&quot;message&quot;</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">source</span> <span class="op">!==</span> <span class="bu">window</span>) <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">data</span><span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&quot;FROM_USERSCRIPT&quot;</span>) {</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    chrome<span class="op">.</span><span class="at">runtime</span><span class="op">.</span><span class="fu">sendMessage</span>(<span class="bu">event</span><span class="op">.</span><span class="at">data</span>)<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></li>
+</ul>
+<h3 id="4-shared-web-storage">4. Shared Web Storage</h3>
+<p>If both the extension content script and the userscript operate on
+the same domain, they can monitor changes to <code>localStorage</code>
+or <code>sessionStorage</code> using the <code>storage</code> event
+listener to pass data back and forth.</p>
+<h2 id="summary">Summary</h2>
+<p>Userscripts cannot natively invoke background APIs or directly
+manipulate background script variables. To establish interaction, an
+extension must actively listen for messages relayed from the page
+context via custom DOM events, window messages, or declared external
+connectivity.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

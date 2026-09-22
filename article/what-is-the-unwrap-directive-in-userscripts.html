@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is the @unwrap Directive in Userscripts? - userscript</title>
+    <meta name="description" content="The @unwrap directive is a specialized metadata header used in userscript development that alters how a script is executed by removing its isolated sandbox environment. By injecting the script code directly into the web page's native execution context, @">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-unwrap-directive-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What is the @unwrap Directive in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-unwrap-directive-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @unwrap directive is a specialized metadata header used in userscript development that alters how a script is executed by removing its isolated sandbox environment. By injecting the script code directly into the web page's native execution context, @" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-unwrap-directive-in-userscripts">What is the @unwrap
+Directive in Userscripts?</h1>
+<p>The <code>@unwrap</code> directive is a specialized metadata header
+used in userscript development that alters how a script is executed by
+removing its isolated sandbox environment. By injecting the script code
+directly into the web page's native execution context,
+<code>@unwrap</code> allows userscripts to interact seamlessly with a
+website's global JavaScript variables and functions, though it strips
+access to privileged extension APIs in exchange for security.</p>
+<h2 id="execution-context-sandboxed-vs-unwrapped">Execution Context:
+Sandboxed vs. Unwrapped</h2>
+<p>By default, userscript managers (such as Tampermonkey, Violentmonkey,
+or Greasemonkey) run scripts inside an isolated scope or sandbox. This
+default sandbox isolates the script from the web page's global
+<code>window</code> object to prevent the page from tampering with the
+script and to protect sensitive browser functions.</p>
+<p>When you add <code>// @unwrap</code> to a script's metadata block,
+the userscript manager removes the anonymous wrapper function and
+execution sandbox. Instead of running in an isolated layer, the code
+executes directly within the target page's global execution context.</p>
+<h2 id="primary-effects-of-using-unwrap">Primary Effects of Using
+@unwrap</h2>
+<h3 id="1-direct-access-to-page-variables-and-scope">1. Direct Access to
+Page Variables and Scope</h3>
+<p>Without <code>@unwrap</code>, accessing the target page’s global
+variables requires using <code>unsafeWindow</code> or injecting script
+tags into the DOM. With <code>@unwrap</code>, the script's
+<code>window</code> object is identical to the page's native
+<code>window</code> object. This allows you to:</p>
+<ul>
+<li>Read and modify global variables declared by the website.</li>
+<li>Call internal JavaScript functions defined by page scripts.</li>
+<li>Override or hook into built-in web page functions without
+scope-bridging issues.</li>
+</ul>
+<h3 id="2-loss-of-privileged-gm_-apis">2. Loss of Privileged GM_*
+APIs</h3>
+<p>Security restrictions prevent web pages from accessing powerful
+browser functions. Because <code>@unwrap</code> exposes your code
+directly to the page's execution context, userscript managers disable
+access to privileged APIs—such as <code>GM_xmlhttpRequest</code>,
+<code>GM_setValue</code>, or <code>GM_getValue</code>—to prevent
+malicious web pages from exploiting them.</p>
+<h3 id="3-reduced-overhead-and-object-cloning-issues">3. Reduced
+Overhead and Object-Cloning Issues</h3>
+<p>In standard sandboxed execution, passing complex objects, functions,
+or DOM events between the script sandbox and the page context often
+requires special wrapper functions or cloning (e.g.,
+<code>cloneInto</code> or <code>exportFunction</code>). Using
+<code>@unwrap</code> eliminates context-bridging overhead, allowing
+native performance and direct object manipulation.</p>
+<h2 id="modern-compatibility-and-alternatives">Modern Compatibility and
+Alternatives</h2>
+<p>The <code>@unwrap</code> directive was historically used by engines
+like Greasemonkey and Scriptish. In modern userscript managers,
+explicitly setting <code>// @grant none</code> achieves a similar
+result: it signals that the script does not require elevated privileges,
+allowing managers to run the script directly in the page context or an
+unprivileged environment.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

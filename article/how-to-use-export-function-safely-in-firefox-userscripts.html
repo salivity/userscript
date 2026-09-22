@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use exportFunction Safely in Firefox Userscripts - userscript</title>
+    <meta name="description" content="Firefox userscripts often need to share code or functions with a web page's DOM context without exposing privileged extension APIs to potential security exploits. The exportFunction API bridges the execution boundary between the privileged userscript env">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-use-export-function-safely-in-firefox-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Use exportFunction Safely in Firefox Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-use-export-function-safely-in-firefox-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Firefox userscripts often need to share code or functions with a web page's DOM context without exposing privileged extension APIs to potential security exploits. The exportFunction API bridges the execution boundary between the privileged userscript env" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-use-exportfunction-safely-in-firefox-userscripts">How to
+Use exportFunction Safely in Firefox Userscripts</h1>
+<p>Firefox userscripts often need to share code or functions with a web
+page's DOM context without exposing privileged extension APIs to
+potential security exploits. The <code>exportFunction</code> API bridges
+the execution boundary between the privileged userscript environment and
+the unprivileged page context (<code>unsafeWindow</code>). This article
+explains how <code>exportFunction</code> works, the security risks
+associated with sharing code across security boundaries, and the
+practical best practices required to implement it safely in your Firefox
+userscripts.</p>
+<h2 id="understanding-the-security-boundary">Understanding the Security
+Boundary</h2>
+<p>Firefox isolates userscript execution from web page scripts to
+prevent malicious websites from hijacking powerful APIs like
+<code>GM_xmlhttpRequest</code> or <code>GM_setValue</code>. Directly
+assigning a userscript function to <code>unsafeWindow</code> (e.g.,
+<code>unsafeWindow.myFunc = myFunc</code>) can create severe privilege
+escalation vulnerabilities, allowing web page scripts to execute code
+with userscript privileges.</p>
+<p>The <code>exportFunction</code> utility safely defines a function in
+the privileged context and exposes a callable reference to the target
+untrusted window context.</p>
+<h2 id="basic-usage-syntax">Basic Usage Syntax</h2>
+<p>To expose a function safely, pass the function, the target scope
+(typically <code>unsafeWindow</code>), and an options object containing
+the property name:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">displayMessage</span>(msg) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Always sanitize inputs from unsafe contexts</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Page message:&quot;</span><span class="op">,</span> <span class="bu">String</span>(msg))<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">exportFunction</span>(displayMessage<span class="op">,</span> unsafeWindow<span class="op">,</span> { <span class="dt">defineAs</span><span class="op">:</span> <span class="st">&quot;displayMessage&quot;</span> })<span class="op">;</span></span></code></pre></div>
+<p>After execution, scripts on the web page can call
+<code>window.displayMessage("Hello")</code>.</p>
+<h2 id="essential-rules-for-safe-implementation">Essential Rules for
+Safe Implementation</h2>
+<h3 id="1-validate-and-sanitize-all-arguments">1. Validate and Sanitize
+All Arguments</h3>
+<p>Untrusted web pages can pass tampered arguments, modified prototypes,
+or objects with malicious getters designed to trigger side effects
+inside your privileged script context.</p>
+<ul>
+<li>Convert incoming arguments to primitive data types immediately
+(<code>String()</code>, <code>Number()</code>,
+<code>Boolean()</code>).</li>
+<li>Avoid accessing properties on objects passed into the function by
+the web page.</li>
+<li>Never use <code>eval()</code> or dynamically construct executable
+code from parameters.</li>
+</ul>
+<h3 id="2-restrict-privileged-api-access">2. Restrict Privileged API
+Access</h3>
+<p>Never create exported functions that act as open proxies for
+privileged GM/TM functions.</p>
+<p><strong>Vulnerable Code:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// </span><span class="al">DANGER</span><span class="co">: Allows the web page to make arbitrary privileged cross-origin requests</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exportFunction</span>(<span class="kw">function</span>(url) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">GM_xmlhttpRequest</span>({ <span class="dt">url</span><span class="op">:</span> url<span class="op">,</span> <span class="dt">method</span><span class="op">:</span> <span class="st">&quot;GET&quot;</span> })<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> unsafeWindow<span class="op">,</span> { <span class="dt">defineAs</span><span class="op">:</span> <span class="st">&quot;fetchData&quot;</span> })<span class="op">;</span></span></code></pre></div>
+<p><strong>Secure Code:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// SAFE: Strictly validates the input against an allowed list</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> ALLOWED_DOMAIN <span class="op">=</span> <span class="st">&quot;https://api.example.com/&quot;</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">exportFunction</span>(<span class="kw">function</span>(endpoint) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> safeEndpoint <span class="op">=</span> <span class="bu">String</span>(endpoint)<span class="op">.</span><span class="fu">replace</span>(<span class="ss">/</span><span class="sc">[^a-zA-Z0-9]</span><span class="ss">/g</span><span class="op">,</span> <span class="st">&quot;&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> fullUrl <span class="op">=</span> ALLOWED_DOMAIN <span class="op">+</span> safeEndpoint<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">GM_xmlhttpRequest</span>({ <span class="dt">url</span><span class="op">:</span> fullUrl<span class="op">,</span> <span class="dt">method</span><span class="op">:</span> <span class="st">&quot;GET&quot;</span> })<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> unsafeWindow<span class="op">,</span> { <span class="dt">defineAs</span><span class="op">:</span> <span class="st">&quot;fetchData&quot;</span> })<span class="op">;</span></span></code></pre></div>
+<h3 id="3-use-cloneinto-when-returning-objects">3. Use
+<code>cloneInto</code> When Returning Objects</h3>
+<p>If an exported function returns an object, array, or complex data
+structure to the web page, you must explicitly clone the object into the
+target scope using <code>cloneInto</code>. Failing to do so will result
+in security errors or unexpected object references across contexts.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">getUserData</span>() {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> payload <span class="op">=</span> { <span class="dt">status</span><span class="op">:</span> <span class="st">&quot;active&quot;</span><span class="op">,</span> <span class="dt">id</span><span class="op">:</span> <span class="dv">101</span> }<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Clone object into the unprivileged context</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="fu">cloneInto</span>(payload<span class="op">,</span> unsafeWindow)<span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">exportFunction</span>(getUserData<span class="op">,</span> unsafeWindow<span class="op">,</span> { <span class="dt">defineAs</span><span class="op">:</span> <span class="st">&quot;getUserData&quot;</span> })<span class="op">;</span></span></code></pre></div>
+<h3 id="4-limit-global-namespace-footprint">4. Limit Global Namespace
+Footprint</h3>
+<p>Avoid attaching multiple functions directly to
+<code>unsafeWindow</code>. Instead, create a single custom object in the
+page context using <code>cloneInto</code> and attach your exported
+functions to that container object.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create a wrapper object in page scope</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> myAppNamespace <span class="op">=</span> <span class="fu">cloneInto</span>({}<span class="op">,</span> unsafeWindow)<span class="op">;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>unsafeWindow<span class="op">.</span><span class="at">myApp</span> <span class="op">=</span> myAppNamespace<span class="op">;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Attach exported functions to the custom namespace</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">exportFunction</span>(displayMessage<span class="op">,</span> myAppNamespace<span class="op">,</span> { <span class="dt">defineAs</span><span class="op">:</span> <span class="st">&quot;log&quot;</span> })<span class="op">;</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

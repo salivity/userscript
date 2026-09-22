@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Remove Stock Photo Watermarks - userscript</title>
+    <meta name="description" content="Stock photography platforms often protect preview images using visual overlays, tiled patterns, or canvas-based watermarks to prevent unauthorized use. Browser userscripts—custom JavaScript snippets executed via extensions like Tampermonkey or Violentm">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-remove-stock-photo-watermarks">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Remove Stock Photo Watermarks - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-remove-stock-photo-watermarks" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Stock photography platforms often protect preview images using visual overlays, tiled patterns, or canvas-based watermarks to prevent unauthorized use. Browser userscripts—custom JavaScript snippets executed via extensions like Tampermonkey or Violentm" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-remove-stock-photo-watermarks">How Userscripts
+Remove Stock Photo Watermarks</h1>
+<p>Stock photography platforms often protect preview images using visual
+overlays, tiled patterns, or canvas-based watermarks to prevent
+unauthorized use. Browser userscripts—custom JavaScript snippets
+executed via extensions like Tampermonkey or Violentmonkey—can bypass or
+remove these invasive watermarks by directly altering how web pages
+process, style, and render image assets. This article breaks down the
+technical methods userscripts use to dismantle watermark protections,
+including DOM manipulation, network request interception, CSS overrides,
+and canvas API hooks.</p>
+<h2 id="1-dom-element-removal-and-style-overrides">1. DOM Element
+Removal and Style Overrides</h2>
+<p>The simplest watermarking implementations use separate HTML elements,
+such as <code>&lt;div&gt;</code> layers or SVG overlays, placed directly
+over the image to display logos or grid patterns.</p>
+<p>Userscripts inspect the Document Object Model (DOM) to target these
+specific overlay elements:</p>
+<ul>
+<li><strong>Node Deletion:</strong> The script identifies the overlay
+using CSS selectors or XPath queries and removes the element entirely
+from the DOM using methods like <code>element.remove()</code>.</li>
+<li><strong>CSS Modification:</strong> Scripts inject custom stylesheets
+into the page header or directly modify inline styles to set
+<code>display: none!important</code> or <code>opacity: 0</code> on
+watermark layers.</li>
+<li><strong>Pointer Events Restoration:</strong> If a watermark layer is
+used to prevent right-clicking or saving the image, the script can set
+<code>pointer-events: none</code> on the overlay, allowing interactions
+to pass straight to the underlying image file.</li>
+</ul>
+<h2 id="2-intercepting-and-modifying-api-requests">2. Intercepting and
+Modifying API Requests</h2>
+<p>Many modern stock sites serve watermarked images dynamically by
+appending parameters to the image URL (e.g.,
+<code>image.jpg?watermark=true&amp;size=medium</code>) or requesting
+watermark metadata via API calls.</p>
+<p>Userscripts can intercept network traffic before the page renders the
+content:</p>
+<ul>
+<li><strong>Hooking <code>fetch</code> and
+<code>XMLHttpRequest</code>:</strong> By overriding the browser's native
+<code>window.fetch</code> or <code>XMLHttpRequest</code> objects,
+userscripts analyze outgoing requests and incoming JSON responses.</li>
+<li><strong>URL Parameter Stripping:</strong> If an image URL contains
+query strings that instruct the server to render a watermark layer, the
+userscript rewrites the URL string to request the clean base file
+instead.</li>
+<li><strong>Response Payload Manipulation:</strong> Scripts can alter
+the data returned by the API to trick the front-end media player or
+image viewer into requesting the unwatermarked asset path.</li>
+</ul>
+<h2 id="3-canvas-context-hooking">3. Canvas Context Hooking</h2>
+<p>When stock sites draw watermarks dynamically onto an HTML5
+<code>&lt;canvas&gt;</code> element, standard DOM manipulation is
+ineffective because the main image and the watermark are flattened into
+a single pixel grid.</p>
+<p>To bypass this, userscripts hook into the Canvas 2D Rendering Context
+(<code>CanvasRenderingContext2D</code>):</p>
+<ul>
+<li><strong>Intercepting Method Calls:</strong> The script intercepts
+functions such as <code>drawImage()</code>, <code>fillText()</code>, or
+<code>strokeText()</code>.</li>
+<li><strong>Selective Execution:</strong> When the site's rendering loop
+calls a drawing function associated with the watermark (identified by
+specific coordinates, text strings, or image sources), the userscript
+blocks that specific function call while allowing the base image drawing
+calls to proceed normally.</li>
+</ul>
+<h2 id="4-reconstructing-images-from-tiles">4. Reconstructing Images
+from Tiles</h2>
+<p>Some platforms slice protected images into multiple small grid tiles
+and apply watermarks to specific tiles or display them inside a
+specialized canvas viewer.</p>
+<p>Userscripts bypass this layout method by:</p>
+<ol type="1">
+<li>Scanning the page scripts or network responses for the direct URLs
+of individual raw image tiles.</li>
+<li>Creating a hidden background <code>&lt;canvas&gt;</code>
+element.</li>
+<li>Fetching the clean tile segments, drawing them in their correct
+coordinates, and exporting the reconstructed full-resolution image using
+<code>canvas.toDataURL()</code>.</li>
+</ol>
+<h2 id="5-bypassing-image-blurring-and-low-res-swaps">5. Bypassing Image
+Blurring and Low-Res Swaps</h2>
+<p>In addition to watermarks, platforms often apply CSS blurs or load
+low-resolution previews until a user purchases the asset.</p>
+<p>Userscripts reverse these visual degradation techniques by:</p>
+<ul>
+<li>Removing CSS filters like <code>filter: blur(...)</code> or
+<code>backdrop-filter</code>.</li>
+<li>Replacing thumbnail image source attributes (<code>src</code> or
+<code>srcset</code>) with high-resolution direct links discovered within
+the page's hidden metadata, JSON-LD scripts, or state management objects
+(such as Redux or Vuex stores).</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

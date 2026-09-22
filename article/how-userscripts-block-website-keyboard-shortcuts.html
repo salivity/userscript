@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Block Website Keyboard Shortcuts - userscript</title>
+    <meta name="description" content="Websites frequently hijack browser keyboard shortcuts to trigger custom web app actions, often degrading the user experience. Userscripts neutralize this behavior by injecting custom JavaScript into the browser to intercept keyboard events before the web">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-block-website-keyboard-shortcuts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Block Website Keyboard Shortcuts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-block-website-keyboard-shortcuts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Websites frequently hijack browser keyboard shortcuts to trigger custom web app actions, often degrading the user experience. Userscripts neutralize this behavior by injecting custom JavaScript into the browser to intercept keyboard events before the web" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-block-website-keyboard-shortcuts">How
+Userscripts Block Website Keyboard Shortcuts</h1>
+<p>Websites frequently hijack browser keyboard shortcuts to trigger
+custom web app actions, often degrading the user experience. Userscripts
+neutralize this behavior by injecting custom JavaScript into the browser
+to intercept keyboard events before the website's native code can
+process them. By taking advantage of event capturing, method
+monkey-patching, and early script execution, userscripts effectively
+block web pages from overriding standard browser functions or custom
+user hotkeys.</p>
+<h2 id="intercepting-via-the-event-capture-phase">Intercepting via the
+Event Capture Phase</h2>
+<p>DOM keyboard events traverse the document in two main phases: the
+capture phase and the bubble phase. When a key is pressed, the event
+originates at the top-level <code>window</code> object and travels down
+the DOM tree to the target element (capture phase), before traveling
+back up to the root (bubble phase). Most websites register key listeners
+on the target element or during the bubble phase.</p>
+<p>Userscripts gain priority by attaching <code>keydown</code> or
+<code>keyup</code> listeners to the <code>window</code> or
+<code>document</code> object specifically during the capture phase. This
+is achieved by setting the third parameter of
+<code>addEventListener</code> to <code>true</code> or passing
+<code>{ capture: true }</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;keydown&#39;</span><span class="op">,</span> <span class="kw">function</span>(<span class="bu">event</span>) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">ctrlKey</span> <span class="op">&amp;&amp;</span> <span class="bu">event</span><span class="op">.</span><span class="fu">key</span> <span class="op">===</span> <span class="st">&#39;s&#39;</span>) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">event</span><span class="op">.</span><span class="fu">stopImmediatePropagation</span>()<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">,</span> <span class="kw">true</span>)<span class="op">;</span></span></code></pre></div>
+<p>Because the capture phase runs top-down, the userscript's listener
+fires before the event reaches any element handlers defined by the
+website.</p>
+<h2 id="halting-event-propagation">Halting Event Propagation</h2>
+<p>Once a userscript identifies a hijacked shortcut during the capture
+phase, it calls <code>event.stopImmediatePropagation()</code> or
+<code>event.stopPropagation()</code>.</p>
+<ul>
+<li><code>event.stopPropagation()</code> prevents the event from
+traveling further down the DOM tree to lower elements.</li>
+<li><code>event.stopImmediatePropagation()</code> halts the event
+completely, preventing both child elements and any other listeners
+attached to the current element from executing.</li>
+</ul>
+<p>Calling <code>stopImmediatePropagation()</code> ensures that the web
+page's event listeners never receive the keypress notification.</p>
+<h2 id="monkey-patching-addeventlistener">Monkey-Patching
+addEventListener</h2>
+<p>Some complex web applications register global listeners on the
+<code>window</code> object during the capture phase, creating a race
+condition with userscripts. To overcome this, userscripts can redefine
+the native <code>EventTarget.prototype.addEventListener</code> method—a
+technique known as monkey-patching.</p>
+<p>By wrapping the native <code>addEventListener</code>, the userscript
+can inspect all incoming event registrations from the website's
+scripts:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalAddEventListener <span class="op">=</span> <span class="bu">EventTarget</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">addEventListener</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">EventTarget</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">addEventListener</span> <span class="op">=</span> <span class="kw">function</span>(type<span class="op">,</span> listener<span class="op">,</span> options) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (type <span class="op">===</span> <span class="st">&#39;keydown&#39;</span> <span class="op">||</span> type <span class="op">===</span> <span class="st">&#39;keyup&#39;</span>) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> wrappedListener <span class="op">=</span> <span class="kw">function</span>(<span class="bu">event</span>) {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Filter out specific unwanted shortcuts (e.g., Ctrl+K)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">ctrlKey</span> <span class="op">&amp;&amp;</span> <span class="bu">event</span><span class="op">.</span><span class="fu">key</span> <span class="op">===</span> <span class="st">&#39;k&#39;</span>) {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> listener<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> <span class="kw">arguments</span>)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        }<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> originalAddEventListener<span class="op">.</span><span class="fu">call</span>(<span class="kw">this</span><span class="op">,</span> type<span class="op">,</span> wrappedListener<span class="op">,</span> options)<span class="op">;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> originalAddEventListener<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> <span class="kw">arguments</span>)<span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>This method silently modifies or drops the website's shortcut
+handlers at the time of registration, disabling them before they can
+ever trigger.</p>
+<h2 id="script-execution-timing">Script Execution Timing</h2>
+<p>For capture listeners and monkey-patching to function reliably, the
+userscript must execute before the target website loads its own
+JavaScript assets. Userscript managers accomplish this via the
+<code>@run-at document-start</code> metadata directive. Injecting the
+script at <code>document-start</code> guarantees that DOM prototypes are
+patched and global event capture listeners are bound before any page
+scripts can execute.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

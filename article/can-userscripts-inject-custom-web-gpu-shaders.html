@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Inject Custom WebGPU Shaders? - userscript</title>
+    <meta name="description" content="Userscripts can successfully inject custom WebGPU shaders into browser-based rendering engines by intercepting and modifying JavaScript API calls before the shaders are compiled. By monkey-patching native WebGPU methods like GPUDevice.prototype.createSha">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-inject-custom-web-gpu-shaders">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Inject Custom WebGPU Shaders? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-inject-custom-web-gpu-shaders" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can successfully inject custom WebGPU shaders into browser-based rendering engines by intercepting and modifying JavaScript API calls before the shaders are compiled. By monkey-patching native WebGPU methods like GPUDevice.prototype.createSha" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-inject-custom-webgpu-shaders">Can Userscripts
+Inject Custom WebGPU Shaders?</h1>
+<p>Userscripts can successfully inject custom WebGPU shaders into
+browser-based rendering engines by intercepting and modifying JavaScript
+API calls before the shaders are compiled. By monkey-patching native
+WebGPU methods like <code>GPUDevice.prototype.createShaderModule</code>,
+custom scripts can alter WGSL (WebGPU Shading Language) code dynamically
+to modify graphics, inject post-processing shaders, or tweak game
+visuals directly inside the user's browser.</p>
+<h2 id="how-webgpu-shader-injection-works">How WebGPU Shader Injection
+Works</h2>
+<p>WebGPU operates through standard JavaScript bindings exposed by the
+browser via the <code>navigator.gpu</code> object. Because userscripts
+run within the context of the webpage, they share the same execution
+environment and can manipulate WebGPU API functions before the target
+application creates its rendering pipelines.</p>
+<p>The injection process relies on a technique called API hooking or
+monkey-patching:</p>
+<ol type="1">
+<li><strong>Interception</strong>: The userscript intercepts calls to
+<code>GPUDevice.prototype.createShaderModule</code>.</li>
+<li><strong>Inspection</strong>: The script reads the incoming
+<code>GPUShaderModuleDescriptor</code> object containing the raw WGSL
+shader source code.</li>
+<li><strong>Modification</strong>: The script replaces, modifies, or
+appends custom WGSL code (such as custom vertex transformations,
+fragment color adjustments, or lighting effects).</li>
+<li><strong>Execution</strong>: The script calls the original native
+<code>createShaderModule</code> method with the modified shader string,
+passing the altered graphics code to the GPU.</li>
+</ol>
+<h2 id="step-by-step-mechanism">Step-by-Step Mechanism</h2>
+<p>To intercept shader creation, a userscript typically hooks into the
+pipeline during early page load using the
+<code>@run-at document-start</code> directive.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example of monkey-patching WebGPU shader creation</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalCreateShaderModule <span class="op">=</span> GPUDevice<span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">createShaderModule</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>GPUDevice<span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">createShaderModule</span> <span class="op">=</span> <span class="kw">function</span> (descriptor) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Check if the descriptor contains WGSL code</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (descriptor <span class="op">&amp;&amp;</span> descriptor<span class="op">.</span><span class="at">code</span>) {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Search for specific fragment shader functions and append custom code</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (descriptor<span class="op">.</span><span class="at">code</span><span class="op">.</span><span class="fu">includes</span>(<span class="st">&quot;fn main&quot;</span>)) {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>            descriptor<span class="op">.</span><span class="at">code</span> <span class="op">=</span> descriptor<span class="op">.</span><span class="at">code</span><span class="op">.</span><span class="fu">replace</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;return finalColor;&quot;</span><span class="op">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">&quot;return finalColor * vec4&lt;f32&gt;(1.2, 1.0, 0.8, 1.0);&quot;</span> <span class="co">// Injects custom tint</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>            )<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Call the native browser method with modified WGSL code</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> originalCreateShaderModule<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> <span class="kw">arguments</span>)<span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Beyond altering existing shaders, a userscript can also create
+entirely new WebGPU render passes. By wrapping
+<code>GPUCanvasContext.prototype.configure</code> or hooking into the
+frame render loop (<code>requestAnimationFrame</code>), a script can
+bind custom render pipelines to draw post-processing passes (such as
+bloom, CRT filters, or custom depth effects) on top of the engine's
+output.</p>
+<h2 id="practical-applications">Practical Applications</h2>
+<ul>
+<li><strong>Browser Game Modding</strong>: Customizing character
+shaders, lighting models, or visual effects in WebGPU-powered games
+built with modern engines like Three.js, Babylon.js, or PlayCanvas.</li>
+<li><strong>Post-Processing Injection</strong>: Adding full-screen
+visual shaders (e.g., FXAA, color grading, scanlines) to web
+applications that lack built-in graphics settings.</li>
+<li><strong>Debugging and Graphics Research</strong>: Inspecting,
+dumping, and analyzing raw WGSL shaders used by web applications in
+real-time.</li>
+<li><strong>Accessibility Adjustments</strong>: Enhancing contrast,
+colorblindness modes, or removing bright flashing visual elements
+dynamically.</li>
+</ul>
+<h2 id="challenges-and-technical-limitations">Challenges and Technical
+Limitations</h2>
+<p>While shader injection is entirely possible, several technical
+obstacles exist:</p>
+<ul>
+<li><strong>Timing Constraints</strong>: The userscript must execute
+before the target application initializes its WebGPU device. If the
+application caches its shader modules early, late-running scripts will
+fail to intercept them.</li>
+<li><strong>WGSL Parsing Complexity</strong>: Modern web applications
+often minify or procedurally generate WGSL code. Finding the right hooks
+or function names inside minified shader strings requires regex matching
+or abstract syntax tree (AST) parsing.</li>
+<li><strong>Pipeline Layout Mismatches</strong>: Changing shader
+input/output structures (bind groups, uniforms, or vertex buffers)
+without updating the corresponding <code>GPURenderPipeline</code> layout
+will cause WebGPU validation errors and halt rendering.</li>
+<li><strong>CORS and Resource Assets</strong>: Loading external textures
+or resources for custom shaders must comply with browser Cross-Origin
+Resource Sharing rules.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

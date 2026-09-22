@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the GM_setValue Function in Userscripts? - userscript</title>
+    <meta name="description" content="The GMsetValue function is a core API provided by userscript managers like Tampermonkey, Violentmonkey, and Greasemonkey that allows scripts to store data persistently across page reloads and different browser sessions. Unlike standard Web Storage option">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-gm-set-value-function-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the GM_setValue Function in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-gm-set-value-function-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMsetValue function is a core API provided by userscript managers like Tampermonkey, Violentmonkey, and Greasemonkey that allows scripts to store data persistently across page reloads and different browser sessions. Unlike standard Web Storage option" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-gm_setvalue-function-in-userscripts">What Is the
+GM_setValue Function in Userscripts?</h1>
+<p>The <code>GM_setValue</code> function is a core API provided by
+userscript managers like Tampermonkey, Violentmonkey, and Greasemonkey
+that allows scripts to store data persistently across page reloads and
+different browser sessions. Unlike standard Web Storage options,
+<code>GM_setValue</code> binds saved data directly to the userscript
+itself rather than a specific web domain, enabling scripts to retain
+user preferences, application state, and cross-site data seamlessly.</p>
+<hr />
+<h2 id="how-gm_setvalue-works">How GM_setValue Works</h2>
+<p>Standard JavaScript variables reset every time a webpage reloads or
+navigates to a new URL. Browser storage APIs, such as
+<code>localStorage</code>, are tied to the domain of the active website,
+meaning data saved on one site cannot be accessed when navigating to
+another.</p>
+<p><code>GM_setValue</code> solves this by utilizing the storage layer
+of the userscript extension. Data saved via this function is isolated to
+your specific script, allowing it to persist across multiple tabs,
+different domains, and browser restarts.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Cross-Domain Data Persistence:</strong> Retain information
+even when your userscript operates across multiple different
+websites.</li>
+<li><strong>Support for Rich Data Types:</strong> Modern implementations
+automatically serialize complex data structures like objects, arrays,
+booleans, and numbers without requiring manual string conversion.</li>
+<li><strong>Isolated Storage Environment:</strong> Prevents collision
+with the target website's own <code>localStorage</code> key-value
+pairs.</li>
+</ul>
+<hr />
+<h2 id="basic-syntax-and-usage">Basic Syntax and Usage</h2>
+<p>To use <code>GM_setValue</code>, you must first declare it in your
+userscript's metadata block using the <code>@grant</code> directive.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Preference Saver Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_setValue</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getValue</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// Storing a simple string value</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_setValue</span>(<span class="st">&quot;themeColor&quot;</span><span class="op">,</span> <span class="st">&quot;dark&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Storing a complex JavaScript object</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> userSettings <span class="op">=</span> {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">fontSize</span><span class="op">:</span> <span class="dv">16</span><span class="op">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="dt">notificationsEnabled</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">favoriteTags</span><span class="op">:</span> [<span class="st">&quot;javascript&quot;</span><span class="op">,</span> <span class="st">&quot;userscripts&quot;</span>]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_setValue</span>(<span class="st">&quot;appSettings&quot;</span><span class="op">,</span> userSettings)<span class="op">;</span></span></code></pre></div>
+<hr />
+<h2 id="common-use-cases">Common Use Cases</h2>
+<h3 id="1-saving-user-preferences">1. Saving User Preferences</h3>
+<p>Userscripts frequently offer custom UI overlays, settings panels, or
+dark modes. <code>GM_setValue</code> ensures that custom configurations
+set by the user remain active every time they revisit the site.</p>
+<h3 id="2-maintaining-state-across-page-navigations">2. Maintaining
+State Across Page Navigations</h3>
+<p>If a script performs multi-step automation—such as processing data
+across several paginated pages—<code>GM_setValue</code> can store
+current progress, counters, or queue items between page loads.</p>
+<h3 id="3-caching-external-api-responses">3. Caching External API
+Responses</h3>
+<p>To prevent hitting API rate limits or slowing down page load times,
+scripts can fetch external data once and cache the response using
+<code>GM_setValue</code>, updating it only after a set expiration
+period.</p>
+<hr />
+<h2 id="gm_setvalue-vs-alternative-storage-methods">GM_setValue vs.
+Alternative Storage Methods</h2>
+<table>
+<thead>
+<tr>
+<th>Storage Type</th>
+<th>Domain Scope</th>
+<th>Script Scope</th>
+<th>Persistence</th>
+<th>Data Types Supported</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>GM_setValue</code></strong></td>
+<td>Universal / Global</td>
+<td>Isolated to your script</td>
+<td>Persistent</td>
+<td>Objects, Arrays, Strings, Numbers, Booleans</td>
+</tr>
+<tr>
+<td><strong><code>localStorage</code></strong></td>
+<td>Restricted to origin domain</td>
+<td>Shared with target website</td>
+<td>Persistent</td>
+<td>Strings only (requires <code>JSON.stringify</code>)</td>
+</tr>
+<tr>
+<td><strong><code>sessionStorage</code></strong></td>
+<td>Restricted to origin domain</td>
+<td>Shared with target website</td>
+<td>Cleared on tab close</td>
+<td>Strings only</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="best-practices-and-considerations">Best Practices and
+Considerations</h2>
+<ul>
+<li><strong>Always Include <code>@grant</code>:</strong> If you forget
+to add <code>// @grant GM_setValue</code> in the userscript header,
+calling the function will result in a runtime error.</li>
+<li><strong>Pair with <code>GM_getValue</code>:</strong> Use
+<code>GM_getValue(key, defaultValue)</code> to retrieve saved values
+reliably, providing a fallback default if the key does not yet
+exist.</li>
+<li><strong>Mind Storage Limits:</strong> While <code>GM_setValue</code>
+offers high storage limits compared to standard browser storage, storing
+massive files or large binary data directly in script storage can
+degrade browser extension performance.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

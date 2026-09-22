@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Work Offline After Initial Page Load? - userscript</title>
+    <meta name="description" content="Userscripts can function entirely offline after the initial page load, provided they do not rely on active network requests, external APIs, or remote assets during execution. By bundling all necessary logic, embedding dependencies locally, and utilizing">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-work-offline-after-initial-page-load">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Work Offline After Initial Page Load? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-work-offline-after-initial-page-load" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can function entirely offline after the initial page load, provided they do not rely on active network requests, external APIs, or remote assets during execution. By bundling all necessary logic, embedding dependencies locally, and utilizing" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-work-offline-after-initial-page-load">Can
+Userscripts Work Offline After Initial Page Load?</h1>
+<p>Userscripts can function entirely offline after the initial page
+load, provided they do not rely on active network requests, external
+APIs, or remote assets during execution. By bundling all necessary
+logic, embedding dependencies locally, and utilizing browser storage
+mechanisms, developers can build fully offline-capable userscripts. This
+article explains how userscripts operate without an internet connection,
+the requirements for offline functionality, and key design
+considerations.</p>
+<h2 id="how-userscripts-execute-offline">How Userscripts Execute
+Offline</h2>
+<p>Browser extensions like Tampermonkey, Violentmonkey, and Greasemonkey
+execute userscripts locally within the browser context. Once the host
+web page finishes loading its initial assets, the userscript manager
+injects the script into the document object model (DOM). From that point
+forward, JavaScript runs strictly on the client side, meaning an active
+internet connection is not required for the script's code to process
+data or modify the user interface.</p>
+<h2 id="key-requirements-for-offline-userscripts">Key Requirements for
+Offline Userscripts</h2>
+<p>To ensure a userscript operates completely offline after the initial
+page render, it must adhere to specific technical requirements:</p>
+<ul>
+<li><strong>Pre-loaded Dependencies:</strong> External libraries must be
+bundled directly within the script or loaded via the
+<code>@require</code> directive during the script's installation. Script
+managers download <code>@require</code> dependencies once during
+installation, storing them locally for offline execution.</li>
+<li><strong>Base64 Encoded Assets:</strong> Images, icons, or custom
+fonts used by the script must be embedded directly as Base64 data URIs
+or CSS strings instead of fetching remote URLs.</li>
+<li><strong>Local Data Storage:</strong> Instead of querying remote
+servers, offline userscripts store and retrieve data using local APIs
+such as <code>localStorage</code>, <code>IndexedDB</code>, or the
+userscript manager's built-in storage functions
+(<code>GM_setValue</code> and <code>GM_getValue</code>).</li>
+<li><strong>Client-Side DOM Manipulation:</strong> All visual changes,
+calculations, and event handlers must operate exclusively on the
+existing local DOM structure without invoking asynchronous network
+requests like <code>fetch()</code> or <code>XMLHttpRequest</code>.</li>
+</ul>
+<h2 id="limitations-and-edge-cases">Limitations and Edge Cases</h2>
+<p>While the userscript itself can run offline, its functionality
+depends on the architecture of the underlying web page. If the host page
+is a Single Page Application (SPA) that requires background network
+requests to render new views or dynamic content, the page itself may
+fail while offline, indirectly limiting what the userscript can modify.
+However, for static pages, locally cached pages, or applications
+designed to run offline (such as progressive web apps), a self-contained
+userscript will remain fully operational.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

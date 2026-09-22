@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Customize Real Estate Search Filters - userscript</title>
+    <meta name="description" content="Userscripts are custom snippets of JavaScript executed in the browser using managers like Tampermonkey or Violentmonkey, enabling users to alter how web pages function. On real estate and property portals, built-in search filters are often limited, rigid">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-customize-real-estate-search-filters">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Customize Real Estate Search Filters - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-customize-real-estate-search-filters" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts are custom snippets of JavaScript executed in the browser using managers like Tampermonkey or Violentmonkey, enabling users to alter how web pages function. On real estate and property portals, built-in search filters are often limited, rigid" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-customize-real-estate-search-filters">How
+Userscripts Customize Real Estate Search Filters</h1>
+<p>Userscripts are custom snippets of JavaScript executed in the browser
+using managers like Tampermonkey or Violentmonkey, enabling users to
+alter how web pages function. On real estate and property portals,
+built-in search filters are often limited, rigid, or optimized for the
+platform's commercial interests rather than the homebuyer's convenience.
+By injecting client-side code, userscripts can overhaul these property
+filters, add custom search parameters, automatically hide unwanted
+listings, and calculate real-time metrics that built-in tools
+ignore.</p>
+<h2 id="intercepting-and-modifying-api-data">Intercepting and Modifying
+API Data</h2>
+<p>Modern property websites rely on asynchronous API requests (using
+<code>fetch</code> or <code>XMLHttpRequest</code>) to pull listing data
+from servers and render it dynamically on the page. Userscripts can
+intercept these responses before the browser renders the HTML.</p>
+<p>By inspecting the incoming JSON payloads, a script can filter out
+listings that fail specific backend criteria—such as properties with
+excessive HOA fees, pending sales status, or missing price
+histories—preventing them from ever rendering on the user's screen.</p>
+<h2 id="injecting-custom-filter-inputs-into-the-ui">Injecting Custom
+Filter Inputs into the UI</h2>
+<p>Userscripts manipulate the Document Object Model (DOM) to add custom
+control panels, sliders, and checkboxes directly onto the real estate
+site's interface.</p>
+<p>For example, if a website only allows filtering by total price and
+bedroom count, a userscript can insert a custom input field for "Maximum
+Price per Square Foot." When the user adjusts this custom input, the
+script evaluates the visible listing cards and dynamically hides any
+property exceeding the target price-per-square-foot threshold.</p>
+<h2 id="advanced-keyword-and-text-exclusions">Advanced Keyword and Text
+Exclusions</h2>
+<p>Built-in property filters rarely allow users to exclude listings
+based on specific terms in the description. Userscripts solve this by
+parsing the textual content of listing titles, descriptions, and tag
+lists.</p>
+<p>Users can configure scripts to scan for specific blacklisted terms,
+such as:</p>
+<ul>
+<li>"Leasehold" or "land lease"</li>
+<li>"Cash buyers only"</li>
+<li>"Tenant occupied"</li>
+<li>"Auction" or "short sale"</li>
+</ul>
+<p>If a listing contains any specified negative keywords, the userscript
+applies a CSS style like <code>display: none;</code> to remove the
+property card from the search results grid.</p>
+<h2 id="filtering-by-derived-and-external-metrics">Filtering by Derived
+and External Metrics</h2>
+<p>Property portals often require users to click into individual listing
+pages to view crucial secondary data. Userscripts streamline this by
+parsing raw listing data directly on the search page, calculating
+derived metrics, and applying filter rules based on the results:</p>
+<ul>
+<li><strong>Price Reduction History:</strong> Filtering out properties
+that have not dropped in price within a set timeframe.</li>
+<li><strong>Lot-to-Building Ratios:</strong> Automatically hiding
+properties where the yard size is below a specified percentage of the
+total lot.</li>
+<li><strong>External Geo-Data:</strong> Integrating with third-party
+APIs (such as Google Maps or OpenStreetMap) to filter out listings
+located beyond a specific driving radius from a workplace or school,
+regardless of static zip-code boundaries.</li>
+</ul>
+<h2 id="storing-preferences-and-hiding-viewed-listings">Storing
+Preferences and Hiding Viewed Listings</h2>
+<p>Standard real estate sites often reset search filters upon logging
+out or fail to remember which properties a user has already discarded.
+Userscripts utilize local browser storage (<code>localStorage</code> or
+IndexedDB) to track listing IDs across sessions.</p>
+<p>Users can add "Hide Property" buttons to each listing card. The
+script saves those hidden IDs locally and ensures that dismissed
+properties never appear in future search results, keeping the feed
+dedicated strictly to new, relevant leads.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

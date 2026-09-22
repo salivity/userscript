@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Are Userscripts Safe to Install From Unknown Sources? - userscript</title>
+    <meta name="description" content="Userscripts can significantly enhance your browsing experience by modifying web pages on the fly, but installing them from unknown or unverified sources poses substantial security and privacy risks. Because userscripts run directly within the context of">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/are-userscripts-safe-to-install-from-unknown-sources">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Are Userscripts Safe to Install From Unknown Sources? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/are-userscripts-safe-to-install-from-unknown-sources" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can significantly enhance your browsing experience by modifying web pages on the fly, but installing them from unknown or unverified sources poses substantial security and privacy risks. Because userscripts run directly within the context of" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="are-userscripts-safe-to-install-from-unknown-sources">Are
+Userscripts Safe to Install From Unknown Sources?</h1>
+<p>Userscripts can significantly enhance your browsing experience by
+modifying web pages on the fly, but installing them from unknown or
+unverified sources poses substantial security and privacy risks. Because
+userscripts run directly within the context of your browser, malicious
+scripts can steal sensitive information, inject harmful advertisements,
+or track your online activity. This article explores how userscripts
+work, the primary dangers of installing them from untrusted developers,
+and the best practices you can follow to keep your device and data
+safe.</p>
+<hr />
+<h2 id="how-userscripts-work-behind-the-scenes">How Userscripts Work
+Behind the Scenes</h2>
+<p>Userscripts are small programs written in JavaScript that run locally
+in your web browser through a manager extension like Tampermonkey,
+Violentmonkey, or Greasemonkey. They allow you to customize the
+appearance and behavior of web pages, automate repetitive tasks, or add
+new features to your favorite sites.</p>
+<p>However, because these scripts execute with high privileges inside
+your browser, they have access to much of the same data you see on
+screen. When a userscript loads on a webpage, it can often read page
+content, interact with forms, and listen for user inputs.</p>
+<hr />
+<h2 id="the-security-risks-of-untrusted-userscripts">The Security Risks
+of Untrusted Userscripts</h2>
+<p>When you install a script from an unknown or unverified source, you
+are giving an unvetted author permission to run code inside your web
+sessions.</p>
+<h3 id="key-threats-include">Key Threats Include:</h3>
+<ul>
+<li><strong>Data Theft and Credential Harvesting:</strong> Malicious
+scripts can capture keystrokes, extract cookies, or scrape personal
+information—such as usernames, passwords, and credit card details—and
+send them to remote attackers.</li>
+<li><strong>Session Hijacking:</strong> A script can leverage session
+tokens stored in your browser to impersonate you on logged-in websites,
+performing unauthorized actions under your account.</li>
+<li><strong>Malicious Redirection and Ad Injection:</strong> Bad actors
+often use scripts to inject unwanted advertisements, pop-ups, or
+redirect your traffic to phishing websites.</li>
+<li><strong>Cross-Site Scripting (XSS) Exploits:</strong> A poorly
+written or intentionally malicious script can introduce vulnerabilities
+into otherwise secure websites, leaving you open to broader
+exploits.</li>
+</ul>
+<hr />
+<h2 id="red-flags-to-watch-out-for">Red Flags to Watch Out For</h2>
+<p>Before installing any userscript, inspect the code or listing details
+for these warning signs:</p>
+<ul>
+<li><strong>Obfuscated Code:</strong> If the script’s code looks
+scrambled, encoded, or unreadable, it may be hiding malicious functions
+to prevent user inspection.</li>
+<li><strong>Unnecessary Permissions:</strong> Be cautious of scripts
+requesting broad <code>@match</code> or <code>@include</code> rules
+(like <code>&lt;all_urls&gt;</code>) when they only claim to work on a
+single website.</li>
+<li><strong>Suspicious Network Requests:</strong> Pay attention to the
+use of <code>@grant GM_xmlhttpRequest</code>. This function allows the
+script to bypass standard browser cross-origin restrictions and send
+data to third-party servers.</li>
+</ul>
+<hr />
+<h2 id="best-practices-for-staying-safe">Best Practices for Staying
+Safe</h2>
+<p>If you rely on userscripts for productivity or customization, follow
+these practical tips to minimize risk:</p>
+<ul>
+<li><strong>Use Reputable Repositories:</strong> Download scripts from
+well-known platforms with active communities, transparent code reviews,
+and user feedback mechanisms.</li>
+<li><strong>Review the Source Code:</strong> If you know basic
+JavaScript, inspect the code before installing. Look for where your data
+goes and check for external server calls.</li>
+<li><strong>Limit Script Scope:</strong> Edit the script's metadata
+headers so it only runs on the specific domain for which it was
+designed, rather than across all websites.</li>
+<li><strong>Keep Extensions Updated:</strong> Ensure your browser and
+userscript manager extension are always up to date to benefit from the
+latest security patches.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

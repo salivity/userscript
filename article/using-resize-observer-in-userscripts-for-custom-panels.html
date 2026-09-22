@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using ResizeObserver in Userscripts for Custom Panels - userscript</title>
+    <meta name="description" content="Userscripts frequently inject custom UI panels into third-party websites, but keeping these panels aligned and sized correctly as the browser layout changes can be challenging. By leveraging the JavaScript ResizeObserver API, userscripts can monitor real">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/using-resize-observer-in-userscripts-for-custom-panels">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Using ResizeObserver in Userscripts for Custom Panels - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/using-resize-observer-in-userscripts-for-custom-panels" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts frequently inject custom UI panels into third-party websites, but keeping these panels aligned and sized correctly as the browser layout changes can be challenging. By leveraging the JavaScript ResizeObserver API, userscripts can monitor real" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="using-resizeobserver-in-userscripts-for-custom-panels">Using
+ResizeObserver in Userscripts for Custom Panels</h1>
+<p>Userscripts frequently inject custom UI panels into third-party
+websites, but keeping these panels aligned and sized correctly as the
+browser layout changes can be challenging. By leveraging the JavaScript
+<code>ResizeObserver</code> API, userscripts can monitor real-time
+dimension changes of specific DOM elements—such as responsive sidebars
+or main content containers—and automatically recalculate and adjust
+custom panel dimensions without relying on laggy window resize events or
+performance-heavy polling loops.</p>
+<h2 id="why-userscripts-need-resizeobserver">Why Userscripts Need
+ResizeObserver</h2>
+<p>Traditional web development often relies on the
+<code>window.onresize</code> event listener to handle layout updates.
+However, window resize events only fire when the entire browser window
+changes dimensions, missing key layout changes like collapsed sidebars,
+toggled navigation menus, or dynamic content loading within Single Page
+Applications (SPAs).</p>
+<p><code>ResizeObserver</code> solves this by directly monitoring
+specific DOM nodes. For userscripts, this means custom floating, docked,
+or injected panels can react to localized changes in their parent
+containers instantly.</p>
+<h2 id="how-the-implementation-works">How the Implementation Works</h2>
+<p>Integrating <code>ResizeObserver</code> into a userscript involves
+four primary steps:</p>
+<ol type="1">
+<li><strong>Target Identification:</strong> The script identifies the
+existing web page element that determines the available space (e.g.,
+<code>#main-content</code> or <code>.sidebar-container</code>).</li>
+<li><strong>Observer Instantiation:</strong> A new
+<code>ResizeObserver</code> instance is created, initialized with a
+callback function that handles the resizing logic.</li>
+<li><strong>Panel Adjustment Logic:</strong> Inside the callback, the
+script reads the target's updated <code>contentRect</code> properties
+(width, height, top, left) and applies updated inline styles to the
+custom panel.</li>
+<li><strong>Observation Initialization:</strong> The script attaches the
+targeted element to the observer using the <code>.observe()</code>
+method.</li>
+</ol>
+<h2 id="practical-javascript-code-pattern">Practical JavaScript Code
+Pattern</h2>
+<p>Below is a standard pattern used within Tampermonkey or Violentmonkey
+userscripts to keep an injected panel synchronized with a site's main
+content wrapper:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// 1. Create and inject the custom panel</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> customPanel <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>customPanel<span class="op">.</span><span class="at">id</span> <span class="op">=</span> <span class="st">&#39;my-custom-panel&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>customPanel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">position</span> <span class="op">=</span> <span class="st">&#39;absolute&#39;</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>customPanel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">backgroundColor</span> <span class="op">=</span> <span class="st">&#39;#f0f0f0&#39;</span><span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>customPanel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">transition</span> <span class="op">=</span> <span class="st">&#39;width 0.1s, height 0.1s&#39;</span><span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(customPanel)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// 2. Identify the element to track</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> targetContainer <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#main-content&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">// 3. Define the ResizeObserver callback</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> resizeObserver <span class="op">=</span> <span class="kw">new</span> <span class="fu">ResizeObserver</span>(entries <span class="kw">=&gt;</span> {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (<span class="kw">let</span> entry <span class="kw">of</span> entries) {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Extract new dimensions of the target container</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> { width<span class="op">,</span> left<span class="op">,</span> top } <span class="op">=</span> entry<span class="op">.</span><span class="at">contentRect</span><span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Adjust the custom panel to match or offset based on container size</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    customPanel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">width</span> <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>width <span class="op">*</span> <span class="fl">0.25</span><span class="sc">}</span><span class="vs">px`</span><span class="op">;</span> <span class="co">// Occupy 25% of container width</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    customPanel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">left</span> <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>left <span class="op">+</span> width <span class="op">+</span> <span class="dv">10</span><span class="sc">}</span><span class="vs">px`</span><span class="op">;</span> <span class="co">// Position next to container</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    customPanel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">top</span> <span class="op">=</span> <span class="vs">`</span><span class="sc">${</span>top<span class="sc">}</span><span class="vs">px`</span><span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">// 4. Start observing the container</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (targetContainer) {</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  resizeObserver<span class="op">.</span><span class="fu">observe</span>(targetContainer)<span class="op">;</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="advantages-of-using-resizeobserver-in-userscripts">Advantages of
+Using ResizeObserver in Userscripts</h2>
+<ul>
+<li><strong>Performance Optimization:</strong> Unlike standard resize
+listeners that fire constantly during drag operations,
+<code>ResizeObserver</code> is optimized by the browser rendering engine
+to prevent layout thrashing and unnecessary recalculations.</li>
+<li><strong>Element-Level Precision:</strong> The script responds to
+size changes of individual wrapper elements, ensuring the custom UI
+scales correctly even if the browser window size remains identical.</li>
+<li><strong>Clean Cleanup:</strong> When dynamic SPAs destroy or replace
+DOM nodes, calling <code>resizeObserver.disconnect()</code> prevents
+memory leaks in long-running browser sessions.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

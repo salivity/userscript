@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Automate Jira and Trello Using Userscripts - userscript</title>
+    <meta name="description" content="Managing project management tools like Jira and Trello often involves tedious, repetitive actions such as moving cards, filling out standardized fields, and applying routine labels. Userscripts—small JavaScript scripts executed directly in the browser">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-automate-jira-and-trello-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Automate Jira and Trello Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-automate-jira-and-trello-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing project management tools like Jira and Trello often involves tedious, repetitive actions such as moving cards, filling out standardized fields, and applying routine labels. Userscripts—small JavaScript scripts executed directly in the browser" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-automate-jira-and-trello-using-userscripts">How to
+Automate Jira and Trello Using Userscripts</h1>
+<p>Managing project management tools like Jira and Trello often involves
+tedious, repetitive actions such as moving cards, filling out
+standardized fields, and applying routine labels. Userscripts—small
+JavaScript scripts executed directly in the browser via extensions like
+Tampermonkey or Violentmonkey—offer a light, flexible way to automate
+these workflow bottlenecks. By manipulating the web page's Document
+Object Model (DOM) and leveraging internal API calls, userscripts
+perform routine actions automatically, saving team members significant
+time and reducing manual operational errors.</p>
+<h2 id="core-mechanisms-of-userscript-automation">Core Mechanisms of
+Userscript Automation</h2>
+<p>Userscripts operate on top of the web interface of web applications.
+They trigger based on URL patterns, running customized JavaScript as
+soon as a target Jira or Trello page loads.</p>
+<h3 id="1-dom-manipulation-and-custom-ui-elements">1. DOM Manipulation
+and Custom UI Elements</h3>
+<p>Userscripts can modify the user interface directly. They insert
+custom buttons, quick-action menus, or input macros directly into the
+Jira or Trello interface.</p>
+<ul>
+<li><strong>Jira Example:</strong> Adding a custom button next to the
+"Create Ticket" modal that automatically populates standard bug report
+steps, environment details, and default assignees with a single
+click.</li>
+<li><strong>Trello Example:</strong> Creating a "Quick Move" button on
+card covers to bypass dragging and dropping across long Kanban
+boards.</li>
+</ul>
+<h3 id="2-auto-filling-and-form-pre-population">2. Auto-Filling and Form
+Pre-Population</h3>
+<p>Instead of manually typing repeated information, userscripts hook
+into input fields and selectors to pre-fill dynamic data. They can
+inject predefined markdown templates into Jira issue descriptions or
+automatically fill out custom fields based on selected issue types.</p>
+<h3 id="3-custom-keyboard-shortcuts">3. Custom Keyboard Shortcuts</h3>
+<p>Userscripts can listen for specific key presses to execute multi-step
+workflows instantly.</p>
+<ul>
+<li>Pressing a shortcut like <code>Shift + D</code> can automatically
+move a Jira issue to "Done," clear the sprint field, and assign the
+ticket to QA.</li>
+<li>Pressing <code>Shift + L</code> in Trello can simultaneously attach
+specific color labels and assign the current logged-in user to the
+active card.</li>
+</ul>
+<h3 id="4-background-api-execution">4. Background API Execution</h3>
+<p>Instead of relying solely on clicking UI buttons, advanced
+userscripts utilize <code>fetch</code> or <code>XMLHttpRequest</code> to
+call the REST APIs of Jira (Atlassian Cloud API) or Trello directly
+using the user’s existing browser session.</p>
+<ul>
+<li><strong>Batch Operations:</strong> A user can select multiple cards
+on a Trello board and trigger a script that batch-updates due dates or
+archives them via API calls in milliseconds, avoiding slow web page
+reloads.</li>
+<li><strong>External Integration:</strong> Userscripts can query
+third-party APIs (like GitHub or Figma) to fetch commit hashes or design
+links and insert them into the ticket automatically.</li>
+</ul>
+<h2 id="common-jira-and-trello-userscript-use-cases">Common Jira and
+Trello Userscript Use Cases</h2>
+<ul>
+<li><strong>Enforcing Standardized Checklists:</strong> Automatically
+creating a default set of subtasks in Jira or checklist items in Trello
+whenever a card moves into an "In Progress" column.</li>
+<li><strong>Custom Field Validation:</strong> Highlighting missing
+parameters (e.g., missing story points or missing acceptance criteria)
+before allowing a user to submit a ticket.</li>
+<li><strong>UI Cleanup:</strong> Hiding cluttered or unused sidebars,
+custom fields, and banner notifications to create a distraction-free,
+high-density view tailored to individual preferences.</li>
+<li><strong>Time Tracking Macros:</strong> Automatically logging
+predefined work logs (e.g., "15-minute code review") to Jira tickets
+upon transitioning them to specific states.</li>
+</ul>
+<h2 id="advantages-over-built-in-automation-tools">Advantages Over
+Built-In Automation Tools</h2>
+<p>While Jira (Jira Automation) and Trello (Butler) offer native
+automation capabilities, userscripts provide distinct advantages for
+individual power users:</p>
+<ol type="1">
+<li><strong>No Admin Permissions Required:</strong> Native automations
+often require organization-level administrator rights or global
+permissions. Userscripts run strictly in the user's browser, allowing
+individual workers to build custom workflows without IT approval.</li>
+<li><strong>Bypassing Automation Quotas:</strong> Cloud platforms often
+cap the number of automated runs allowed per month on lower-tier plans.
+Userscripts run client-side, consuming zero native automation
+credits.</li>
+<li><strong>Instant Execution:</strong> Native integrations often run
+asynchronously on server queues, leading to noticeable delays.
+Browser-side scripts run instantly upon UI interaction.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Bypass Strict Popup Blockers - userscript</title>
+    <meta name="description" content="Userscripts—custom JavaScript snippets run via extensions like Tampermonkey or Violentmonkey—often need to open secondary windows for tasks like authentication, OAuth redirects, or displaying external resources. Modern web browsers enforce strict pop">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-bypass-strict-popup-blockers">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Bypass Strict Popup Blockers - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-bypass-strict-popup-blockers" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts—custom JavaScript snippets run via extensions like Tampermonkey or Violentmonkey—often need to open secondary windows for tasks like authentication, OAuth redirects, or displaying external resources. Modern web browsers enforce strict pop" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-bypass-strict-popup-blockers">How Userscripts
+Bypass Strict Popup Blockers</h1>
+<p>Userscripts—custom JavaScript snippets run via extensions like
+Tampermonkey or Violentmonkey—often need to open secondary windows for
+tasks like authentication, OAuth redirects, or displaying external
+resources. Modern web browsers enforce strict popup blocking rules that
+prevent scripts from opening new windows unless triggered by an explicit
+user gesture. This article details the specific technical mechanisms
+userscripts use to bypass these restrictions, including privilege
+escalation through extension APIs, direct event binding, and dynamic DOM
+manipulation.</p>
+<h2 id="1-leveraging-userscript-manager-apis-gm_openintab">1. Leveraging
+Userscript Manager APIs (<code>GM_openInTab</code>)</h2>
+<p>The most effective way a userscript bypasses a browser's native popup
+blocker is by using dedicated API functions provided by the userscript
+manager, such as <code>GM_openInTab</code> (or
+<code>GM.openInTab</code>).</p>
+<p>Because userscript managers run with higher browser extension
+permissions (specifically background context capabilities), calls to
+<code>GM_openInTab</code> operate outside the web page's standard DOM
+sandbox. When a script calls this API:</p>
+<ul>
+<li>The request is passed from the content script to the extension's
+background script.</li>
+<li>The background script uses the browser’s internal extensions API
+(such as <code>chrome.tabs.create</code> or
+<code>browser.tabs.create</code>).</li>
+<li>The browser treats this action as an intentional extension feature,
+bypassing the tab's strict popup blocker entirely, even if the action
+was not directly tied to a user event.</li>
+</ul>
+<h2 id="2-binding-execution-to-genuine-user-gestures">2. Binding
+Execution to Genuine User Gestures</h2>
+<p>Standard web security blocks calls to <code>window.open()</code> if
+they occur asynchronously (e.g., inside a <code>setTimeout</code>, after
+a <code>fetch</code> network request, or during initial page load).
+Browsers maintain a "transient user activation" flag, which remains
+active for a few seconds only after an actual physical user interaction
+like a click or keypress.</p>
+<p>To open standard windows using native JavaScript without
+trigger-blocking:</p>
+<ul>
+<li><strong>Event Interception:</strong> Userscripts hook directly into
+real DOM events (e.g., <code>click</code>, <code>keydown</code>, or
+<code>submit</code>).</li>
+<li><strong>Synchronous Execution:</strong> The script calls
+<code>window.open()</code> synchronously within the event listener
+function before the user activation state expires.</li>
+<li><strong>Pre-Opening Placeholder Tabs:</strong> If an asynchronous
+network request is necessary before opening the popup, the script opens
+a blank tab (<code>const win = window.open('about:blank')</code>)
+<em>synchronously</em> during the click event, performs the background
+request, and then updates <code>win.location.href</code> once the target
+URL is ready.</li>
+</ul>
+<h2 id="3-dynamic-anchor-injection-and-mouseevent-dispatching">3.
+Dynamic Anchor Injection and MouseEvent Dispatching</h2>
+<p>When normal <code>window.open()</code> calls fail or are blocked by
+aggressive ad-blockers, userscripts often create temporary DOM elements
+that simulate standard user navigation.</p>
+<ol type="1">
+<li>The script programmatically creates an HTML anchor element:
+<code>const a = document.createElement('a');</code></li>
+<li>It sets the target attribute to open a new context:
+<code>a.target = '_blank';</code> <code>a.href = targetUrl;</code>
+<code>a.rel = 'noopener noreferrer';</code></li>
+<li>The script attaches the anchor to the DOM, constructs a genuine
+<code>MouseEvent</code> object with trusted properties, dispatches the
+event directly to the element, and subsequently removes the element from
+the page.</li>
+</ol>
+<h2 id="4-manipulating-the-web-application-context">4. Manipulating the
+Web Application Context</h2>
+<p>In cases where a web application actively blocks popups via internal
+scripts, userscripts execute at <code>document-start</code> to override
+default window behavior. By monkey-patching or replacing the native
+<code>window.open</code> reference on the target page, the userscript
+can intercept window creation calls, rewrite their parameters to conform
+to acceptable security policies, or route the open request through the
+elevated extension environment before the site's default security
+scripts execute.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

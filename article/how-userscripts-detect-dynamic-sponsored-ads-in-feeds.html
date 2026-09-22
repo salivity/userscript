@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Detect Dynamic Sponsored Ads in Feeds - userscript</title>
+    <meta name="description" content="Userscripts detect and highlight dynamically loaded sponsored content in news feeds by combining real-time DOM monitoring, precise element inspection, and custom CSS injection. Because modern websites use infinite scrolling and asynchronous JavaScript to">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-detect-dynamic-sponsored-ads-in-feeds">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Detect Dynamic Sponsored Ads in Feeds - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-detect-dynamic-sponsored-ads-in-feeds" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts detect and highlight dynamically loaded sponsored content in news feeds by combining real-time DOM monitoring, precise element inspection, and custom CSS injection. Because modern websites use infinite scrolling and asynchronous JavaScript to" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-detect-dynamic-sponsored-ads-in-feeds">How
+Userscripts Detect Dynamic Sponsored Ads in Feeds</h1>
+<p>Userscripts detect and highlight dynamically loaded sponsored content
+in news feeds by combining real-time DOM monitoring, precise element
+inspection, and custom CSS injection. Because modern websites use
+infinite scrolling and asynchronous JavaScript to insert ads into user
+feeds without reloading the page, standard browser extensions or static
+scripts often miss them. Userscripts overcome this by relying on browser
+APIs like <code>MutationObserver</code> to watch for new posts, scanning
+those elements for ad-related indicators, and applying high-visibility
+styling to alert the user.</p>
+<h2 id="real-time-dom-monitoring-with-mutationobserver">Real-Time DOM
+Monitoring with MutationObserver</h2>
+<p>Modern news feeds continuously load new content as users scroll.
+Traditional userscripts run only once when the page loads, which makes
+them ineffective against dynamically fetched posts.</p>
+<p>To solve this, userscripts use the <code>MutationObserver</code> API.
+A <code>MutationObserver</code> listens for changes to the Document
+Object Model (DOM) tree. The script attaches an observer to the parent
+container of the news feed (such as a <code>div</code> holding all feed
+posts) and configures it to trigger whenever child nodes are added.</p>
+<p>When a user scrolls down and the website fetches a new batch of items
+via AJAX or Fetch APIs, the <code>MutationObserver</code> captures the
+newly appended HTML elements instantly and passes them to a processing
+function.</p>
+<h2 id="identifying-sponsored-content-rules">Identifying Sponsored
+Content Rules</h2>
+<p>Once a script detects newly added feed items, it inspects them to
+determine if they contain native advertising. Platforms often disguise
+sponsored content to blend in with organic posts, but userscripts detect
+them through several key markers:</p>
+<h3 id="1-text-parsing-and-substring-matching">1. Text Parsing and
+Substring Matching</h3>
+<p>Scripts search element text for common promotional labels such as
+"Sponsored," "Promoted," "Ad," or "Paid Partnership." Some platforms
+attempt to obscure these labels by breaking the letters across multiple
+hidden <code>span</code> tags or inserting invisible zero-width
+characters. Advanced userscripts handle this by reading the computed
+visible text (<code>innerText</code>) or stripping out hidden characters
+before matching strings.</p>
+<h3 id="2-attribute-and-selector-inspection">2. Attribute and Selector
+Inspection</h3>
+<p>Ad networks often assign unique attributes to promotional elements.
+Userscripts evaluate nodes using specific CSS selectors or XPath
+queries, checking for:</p>
+<ul>
+<li>Data attributes like <code>data-ad-preview</code> or
+<code>data-promoted="true"</code>.</li>
+<li>Accessibility tags like <code>aria-label="Sponsored"</code>.</li>
+<li>Distinctive URL patterns within outbound links (e.g., redirection
+links containing tracking parameters like <code>utm_source</code> or
+ad-network domains).</li>
+</ul>
+<h3 id="3-structural-and-layout-analysis">3. Structural and Layout
+Analysis</h3>
+<p>If a platform uses randomized or obfuscated CSS class names,
+userscripts analyze the structural blueprint of the element. Sponsored
+posts often contain specific structural differences compared to standard
+posts, such as missing author profile links, extra call-to-action
+buttons (e.g., "Shop Now"), or hidden SVG icons used specifically for ad
+disclosures.</p>
+<h2 id="intercepting-network-requests">Intercepting Network
+Requests</h2>
+<p>For complex platforms where the DOM is heavily obfuscated or rendered
+inside Shadow DOM containers, userscripts bypass visual parsing entirely
+by intercepting network traffic.</p>
+<p>By monkey-patching the browser's native <code>window.fetch</code> or
+<code>XMLHttpRequest</code> methods, the script reads the raw JSON
+responses sent from the server before the web app renders them on
+screen. The JSON payload usually contains explicit boolean flags (e.g.,
+<code>"is_sponsored": true</code>). The userscript tags the unique ID of
+that post in memory so that when the item finally renders in the DOM,
+the script can instantly recognize and flag it.</p>
+<h2 id="applying-highlights-to-detected-ads">Applying Highlights to
+Detected Ads</h2>
+<p>Once a sponsored element is flagged, the userscript modifies its
+appearance to make it obvious to the user. This is achieved through
+direct manipulation of the element's style properties or by inserting
+custom CSS into the document head.</p>
+<p>Common highlighting techniques include:</p>
+<ul>
+<li><strong>Borders and Outlines:</strong> Adding thick, high-contrast
+borders (e.g., bright red or neon yellow) around the feed item
+container.</li>
+<li><strong>Background Tinting:</strong> Altering the
+<code>background-color</code> property to dim or highlight the
+background of the ad.</li>
+<li><strong>Custom Labels:</strong> Injecting a prominent badge or
+header tag (e.g., "[SPONSORED AD DETECTED]") directly at the top of the
+post.</li>
+<li><strong>Opacity Reduction:</strong> Lowering the opacity of the
+sponsored post to make it visually distinct from regular content while
+preserving the layout.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Customize In-Browser PDF Viewing - userscript</title>
+    <meta name="description" content="Userscripts offer a powerful way to tailor the browser-based PDF reading experience by injecting custom JavaScript and CSS directly into the web page or native PDF viewer interface. Installed via browser extensions like Tampermonkey or Violentmonkey, the">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-customize-in-browser-pdf-viewing">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Customize In-Browser PDF Viewing - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-customize-in-browser-pdf-viewing" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts offer a powerful way to tailor the browser-based PDF reading experience by injecting custom JavaScript and CSS directly into the web page or native PDF viewer interface. Installed via browser extensions like Tampermonkey or Violentmonkey, the" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-customize-in-browser-pdf-viewing">How
+Userscripts Customize In-Browser PDF Viewing</h1>
+<p>Userscripts offer a powerful way to tailor the browser-based PDF
+reading experience by injecting custom JavaScript and CSS directly into
+the web page or native PDF viewer interface. Installed via browser
+extensions like Tampermonkey or Violentmonkey, these lightweight scripts
+can alter visual themes, automate tedious tasks, add custom navigation
+shortcuts, and extract text or metadata from documents loaded in
+browsers like Chrome, Firefox, and Edge. By leveraging the web-based
+architecture of modern PDF viewers, userscripts transform static
+document displays into interactive, highly functional reading
+environments.</p>
+<h2 id="how-userscripts-interact-with-browser-pdf-viewers">How
+Userscripts Interact with Browser PDF Viewers</h2>
+<p>Modern web browsers render PDF files using internal,
+web-technology-based viewers. For example, Mozilla Firefox uses
+PDF.js—an HTML5 canvas and JavaScript-based library—while Google Chrome
+and Chromium-based browsers use specialized WebUI wrappers. Because
+these viewers operate within the standard web document frame,
+userscripts can target their DOM elements, styles, and event
+listeners.</p>
+<p>Userscript managers execute user-defined scripts based on URL
+patterns specified in the script's <code>@match</code> or
+<code>@include</code> headers. When a user opens a online PDF (e.g.,
+<code>https://example.com/document.pdf</code>), the userscript injects
+code into the page after the PDF viewer loads, enabling immediate
+customization.</p>
+<h2 id="key-viewing-customizations-powered-by-userscripts">Key Viewing
+Customizations Powered by Userscripts</h2>
+<h3 id="1-advanced-visual-themes-and-dark-mode">1. Advanced Visual
+Themes and Dark Mode</h3>
+<p>While many native PDF viewers lack native dark mode support or offer
+limited color inversion options, userscripts can apply sophisticated CSS
+filters or modify background layers. They can:</p>
+<ul>
+<li>Apply true dark themes by re-coloring background canvases while
+maintaining text readability.</li>
+<li>Adjust brightness, contrast, and warmth (sepia tones) to reduce eye
+strain during extended reading sessions.</li>
+<li>Invert images selectively so photos and diagrams remain legible
+while page backgrounds turn dark.</li>
+</ul>
+<h3 id="2-custom-keyboard-navigation-and-controls">2. Custom Keyboard
+Navigation and Controls</h3>
+<p>Userscripts enable full control over browser hotkeys, allowing users
+to map custom keyboard shortcuts for faster navigation:</p>
+<ul>
+<li><strong>Vim-style navigation:</strong> Bind keys like
+<code>j</code>/<code>k</code> for scrolling and
+<code>h</code>/<code>l</code> or <code>G</code>/<code>gg</code> for
+jumping between pages.</li>
+<li><strong>Custom Zoom Levels:</strong> Set precise zoom percentages or
+create shortcuts to jump between full-page and fit-to-width modes.</li>
+<li><strong>Auto-Scrolling:</strong> Implement hands-free continuous
+scrolling with configurable speeds.</li>
+</ul>
+<h3 id="3-interface-streamlining-and-ui-modification">3. Interface
+Streamlining and UI Modification</h3>
+<p>To maximize screen real estate, userscripts can strip away intrusive
+UI elements or add persistent custom toolbars:</p>
+<ul>
+<li>Automatically hide top toolbars, sidebars, and floating action
+buttons until hovered over.</li>
+<li>Add persistent page counters, table-of-contents panels, or
+bookmarking overlays.</li>
+<li>Remove print, download, or annotation restrictions imposed by basic
+web-embedded PDF viewers.</li>
+</ul>
+<h3 id="4-text-manipulation-and-translation-integration">4. Text
+Manipulation and Translation Integration</h3>
+<p>Reading academic papers or foreign-language documents becomes
+significantly easier through script-driven text processing:</p>
+<ul>
+<li><strong>Instant Translation:</strong> Automatically send selected
+text to translation APIs (such as Google Translate or DeepL) and display
+the result in a floating popup.</li>
+<li><strong>Copy Formatting Clean-up:</strong> Automatically remove
+unnecessary line breaks, hyphenations, and line numbers from copied text
+fragments.</li>
+<li><strong>External Searching:</strong> Add context menu items or
+hotkeys to search selected text directly on Google Scholar, Wikipedia,
+or dictionary engines.</li>
+</ul>
+<h2 id="overcoming-technical-limitations">Overcoming Technical
+Limitations</h2>
+<p>To customize PDFs opened from a local hard drive
+(<code>file:///</code> paths), users must explicitly enable the "Allow
+access to file URLs" setting in their userscript manager extension
+settings. Additionally, because built-in PDF viewers load
+asynchronously, userscripts often utilize <code>MutationObserver</code>
+APIs or targeted delays to ensure custom controls attach successfully
+after the document canvas has rendered fully.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

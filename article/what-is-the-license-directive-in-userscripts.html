@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the @license Directive in Userscripts? - userscript</title>
+    <meta name="description" content="The @license directive is a metadata header tag used in userscripts to explicitly specify the legal terms under which the script's code can be used, modified, and distributed. By clearly defining copyright permissions, this directive plays a crucial role">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-license-directive-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the @license Directive in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-license-directive-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @license directive is a metadata header tag used in userscripts to explicitly specify the legal terms under which the script's code can be used, modified, and distributed. By clearly defining copyright permissions, this directive plays a crucial role" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-license-directive-in-userscripts">What Is the
+@license Directive in Userscripts?</h1>
+<p>The <code>@license</code> directive is a metadata header tag used in
+userscripts to explicitly specify the legal terms under which the
+script's code can be used, modified, and distributed. By clearly
+defining copyright permissions, this directive plays a crucial role in
+how userscripts are shared across public platforms, protected against
+unauthorized use, and remixed by other developers. Understanding the
+<code>@license</code> directive helps creators safeguard their
+intellectual property while enabling users and repository managers to
+safely host and run the code.</p>
+<h2 id="what-is-the-license-directive">What Is the @license
+Directive?</h2>
+<p>In userscript managers such as Tampermonkey, Violentmonkey, or
+GreaseMonkey, scripts begin with a metadata block enclosed between
+<code>// ==UserScript==</code> and <code>// ==/UserScript==</code>. The
+<code>@license</code> directive is included within this block to declare
+the software license assigned to the code.</p>
+<p>Commonly used licenses in the <code>@license</code> tag include:</p>
+<ul>
+<li><strong>MIT</strong>: Highly permissive; allows anyone to use, copy,
+modify, and distribute the code freely.</li>
+<li><strong>GPL-3.0 (GNU General Public License)</strong>: Copyleft;
+allows modification and sharing, but derivative works must also be
+open-source under the same license.</li>
+<li><strong>Apache-2.0</strong>: Permissive; grants broad rights while
+providing explicit patent rights protection.</li>
+<li><strong>CC-BY-NC (Creative Commons Non-Commercial)</strong>: Allows
+sharing and modification, but restricts commercial usage.</li>
+<li><strong>No License / All Rights Reserved</strong>: Restricts
+redistribution and modification completely.</li>
+</ul>
+<h2 id="how-the-license-directive-impacts-userscript-sharing">How the
+@license Directive Impacts Userscript Sharing</h2>
+<h3 id="1-repository-and-platform-compliance">1. Repository and Platform
+Compliance</h3>
+<p>Script-hosting repositories like Greasy Fork and Sleazy Fork mandate
+or strongly encourage an explicit <code>@license</code> tag. If a script
+lacks a recognized open-source license, these platforms may restrict
+distribution, limit visibility, or refuse to host the script altogether
+to prevent potential copyright infringement issues.</p>
+<h3 id="2-legal-clarity-for-remixing-and-forking">2. Legal Clarity for
+Remixing and Forking</h3>
+<p>Userscripts frequently rely on community maintenance, bug fixes, and
+feature additions. The <code>@license</code> tag informs other
+developers whether they have permission to:</p>
+<ul>
+<li>Create a modified version (a "fork") of the script.</li>
+<li>Re-upload the script if the original author abandons it.</li>
+<li>Port the code to work on different browser engines or
+extensions.</li>
+</ul>
+<p>Without an explicit open-source license, default copyright laws
+apply, which legally prohibits others from modifying or redistributing
+the script—even if the author uploaded it publicly.</p>
+<h3 id="3-protection-for-original-authors">3. Protection for Original
+Authors</h3>
+<p>For script creators, adding a <code>@license</code> directive
+protects their work from unauthorized exploitation. For example, using a
+non-commercial license prevents third parties from packaging the script
+into a paid browser extension or monetizing it without consent.
+Additionally, standard open-source licenses include liability
+disclaimers, protecting the author from legal repercussions if the
+script fails or causes issues for users.</p>
+<h3 id="4-transparency-for-end-users">4. Transparency for End Users</h3>
+<p>For security-conscious users, the presence of a well-defined license
+provides transparency regarding code origin, author intent, and
+long-term viability. It ensures that the script operates within
+established open-source or proprietary software standards.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

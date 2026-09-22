@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Run Userscripts in an Isolated World Context - userscript</title>
+    <meta name="description" content="Userscripts can be executed within an isolated world context rather than the main page context. Modern browser extensions and userscript managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—use isolated worlds as their default execution env">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-run-userscripts-in-an-isolated-world-context">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Run Userscripts in an Isolated World Context - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-run-userscripts-in-an-isolated-world-context" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can be executed within an isolated world context rather than the main page context. Modern browser extensions and userscript managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—use isolated worlds as their default execution env" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-run-userscripts-in-an-isolated-world-context">How to Run
+Userscripts in an Isolated World Context</h1>
+<p>Userscripts can be executed within an isolated world context rather
+than the main page context. Modern browser extensions and userscript
+managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—use
+isolated worlds as their default execution environment. In an isolated
+world context, a userscript shares direct access to the web page's
+Document Object Model (DOM) but operates in a completely separate
+JavaScript environment, preventing page scripts and userscripts from
+accessing each other's global variables or functions.</p>
+<h2 id="understanding-isolated-world-vs-page-context">Understanding
+Isolated World vs. Page Context</h2>
+<p>When a browser loads a webpage, it creates a JavaScript context. How
+your userscript interacts with that page depends on the execution
+context you select:</p>
+<ul>
+<li><strong>Page Context (Main World):</strong> The userscript runs in
+the exact same JavaScript scope as the website's own scripts. It can
+read and modify global variables (<code>window.myVariable</code>),
+intercept native functions, and interact directly with page-defined
+scripts. However, the website can also detect, inspect, or tamper with
+the userscript.</li>
+<li><strong>Isolated World Context (Content Script World):</strong> The
+userscript runs in a private JavaScript scope created by the browser
+extension. It can view and modify the DOM elements on the page, add
+event listeners, and manipulate HTML. However, its JavaScript objects,
+functions, and global <code>window</code> scope are isolated from the
+webpage's own scripts.</li>
+</ul>
+<h2 id="how-to-configure-isolated-world-execution">How to Configure
+Isolated World Execution</h2>
+<p>Userscript managers allow you to control the execution context using
+specific metadata headers in your script's block.</p>
+<h3 id="1-using-grant-directives">1. Using <code>@grant</code>
+Directives</h3>
+<p>In managers like Tampermonkey and Violentmonkey, declaring any
+non-none <code>@grant</code> rule automatically forces the script into
+an isolated world context to grant secure access to extension APIs.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Isolated Context Example</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getValue</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// This runs in an isolated world context because of the @grant directive.</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Running safely in an isolated context.&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>If you do not require specialized extension APIs but still want
+isolation, using <code>@grant GM_addStyle</code> or similar lightweight
+grants will maintain the isolated environment.</p>
+<h3 id="2-using-inject-into-violentmonkey-and-tampermonkey">2. Using
+<code>@inject-into</code> (Violentmonkey and Tampermonkey)</h3>
+<p>Violentmonkey and modern versions of Tampermonkey support the
+explicit <code>@inject-into</code> metadata directive:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Explicit Isolated Injection</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @inject-into  isolated</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">// Explicitly forced into the isolated world context.</span></span></code></pre></div>
+<p>The valid values for <code>@inject-into</code> are:</p>
+<ul>
+<li><code>isolated</code>: Runs the script in the extension's isolated
+world context.</li>
+<li><code>page</code>: Injects the script directly into the page's main
+context.</li>
+<li><code>auto</code>: Lets the userscript manager choose the optimal
+context based on <code>@grant</code> rules.</li>
+</ul>
+<h2 id="key-advantages-of-the-isolated-world-context">Key Advantages of
+the Isolated World Context</h2>
+<ol type="1">
+<li><strong>Preventing Variable Collisions:</strong> Functions or
+libraries (such as jQuery or Lodash) loaded by your script will not
+overwrite or conflict with scripts loaded by the host website.</li>
+<li><strong>Enhanced Security:</strong> Webpage scripts cannot inspect,
+modify, or hijack internal userscript logic or data stored within
+extension APIs.</li>
+<li><strong>Anti-Detection:</strong> Because global scope modifications
+made in an isolated world do not affect the main page's
+<code>window</code> object, site scripts cannot easily detect the
+presence of the userscript via simple global variable checks.</li>
+</ol>
+<h2 id="interacting-between-contexts">Interacting Between Contexts</h2>
+<p>If a script running in an isolated world needs to communicate with
+the page context, it can do so safely using standard web messaging
+mechanisms:</p>
+<ul>
+<li><strong>Custom DOM Events:</strong> Dispatching and listening for
+custom <code>CustomEvent</code> instances on the <code>document</code>
+or <code>window</code>.</li>
+<li><code>window.postMessage()</code>: Sending messages across scopes
+using the browser's window messaging API.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

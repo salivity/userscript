@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the @supportURL Metadata Tag in Userscripts? - userscript</title>
+    <meta name="description" content="The @supportURL metadata tag is a standardized header key in userscripts that provides a direct web link to a script's official support page, issue tracker, or feedback forum. This article explains the definition and syntax of the @supportURL tag, demons">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-support-url-metadata-tag-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the @supportURL Metadata Tag in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-support-url-metadata-tag-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @supportURL metadata tag is a standardized header key in userscripts that provides a direct web link to a script's official support page, issue tracker, or feedback forum. This article explains the definition and syntax of the @supportURL tag, demons" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-supporturl-metadata-tag-in-userscripts">What Is the
+@supportURL Metadata Tag in Userscripts?</h1>
+<p>The <code>@supportURL</code> metadata tag is a standardized header
+key in userscripts that provides a direct web link to a script's
+official support page, issue tracker, or feedback forum. This article
+explains the definition and syntax of the <code>@supportURL</code> tag,
+demonstrates how popular userscript managers interact with it, and
+details the primary ways it simplifies ongoing maintenance and bug
+tracking for developers.</p>
+<h2 id="understanding-the-supporturl-metadata-tag">Understanding the
+<code>@supportURL</code> Metadata Tag</h2>
+<p>In userscript development, the metadata block (also known as the
+<code>==UserScript==</code> header) defines how browser extensions like
+Tampermonkey, Violentmonkey, or Greasemonkey handle and display a
+script.</p>
+<p>The <code>@supportURL</code> tag points users to a designated
+destination for help, bug reports, or feature requests.</p>
+<h3 id="syntax-example">Syntax Example</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Example Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    https://example.com/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Adds extra features to target websites.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @author       DeveloperName</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @supportURL   https://github.com/username/repository/issues</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>When a valid URL is assigned to this key, the userscript manager
+reads the metadata and presents a direct link to that address within its
+user interface.</p>
+<h2 id="how-supporturl-aids-userscript-maintenance">How
+<code>@supportURL</code> Aids Userscript Maintenance</h2>
+<p>Maintaining a userscript can become challenging as target websites
+update their code, breaking original functionalities. The
+<code>@supportURL</code> tag mitigates maintenance hurdles in several
+key ways:</p>
+<h3 id="1-centralizes-bug-reporting">1. Centralizes Bug Reporting</h3>
+<p>Without a defined support link, users often post bug reports in
+random locations, such as review sections on script repositories (e.g.,
+Greasy Fork) or unrelated forums. By directing users to a single
+venue—such as a GitHub Issues page or a dedicated forum
+thread—developers can manage, prioritize, and resolve all reported
+issues in one place.</p>
+<h3 id="2-promotes-quality-feedback">2. Promotes Quality Feedback</h3>
+<p>Directing users to an official issue tracker allows developers to
+utilize templates, submission guidelines, and form fields. This
+encourages users to provide critical details needed for debugging, such
+as browser version, script manager version, console logs, and steps to
+reproduce the bug.</p>
+<h3 id="3-reduces-duplicate-reports">3. Reduces Duplicate Reports</h3>
+<p>When users are directed to a unified support page or issue tracker,
+they can easily search existing open or closed issues before submitting
+a new report. This minimizes duplicate tickets for known bugs and saves
+time during development cycles.</p>
+<h3 id="4-improves-communication-and-transparency">4. Improves
+Communication and Transparency</h3>
+<p>Linkage to a support hub lets developers communicate status updates
+directly to affected users. Users can track when an issue is
+acknowledged, actively being worked on, or resolved in a pending
+update.</p>
+<h3 id="5-integrates-streamlined-support-in-extension-uis">5. Integrates
+Streamlined Support in Extension UIs</h3>
+<p>Most modern userscript managers automatically create a "Support" or
+"Report an Issue" button inside their dashboard or popup menu next to
+the script's details. This accessibility ensures users reach the correct
+support channel immediately, rather than resorting to low ratings or
+negative reviews on distribution platforms when something breaks.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

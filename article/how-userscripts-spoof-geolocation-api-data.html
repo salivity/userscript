@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Spoof Geolocation API Data - userscript</title>
+    <meta name="description" content="Userscripts are client-side scripts managed by browser extensions like Tampermonkey or Violentmonkey that allow users to alter web page functionality. One common application is overriding the browser's native Geolocation API to spoof or modify geographic">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-spoof-geolocation-api-data">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Spoof Geolocation API Data - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-spoof-geolocation-api-data" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts are client-side scripts managed by browser extensions like Tampermonkey or Violentmonkey that allow users to alter web page functionality. One common application is overriding the browser's native Geolocation API to spoof or modify geographic" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-spoof-geolocation-api-data">How Userscripts
+Spoof Geolocation API Data</h1>
+<p>Userscripts are client-side scripts managed by browser extensions
+like Tampermonkey or Violentmonkey that allow users to alter web page
+functionality. One common application is overriding the browser's native
+Geolocation API to spoof or modify geographic coordinates. By
+intercepting calls to <code>navigator.geolocation</code>, userscripts
+replace authentic location data with custom latitude and longitude
+values before a website's scripts can process them.</p>
+<h2 id="the-mechanics-of-geolocation-interception">The Mechanics of
+Geolocation Interception</h2>
+<p>Web applications retrieve geographic position through the browser's
+standard <code>navigator.geolocation</code> interface. This object
+primarily exposes two methods for location retrieval:
+<code>getCurrentPosition()</code> for one-time queries and
+<code>watchPosition()</code> for continuous tracking.</p>
+<p>Userscripts alter this functionality using a technique known as
+<strong>monkey patching</strong>. Monkey patching refers to overriding
+native functions or objects in JavaScript with custom implementations
+within the global execution context.</p>
+<h2 id="overriding-getcurrentposition">Overriding
+<code>getCurrentPosition</code></h2>
+<p>When a web application attempts to get a location, it executes
+<code>navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options)</code>.</p>
+<p>To spoof this request, a userscript redefines
+<code>navigator.geolocation.getCurrentPosition</code> with a custom
+function. This replacement function bypasses the browser's default
+GPS/IP lookup and directly invokes the website's
+<code>successCallback</code>, passing a mock
+<code>GeolocationPosition</code> object.</p>
+<p>A typical override injects structured dummy data that mimics native
+browser responses:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mockPosition <span class="op">=</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">coords</span><span class="op">:</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="dt">latitude</span><span class="op">:</span> <span class="fl">37.7749</span><span class="op">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        <span class="dt">longitude</span><span class="op">:</span> <span class="op">-</span><span class="fl">122.4194</span><span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="dt">accuracy</span><span class="op">:</span> <span class="dv">15</span><span class="op">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="dt">altitude</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="dt">altitudeAccuracy</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">heading</span><span class="op">:</span> <span class="kw">null</span><span class="op">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">speed</span><span class="op">:</span> <span class="kw">null</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">timestamp</span><span class="op">:</span> <span class="bu">Date</span><span class="op">.</span><span class="fu">now</span>()</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">navigator</span><span class="op">.</span><span class="at">geolocation</span><span class="op">.</span><span class="at">getCurrentPosition</span> <span class="op">=</span> <span class="kw">function</span>(success<span class="op">,</span> error<span class="op">,</span> options) {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">success</span>(mockPosition)<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="handling-continuous-tracking-watchposition">Handling Continuous
+Tracking (<code>watchPosition</code>)</h2>
+<p>For web applications that require continuous location updates,
+userscripts must also modify
+<code>navigator.geolocation.watchPosition()</code>.</p>
+<p>The modified <code>watchPosition</code> method mimics the native
+behavior by returning a unique watchdog ID and firing the success
+callback either once or at defined intervals using
+<code>setInterval</code>. To prevent memory leaks and maintain
+compatibility, the userscript must also override
+<code>navigator.geolocation.clearWatch()</code> to clear any timers
+associated with the generated watch ID.</p>
+<h2 id="context-and-injection-timing">Context and Injection Timing</h2>
+<p>For geolocation spoofing to be effective, the userscript must run
+before the target website executes its own scripts. If the website
+caches a reference to the native <code>navigator.geolocation</code>
+methods before the userscript loads, the spoofing attempt will fail.</p>
+<p>Userscripts solve this using specific execution directives and
+context-bridging techniques:</p>
+<ol type="1">
+<li><strong>Execution Directive
+(<code>@run-at document-start</code>):</strong> Instructs the script
+manager to inject the user script as early as possible, before DOM
+content or external scripts load.</li>
+<li><strong>Bypassing the Sandbox:</strong> Userscripts usually execute
+in an isolated sandbox. To modify the web page's global environment, the
+script must access the page context directly—either using
+<code>unsafeWindow</code> or by appending a dynamic
+<code>&lt;script&gt;</code> element directly into the document DOM.</li>
+</ol>
+<p>By combining early execution with function redefinition, userscripts
+guarantee that all subsequent calls made by the website to the
+Geolocation API receive spoofed location data.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

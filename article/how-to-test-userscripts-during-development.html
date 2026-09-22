@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Test Userscripts During Development? - userscript</title>
+    <meta name="description" content="Testing userscripts during development requires a streamlined workflow that balances rapid iteration, isolated testing environments, and proper debugging tools. By leveraging local file linking in browser extensions, using browser Developer Tools effecti">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-test-userscripts-during-development">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Test Userscripts During Development? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-test-userscripts-during-development" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Testing userscripts during development requires a streamlined workflow that balances rapid iteration, isolated testing environments, and proper debugging tools. By leveraging local file linking in browser extensions, using browser Developer Tools effecti" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-test-userscripts-during-development">How to Test
+Userscripts During Development?</h1>
+<p>Testing userscripts during development requires a streamlined
+workflow that balances rapid iteration, isolated testing environments,
+and proper debugging tools. By leveraging local file linking in browser
+extensions, using browser Developer Tools effectively, and testing
+across isolated user profiles, developers can catch bugs early and build
+reliable scripts without constantly copying and pasting code.</p>
+<hr />
+<h2 id="setting-up-a-local-development-workflow">Setting Up a Local
+Development Workflow</h2>
+<p>The most inefficient way to develop a userscript is manually updating
+the code inside your extension's editor every time you make a change.
+Instead, set up a local file sync workflow.</p>
+<ul>
+<li><strong>Enable Local File Access:</strong> In your browser's
+extension settings (e.g., <code>chrome://extensions</code>), enable
+"Allow access to file URLs" for your userscript manager (Tampermonkey,
+Violentmonkey, or Greasemonkey).</li>
+<li><strong>Link Local Files via <code>@require</code>:</strong> Create
+a minimal header script inside your userscript manager that points to
+your local file path using the <code>@require</code> directive:</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Dev Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @require      file:///path/to/your/script.user.js</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<ul>
+<li><strong>Auto-Reload Settings:</strong> Modern managers like
+Violentmonkey or Tampermonkey often support automatic reloading or
+tracking local file changes, instantly reflecting code edits upon a page
+refresh.</li>
+</ul>
+<hr />
+<h2 id="utilizing-browser-developer-tools">Utilizing Browser Developer
+Tools</h2>
+<p>Browser DevTools are the core environment for execution analysis and
+interactive debugging.</p>
+<h3 id="console-logging-and-source-maps">Console Logging and Source
+Maps</h3>
+<p>Use structured logging (<code>console.group()</code>,
+<code>console.table()</code>) to trace script execution flow. If you use
+a build step (like esbuild, Rollup, or webpack) to bundle TypeScript or
+modern JavaScript, configure source maps so line numbers in error stack
+traces map directly back to your source files rather than the generated
+output.</p>
+<h3 id="breakpoints-and-the-debugger-statement">Breakpoints and the
+<code>debugger</code> Statement</h3>
+<p>Instead of relying solely on <code>console.log</code>, insert the
+<code>debugger;</code> statement directly into your userscript source
+code. When DevTools is open, execution will pause at that exact point,
+allowing you to inspect local variables, evaluate expressions in the
+console, and step through DOM manipulation line by line.</p>
+<hr />
+<h2 id="isolate-your-testing-environment">Isolate Your Testing
+Environment</h2>
+<p>Testing in your daily browser profile can lead to false positives or
+conflicts caused by existing web extension state, cached cookies, or
+stored <code>GM_getValue</code> data.</p>
+<h3 id="use-dedicated-browser-profiles">Use Dedicated Browser
+Profiles</h3>
+<p>Create a clean, dedicated browser profile purely for testing. This
+ensures no third-party extensions (like ad blockers or other
+userscripts) interfere with DOM rendering or network requests.</p>
+<h3 id="manage-storage-state">Manage Storage State</h3>
+<p>Userscripts rely heavily on persistent storage
+(<code>GM_setValue</code>, <code>localStorage</code>). Regularly clear
+this data during testing to verify how your script behaves on a fresh
+installation. You can programmatically log or clear storage keys from
+the DevTools console:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Inspecting GM storage via manager context</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="fu">GM_getValue</span>(<span class="st">&quot;app_settings&quot;</span>))<span class="op">;</span></span></code></pre></div>
+<hr />
+<h2 id="cross-browser-and-cross-manager-verification">Cross-Browser and
+Cross-Manager Verification</h2>
+<p>Userscripts often behave differently depending on the manager
+extension and the underlying browser engine.</p>
+<ul>
+<li><strong>Test Multiple Managers:</strong> Test your script in
+Tampermonkey, Violentmonkey, and FireMonkey. Each manager handles
+asynchronous APIs (like <code>GM_xmlhttpRequest</code>) and sandbox
+grant privileges slightly differently.</li>
+<li><strong>Check Sandbox Strictness:</strong> Firefox enforces stricter
+Content Security Policies (CSP) and sandbox boundaries than
+Chromium-based browsers. Verifying your code in both Firefox and Chrome
+ensures your <code>@grant</code> definitions and page-context scripts
+run smoothly everywhere.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Distribute Userscripts via Group Policy - userscript</title>
+    <meta name="description" content="Distributing enterprise-specific userscripts to employees via Active Directory Group Policy (GPO) allows IT administrators to seamlessly deploy browser customizations, automate internal web workflows, and enforce security controls across an organization.">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-distribute-userscripts-via-group-policy">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Distribute Userscripts via Group Policy - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-distribute-userscripts-via-group-policy" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Distributing enterprise-specific userscripts to employees via Active Directory Group Policy (GPO) allows IT administrators to seamlessly deploy browser customizations, automate internal web workflows, and enforce security controls across an organization." />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-distribute-userscripts-via-group-policy">How to
+Distribute Userscripts via Group Policy</h1>
+<p>Distributing enterprise-specific userscripts to employees via Active
+Directory Group Policy (GPO) allows IT administrators to seamlessly
+deploy browser customizations, automate internal web workflows, and
+enforce security controls across an organization. This process involves
+selecting an execution environment, centrally hosting the script files,
+configuring browser management policies through Administrative Templates
+(ADMX), and pushing the configuration to client endpoints.</p>
+<h2
+id="step-1-select-and-deploy-a-userscript-execution-environment">Step 1:
+Select and Deploy a Userscript Execution Environment</h2>
+<p>Browsers do not run <code>.user.js</code> files natively, so
+endpoints require an engine to execute them. Administrators generally
+choose one of two deployment paths:</p>
+<ol type="1">
+<li><strong>Standard Userscript Manager:</strong> Deploy an established
+extension like Tampermonkey or Violentmonkey.</li>
+<li><strong>Custom Enterprise Extension:</strong> Package the custom
+userscripts directly into a proprietary Chrome/Edge extension. This
+eliminates the need for a third-party script manager and provides
+tighter security control.</li>
+</ol>
+<p>If using a standard manager, force-install the extension via GPO:</p>
+<ul>
+<li>Download the policy templates (ADMX) for Google Chrome or Microsoft
+Edge.</li>
+<li>Open <strong>Group Policy Management Console (GPMC)</strong> and
+navigate to
+<code>Computer Configuration &gt; Administrative Templates &gt; Google Chrome (or Microsoft Edge) &gt; Extensions</code>.</li>
+<li>Enable <strong>Configure the list of force-installed apps and
+extensions</strong> (<code>ExtensionInstallForcelist</code>).</li>
+<li>Add the extension ID and update URL (e.g.,
+<code>gmbmikpajjmnolfkioedhhnoiopgmipm;https://clients2.google.com/service/update2/crx</code>
+for Chrome Tampermonkey).</li>
+</ul>
+<h2 id="step-2-centrally-host-the-userscripts">Step 2: Centrally Host
+the Userscripts</h2>
+<p>Store the enterprise userscript (<code>.user.js</code>) in a secure
+location accessible by all network endpoints:</p>
+<ul>
+<li><strong>Internal Web Server (Recommended):</strong> Host the file on
+an internal HTTPS web server (e.g.,
+<code>https://internal.corp/scripts/workflow.user.js</code>).</li>
+<li><strong>Network Share:</strong> Place the file on a Read-Only
+network share accessible via UNC path
+(<code>\\domain\dfs\scripts\workflow.user.js</code>).</li>
+</ul>
+<p>Ensure the userscript metadata block includes an
+<code>@updateURL</code> and <code>@downloadURL</code> pointing to the
+hosted file to enable automatic updates.</p>
+<h2 id="step-3-automatically-pre-configure-and-import-scripts">Step 3:
+Automatically Pre-Configure and Import Scripts</h2>
+<p>To deliver scripts to the installed manager without manual user
+intervention, use one of the following methods:</p>
+<h3 id="method-a-policy-based-extension-settings-edgechrome">Method A:
+Policy-Based Extension Settings (Edge/Chrome)</h3>
+<p>Use the <code>ExtensionSettings</code> policy in GPO to configure
+external configuration files or forced script sync URLs if supported by
+the enterprise version of the script manager extension.</p>
+<h3 id="method-b-managed-preferences-injection-via-gpo-file-copy">Method
+B: Managed Preferences Injection via GPO File Copy</h3>
+<ol type="1">
+<li>Configure a reference machine with the required userscripts
+installed in the extension.</li>
+<li>Export or locate the local extension database/preferences file
+located in the user profile:
+<code>%LocalAppData%\Google\Chrome\User Data\Default\Local Extension Settings\&lt;Extension_ID&gt;</code></li>
+<li>In GPMC, navigate to
+<code>User Configuration &gt; Preferences &gt; Windows Settings &gt; Files</code>.</li>
+<li>Create a file deployment rule to copy the pre-configured database
+files from a central deployment share to the corresponding
+<code>%LocalAppData%</code> path on client machines upon user
+logon.</li>
+</ol>
+<h3 id="method-c-custom-web-extension-deployment-alternative">Method C:
+Custom Web Extension Deployment (Alternative)</h3>
+<p>If using a custom-packaged extension instead of a script manager:</p>
+<ol type="1">
+<li>Manifest the userscripts as content scripts within a custom browser
+extension <code>.crx</code> or <code>.xpi</code> file.</li>
+<li>Host the extension payload and its manifest XML file on an internal
+web server.</li>
+<li>Use the <code>ExtensionInstallForcelist</code> policy in GPO to
+point client browsers directly to your internal extension update
+URL.</li>
+</ol>
+<h2 id="step-4-apply-and-verify-deployment">Step 4: Apply and Verify
+Deployment</h2>
+<ol type="1">
+<li>Link the configured Group Policy Object to the appropriate
+Organizational Unit (OU) containing target user or computer
+accounts.</li>
+<li>Force a policy refresh on a client machine by running
+<code>gpupdate /force</code> in the Command Prompt.</li>
+<li>Open the target browser on the client machine, navigate to
+<code>chrome://policy</code> or <code>edge://policy</code>, and verify
+that the extension policies are active.</li>
+<li>Confirm that the userscript executes correctly when visiting
+specified enterprise web applications.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

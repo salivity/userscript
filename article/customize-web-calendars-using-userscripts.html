@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize Web Calendars Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts allow users to tailor the visual presentation and layout of web-based calendar applications beyond their built-in settings. By executing custom JavaScript directly in the browser via extensions like Tampermonkey or Greasemonkey, userscripts m">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/customize-web-calendars-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Customize Web Calendars Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/customize-web-calendars-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts allow users to tailor the visual presentation and layout of web-based calendar applications beyond their built-in settings. By executing custom JavaScript directly in the browser via extensions like Tampermonkey or Greasemonkey, userscripts m" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="customize-web-calendars-using-userscripts">Customize Web
+Calendars Using Userscripts</h1>
+<p>Userscripts allow users to tailor the visual presentation and layout
+of web-based calendar applications beyond their built-in settings. By
+executing custom JavaScript directly in the browser via extensions like
+Tampermonkey or Greasemonkey, userscripts modify the underlying Document
+Object Model (DOM), inject custom CSS styles, hide clutter, and
+introduce dynamic visual controls. This enables total control over color
+schemes, event dimensions, typography, and interface density on web
+calendars.</p>
+<h2 id="injecting-custom-css-styles">Injecting Custom CSS Styles</h2>
+<p>The most straightforward way userscripts modify a web calendar is by
+dynamically inserting custom CSS rules into the page document. Standard
+web calendars often lack native dark modes or granular theme
+customization.</p>
+<p>A userscript can create a new <code>&lt;style&gt;</code> element,
+populate it with custom CSS, and append it to the document's
+<code>&lt;head&gt;</code>. This allows users to:</p>
+<ul>
+<li><strong>Recolor Interface Elements:</strong> Change background
+colors, grid line contrast, weekend highlights, and header themes.</li>
+<li><strong>Adjust Typography:</strong> Change font families, font
+sizes, and weight for event titles to improve readability.</li>
+<li><strong>Modify Event Card Appearance:</strong> Add borders,
+border-radius, shadows, or custom accent colors to calendar entries
+based on their status or categories.</li>
+</ul>
+<h2 id="modifying-and-removing-dom-elements">Modifying and Removing DOM
+Elements</h2>
+<p>Userscripts interact directly with the web page's structure to clean
+up or reorganize the layout.</p>
+<ul>
+<li><strong>Hiding Unnecessary Panels:</strong> Web calendars frequently
+include sidebars for tasks, secondary mini-calendars, or promotional
+banners. A userscript can target these specific elements by their class
+or ID and apply <code>display: none;</code> or remove them entirely from
+the page layout.</li>
+<li><strong>Expanding the Grid Area:</strong> By hiding sidebars and
+headers, the script can re-calculate and stretch the primary calendar
+grid to occupy 100% of the screen width and height.</li>
+</ul>
+<h2 id="managing-dynamic-content-with-mutation-observers">Managing
+Dynamic Content with Mutation Observers</h2>
+<p>Modern web calendars operate as Single Page Applications (SPAs) built
+with frameworks like React or Angular. Because elements render
+dynamically when switching from month view to week view or navigating
+between dates, simple CSS injection might fail when new elements
+load.</p>
+<p>Userscripts solve this by using the <code>MutationObserver</code>
+API. A <code>MutationObserver</code> monitors changes to the calendar's
+DOM tree. When the user clicks to the next month or opens an event
+detail modal, the observer detects the newly added HTML elements and
+instantly reapplies custom styling, color tags, or layout
+adjustments.</p>
+<h2 id="adding-custom-ui-controls-and-event-formatting">Adding Custom UI
+Controls and Event Formatting</h2>
+<p>Beyond passive restyling, userscripts can add interactive visual
+features directly into the web calendar's existing header or menu
+bar.</p>
+<ul>
+<li><strong>Custom View Toggles:</strong> Scripts can inject buttons
+into the UI that instantly toggle custom modes, such as a "Focus Mode"
+that hides everything except today's events.</li>
+<li><strong>Conditional Highlighting:</strong> Userscripts can parse the
+text content of calendar events. If an event title contains specific
+keywords (e.g., "Meeting", "Deadline", or "Doctor"), the script can
+dynamically alter the background color or icon of that specific event
+element.</li>
+<li><strong>Grid Density Controls:</strong> Scripts can add custom
+sliders or toggle buttons allowing users to increase or decrease padding
+and spacing between hours or days on the fly.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

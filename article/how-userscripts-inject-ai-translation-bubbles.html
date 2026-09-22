@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Inject AI Translation Bubbles - userscript</title>
+    <meta name="description" content="Userscripts create floating AI-powered translation bubbles by detecting user text selections, sending that text to an artificial intelligence API, calculating the exact screen coordinates of the selected text, and injecting a custom, isolated HTML elemen">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-inject-ai-translation-bubbles">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Inject AI Translation Bubbles - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-inject-ai-translation-bubbles" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts create floating AI-powered translation bubbles by detecting user text selections, sending that text to an artificial intelligence API, calculating the exact screen coordinates of the selected text, and injecting a custom, isolated HTML elemen" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-inject-ai-translation-bubbles">How Userscripts
+Inject AI Translation Bubbles</h1>
+<p>Userscripts create floating AI-powered translation bubbles by
+detecting user text selections, sending that text to an artificial
+intelligence API, calculating the exact screen coordinates of the
+selected text, and injecting a custom, isolated HTML element onto the
+webpage. Through browser extension managers like Tampermonkey or
+Violentmonkey, these scripts bridge the gap between webpage DOM
+manipulation, background API calls, and dynamic CSS positioning to
+display real-time translations seamlessly over foreign text.</p>
+<h2 id="1-text-detection-and-selection-capture">1. Text Detection and
+Selection Capture</h2>
+<p>The script listens for user interactions on the webpage using
+JavaScript event listeners such as <code>mouseup</code>,
+<code>keyup</code>, or <code>selectionchange</code>. When a user
+highlights foreign text, the script uses the browser's native
+<code>window.getSelection()</code> API to retrieve the highlighted
+string along with its specific node location in the Document Object
+Model (DOM).</p>
+<h2 id="2-dynamic-position-calculation">2. Dynamic Position
+Calculation</h2>
+<p>To place the translation bubble directly above or beside the
+highlighted text, the userscript calculates precise coordinates using
+the <code>Range.getBoundingClientRect()</code> method. This returns the
+text selection's width, height, and position relative to the
+viewport:</p>
+<ul>
+<li><strong>X-Coordinate:</strong> Positioned horizontally aligned with
+the start or center of the selection.</li>
+<li><strong>Y-Coordinate:</strong> Positioned vertically just above the
+top edge (or below the bottom edge) of the selected text block,
+accounting for page scroll offsets (<code>window.scrollY</code>).</li>
+</ul>
+<h2 id="3-asynchronous-ai-api-requests">3. Asynchronous AI API
+Requests</h2>
+<p>Once text is captured, the userscript sends a payload containing the
+foreign text and instructions (such as target language and contextual
+prompt) to an external AI API, such as OpenAI, DeepL, or Anthropic.</p>
+<p>Because standard web requests might be blocked by Cross-Origin
+Resource Sharing (CORS) policies on host websites, userscripts utilize
+privileged APIs like <code>GM_xmlhttpRequest</code> or standard
+<code>fetch()</code> requests configured with background script
+permissions to safely communicate with external servers.</p>
+<h2 id="4-dom-injection-and-ui-isolation">4. DOM Injection and UI
+Isolation</h2>
+<p>While waiting for or receiving the translation stream, the script
+dynamically creates a floating UI container (usually a
+<code>&lt;div&gt;</code>) and appends it to the document body.</p>
+<p>To prevent the target website's existing CSS from messing up the
+bubble's styling, advanced userscripts attach a <strong>Shadow
+DOM</strong> root (<code>element.attachShadow({mode: 'open'})</code>).
+This creates a encapsulated sub-DOM tree, guaranteeing that the
+translation bubble's buttons, loading spinners, and typography render
+consistently regardless of the host site's stylesheet.</p>
+<h2 id="5-overlay-styling-and-cleanup">5. Overlay Styling and
+Cleanup</h2>
+<p>The floating element is styled using absolute or fixed CSS
+positioning:</p>
+<ul>
+<li><code>position: absolute</code> (or <code>fixed</code>) ensures it
+floats over underlying text without breaking the page layout.</li>
+<li><code>z-index: 999999</code> guarantees the bubble appears above all
+other web elements.</li>
+<li><code>pointer-events: auto</code> allows users to click, copy, or
+close the translation.</li>
+</ul>
+<p>Finally, the script adds global click listeners to remove or hide the
+bubble whenever the user clicks elsewhere on the page or clears the text
+selection.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

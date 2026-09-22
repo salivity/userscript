@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Stop Userscripts from Running in Iframes? - userscript</title>
+    <meta name="description" content="Preventing userscripts from executing inside <iframe> elements requires a combination of server-side security headers, client-side JavaScript checks, and proper userscript metadata configuration. While userscripts (managed by extensions like Tampermonkey">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-stop-userscripts-from-running-in-iframes">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Stop Userscripts from Running in Iframes? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-stop-userscripts-from-running-in-iframes" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Preventing userscripts from executing inside <iframe> elements requires a combination of server-side security headers, client-side JavaScript checks, and proper userscript metadata configuration. While userscripts (managed by extensions like Tampermonkey" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-stop-userscripts-from-running-in-iframes">How to Stop
+Userscripts from Running in Iframes?</h1>
+<p>Preventing userscripts from executing inside
+<code>&lt;iframe&gt;</code> elements requires a combination of
+server-side security headers, client-side JavaScript checks, and proper
+userscript metadata configuration. While userscripts (managed by
+extensions like Tampermonkey or Violentmonkey) run at a
+browser-extension privilege level, web developers can use frame-busting
+logic and Content Security Policies to restrict subframe interactions,
+while script authors can use specific header directives to restrict
+execution strictly to the top-level window.</p>
+<h2
+id="preventing-execution-via-script-metadata-for-userscript-authors">Preventing
+Execution via Script Metadata (For Userscript Authors)</h2>
+<p>If you are writing or configuring a userscript and want to prevent it
+from running inside any embedded frames, the standard solution is to use
+the <code>@noframes</code> directive in the script's metadata block.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Userscript</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @noframes</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>When the <code>@noframes</code> directive is present, the userscript
+manager automatically restricts execution to the top-level document
+(<code>window.top</code>), skipping any <code>&lt;iframe&gt;</code>
+elements loaded within the page.</p>
+<h2
+id="detecting-and-blocking-frame-execution-for-web-developers">Detecting
+and Blocking Frame Execution (For Web Developers)</h2>
+<p>If you are a web developer attempting to mitigate unauthorized script
+behavior or frame manipulation within embedded frames, standard
+JavaScript frame detection can help isolate your context.</p>
+<h3 id="1-frame-busting-checks">1. Frame-Busting Checks</h3>
+<p>You can check whether the current execution context is inside an
+iframe by comparing <code>window.self</code> to
+<code>window.top</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="bu">window</span><span class="op">.</span><span class="at">self</span> <span class="op">!==</span> <span class="bu">window</span><span class="op">.</span><span class="at">top</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Code is running inside an iframe</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// You can halt sensitive operations or alert the user</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="2-utilizing-the-sandbox-attribute">2. Utilizing the
+<code>sandbox</code> Attribute</h3>
+<p>When embedding an iframe on your own site, using the
+<code>sandbox</code> attribute restricts what scripts can do within the
+frame:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">iframe</span><span class="ot"> src</span><span class="op">=</span><span class="st">&quot;https://example.com&quot;</span><span class="ot"> sandbox</span><span class="op">=</span><span class="st">&quot;allow-scripts allow-same-origin&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">iframe</span><span class="dt">&gt;</span></span></code></pre></div>
+<p>Omitting <code>allow-same-origin</code> or restricting specific
+permissions prevents embedded frames from accessing the parent
+document's DOM, significantly limiting the impact of potential script
+injections within subframes.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

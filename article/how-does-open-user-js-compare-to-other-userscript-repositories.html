@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Does OpenUserJS Compare to Other Userscript Repositories? - userscript</title>
+    <meta name="description" content="OpenUserJS is a open-source, community-driven repository for browser userscripts that sets itself apart through a strong focus on security, collaborative development, and metadata transparency. Unlike platform-dependent alternatives or legacy script hubs">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-does-open-user-js-compare-to-other-userscript-repositories">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Does OpenUserJS Compare to Other Userscript Repositories? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-does-open-user-js-compare-to-other-userscript-repositories" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="OpenUserJS is a open-source, community-driven repository for browser userscripts that sets itself apart through a strong focus on security, collaborative development, and metadata transparency. Unlike platform-dependent alternatives or legacy script hubs" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="how-does-openuserjs-compare-to-other-userscript-repositories">How
+Does OpenUserJS Compare to Other Userscript Repositories?</h1>
+<p>OpenUserJS is a open-source, community-driven repository for browser
+userscripts that sets itself apart through a strong focus on security,
+collaborative development, and metadata transparency. Unlike
+platform-dependent alternatives or legacy script hubs, OpenUserJS
+provides dedicated features such as built-in version control
+integration, active script moderation, and an ad-free experience.
+Understanding how OpenUserJS compares to other popular script managers
+and hosting sites helps power users select the safest and most efficient
+hub for their custom browser extensions.</p>
+<h2 id="understanding-userscript-repositories">Understanding Userscript
+Repositories</h2>
+<p>Userscripts are small JavaScript snippets that alter the appearance
+or behavior of web pages locally in a user's browser. To manage and
+discover these scripts, developers host them on public repositories,
+while end users install them via browser extensions like Violentmonkey,
+Tampermonkey, or Greasemonkey.</p>
+<p>While multiple platforms store userscripts, each platform differs in
+governance, hosting architecture, security policies, and community
+tools.</p>
+<h2 id="key-differences-between-openuserjs-and-alternatives">Key
+Differences Between OpenUserJS and Alternatives</h2>
+<h3 id="1-open-source-philosophy-and-hosting-architecture">1.
+Open-Source Philosophy and Hosting Architecture</h3>
+<p>OpenUserJS is built entirely on open-source software (Node.js/Express
+framework) and is run as a community effort.</p>
+<ul>
+<li><strong>OpenUserJS:</strong> Fully transparent platform code,
+allowing community contributions to the site's underlying
+infrastructure.</li>
+<li><strong>Greasy Fork:</strong> Also open-source, created largely in
+response to the shutdown of the original Userscripts.org, but uses a
+different technology stack (Ruby on Rails) and site architecture.</li>
+<li><strong>GitHub / GitLab:</strong> General-purpose code repositories
+that can host <code>.user.js</code> files, but lack userscript-specific
+features like one-click installation buttons or automated metadata
+parsing.</li>
+</ul>
+<h3 id="2-security-practices-and-code-inspection">2. Security Practices
+and Code Inspection</h3>
+<p>Security is a major factor when executing third-party JavaScript on
+sensitive websites.</p>
+<ul>
+<li><strong>Metadata &amp; Hosting Checks:</strong> OpenUserJS
+rigorously enforces proper <code>@grant</code> and metadata
+declarations, encouraging developers to adhere to strict security
+standards.</li>
+<li><strong>Source Transparency:</strong> Users on OpenUserJS can easily
+inspect source code, track version histories, and view precise
+changelogs prior to installation.</li>
+<li><strong>Direct Script Serving:</strong> Unlike general file hosts,
+OpenUserJS serves raw script files with appropriate MIME types
+(<code>text/javascript</code> or <code>application/x-javascript</code>),
+allowing browser managers to trigger instant installation dialogs
+seamlessly.</li>
+</ul>
+<h3 id="3-developer-and-community-collaboration">3. Developer and
+Community Collaboration</h3>
+<p>OpenUserJS emphasizes developer workflow and issue tracking directly
+alongside the code.</p>
+<ul>
+<li><strong>Issue Tracking:</strong> It features an integrated issue
+tracker for each script, enabling users to report bugs, request
+features, or submit pull-like feedback directly on the script page.</li>
+<li><strong>Collaborative Maintenance:</strong> Script authors can
+designate collaborators, ensuring useful scripts remain maintained even
+if the original creator steps away.</li>
+<li><strong>Discussion Moderation:</strong> Dedicated forum threads
+exist per script to keep discussions organized and technical feedback
+distinct from general user ratings.</li>
+</ul>
+<h2 id="summary-comparison">Summary Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>OpenUserJS</th>
+<th>Greasy Fork</th>
+<th>GitHub / GitLab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Primary Focus</strong></td>
+<td>Dedicated Userscripts</td>
+<td>Dedicated Userscripts</td>
+<td>General Software Development</td>
+</tr>
+<tr>
+<td><strong>One-Click Install</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Requires Raw Link Navigation</td>
+</tr>
+<tr>
+<td><strong>Built-in Issue Tracker</strong></td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Collaborative Script Ownership</strong></td>
+<td>Native Support</td>
+<td>Limited / Author-based</td>
+<td>Multi-contributor / Forks</td>
+</tr>
+<tr>
+<td><strong>Ad-Supported</strong></td>
+<td>Minimal / Community Driven</td>
+<td>No Ads</td>
+<td>No Ads</td>
+</tr>
+</tbody>
+</table></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

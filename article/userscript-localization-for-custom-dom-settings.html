@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscript Localization for Custom DOM Settings - userscript</title>
+    <meta name="description" content="Userscripts handle localization for custom, DOM-built settings panels by combining environment language detection, structured translation dictionaries, dynamic DOM string injection, and fallback logic. By fetching the user's preferred browser locale or s">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscript-localization-for-custom-dom-settings">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscript Localization for Custom DOM Settings - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscript-localization-for-custom-dom-settings" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts handle localization for custom, DOM-built settings panels by combining environment language detection, structured translation dictionaries, dynamic DOM string injection, and fallback logic. By fetching the user's preferred browser locale or s" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="userscript-localization-for-custom-dom-settings">Userscript
+Localization for Custom DOM Settings</h1>
+<p>Userscripts handle localization for custom, DOM-built settings panels
+by combining environment language detection, structured translation
+dictionaries, dynamic DOM string injection, and fallback logic. By
+fetching the user's preferred browser locale or script configuration,
+the userscript matches UI keys to localized strings before rendering
+elements directly into the web page's Document Object Model.</p>
+<h2 id="language-detection">Language Detection</h2>
+<p>Userscripts detect the active language primarily through the
+browser's <code>navigator.language</code> or
+<code>navigator.languages</code> API. To give users manual control, many
+scripts also allow selecting a specific language override, which is
+stored using script storage APIs like <code>GM_setValue</code> or
+<code>GM.setValue</code>.</p>
+<h2 id="translation-dictionaries">Translation Dictionaries</h2>
+<p>Translations are structured as JavaScript objects or JSON maps stored
+directly within the script or fetched externally using the
+<code>@resource</code> metadata header. These dictionaries map uniform
+keys to localized string values for every supported language.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;en&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;save&quot;</span><span class="fu">:</span> <span class="st">&quot;Save Settings&quot;</span><span class="fu">,</span> <span class="dt">&quot;theme&quot;</span><span class="fu">:</span> <span class="st">&quot;Dark Mode&quot;</span> <span class="fu">},</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;es&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;save&quot;</span><span class="fu">:</span> <span class="st">&quot;Guardar Ajustes&quot;</span><span class="fu">,</span> <span class="dt">&quot;theme&quot;</span><span class="fu">:</span> <span class="st">&quot;Modo Oscuro&quot;</span> <span class="fu">}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h2 id="dynamic-string-injection-into-the-dom">Dynamic String Injection
+into the DOM</h2>
+<p>When building custom settings interfaces, userscripts apply localized
+strings using two primary approaches:</p>
+<ul>
+<li><strong>Direct Template Insertion:</strong> Strings are inserted
+directly into template literals during HTML element creation using
+helper functions.</li>
+<li><strong>Data Attribute Parsing:</strong> Elements are created with a
+custom attribute (such as <code>data-i18n="save"</code>). A query
+selector iterates through these elements after insertion, setting their
+<code>textContent</code> property to the matching dictionary value.</li>
+</ul>
+<p>Using <code>textContent</code> rather than <code>innerHTML</code>
+ensures security against potential cross-site scripting (XSS) risks when
+inserting dynamic or translated text into the DOM.</p>
+<h2 id="fallback-mechanisms">Fallback Mechanisms</h2>
+<p>To prevent missing text when translations are incomplete, scripts use
+fallback resolution. If a specific key is missing from the detected
+language object, the translation function defaults to a baseline
+language—usually English—or displays the key name itself as a final
+resort.</p>
+<h2 id="real-time-ui-updates">Real-Time UI Updates</h2>
+<p>When a user updates the language setting inside the custom DOM panel,
+the userscript saves the new selection, updates its active dictionary
+state, and triggers a lightweight UI refresh. This is typically done by
+re-running the DOM parser function over the panel container to update
+all labeled nodes without requiring a full browser reload.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

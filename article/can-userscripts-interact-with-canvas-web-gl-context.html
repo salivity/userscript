@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Interact With Canvas WebGL Context? - userscript</title>
+    <meta name="description" content="Userscripts can fully interact with, modify, and intercept the WebGL context of an HTML5 canvas element. By leveraging JavaScript's dynamic nature, browser extension managers like Tampermonkey or Violentmonkey allow scripts to hook into native WebGL meth">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-interact-with-canvas-web-gl-context">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Interact With Canvas WebGL Context? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-interact-with-canvas-web-gl-context" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can fully interact with, modify, and intercept the WebGL context of an HTML5 canvas element. By leveraging JavaScript's dynamic nature, browser extension managers like Tampermonkey or Violentmonkey allow scripts to hook into native WebGL meth" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-interact-with-canvas-webgl-context">Can
+Userscripts Interact With Canvas WebGL Context?</h1>
+<p>Userscripts can fully interact with, modify, and intercept the WebGL
+context of an HTML5 canvas element. By leveraging JavaScript's dynamic
+nature, browser extension managers like Tampermonkey or Violentmonkey
+allow scripts to hook into native WebGL methods, manipulate shaders,
+spoof hardware specifications, and alter rendering behavior in real
+time.</p>
+<h2 id="how-userscripts-access-the-webgl-context">How Userscripts Access
+the WebGL Context</h2>
+<p>To interact with a WebGL context, a userscript must run within the
+page's execution context. While userscripts usually run in an isolated
+sandbox, they can interact directly with the main window using
+<code>@grant none</code> or through <code>unsafeWindow</code>.</p>
+<p>Accessing an active WebGL context is typically achieved through one
+of two methods:</p>
+<h3 id="1-intercepting-the-getcontext-method">1. Intercepting the
+<code>getContext</code> Method</h3>
+<p>The most reliable way to monitor or modify WebGL behavior is to
+override <code>HTMLCanvasElement.prototype.getContext</code> before the
+target webpage initializes its graphics engine.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at document-start</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalGetContext <span class="op">=</span> <span class="bu">HTMLCanvasElement</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">getContext</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">HTMLCanvasElement</span><span class="op">.</span><span class="at">prototype</span><span class="op">.</span><span class="at">getContext</span> <span class="op">=</span> <span class="kw">function</span>(type<span class="op">,</span> attributes) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> context <span class="op">=</span> originalGetContext<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> <span class="kw">arguments</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (type <span class="op">===</span> <span class="st">&#39;webgl&#39;</span> <span class="op">||</span> type <span class="op">===</span> <span class="st">&#39;webgl2&#39;</span> <span class="op">||</span> type <span class="op">===</span> <span class="st">&#39;experimental-webgl&#39;</span>) {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Intercept and manipulate the WebGL context instance</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;WebGL Context Captured:&#39;</span><span class="op">,</span> context)<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> context<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="2-direct-dom-inspection">2. Direct DOM Inspection</h3>
+<p>If a canvas element already exists on the DOM, a userscript can
+select the element and retrieve its existing WebGL rendering context
+directly via JavaScript:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> canvas <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;canvas&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gl <span class="op">=</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&#39;webgl&#39;</span>) <span class="op">||</span> canvas<span class="op">.</span><span class="fu">getContext</span>(<span class="st">&#39;webgl2&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="common-use-cases-for-webgl-userscripts">Common Use Cases for
+WebGL Userscripts</h2>
+<h3 id="webgl-fingerprint-protection">WebGL Fingerprint Protection</h3>
+<p>Tracking scripts often use WebGL to generate unique hardware
+fingerprints based on rendering subtle differences across different
+GPUs. Userscripts can intercept calls to <code>gl.getParameter()</code>
+to spoof hardware details, such as changing
+<code>UNMASKED_VENDOR_WEBGL</code> or
+<code>UNMASKED_RENDERER_WEBGL</code>.</p>
+<h3 id="game-modding-and-utility-injection">Game Modding and Utility
+Injection</h3>
+<p>Browser games built on WebGL engines (such as Three.js, Babylon.js,
+or Unity WebGL) execute graphics calls directly through the browser. A
+userscript can:</p>
+<ul>
+<li>Intercept draw calls (<code>gl.drawArrays</code>,
+<code>gl.drawElements</code>) to render wallhacks or force wireframe
+modes.</li>
+<li>Modify texture data loaded into memory via
+<code>gl.texImage2D</code>.</li>
+<li>Inject custom camera controls into existing 3D scenes.</li>
+</ul>
+<h3 id="shader-interception-and-modification">Shader Interception and
+Modification</h3>
+<p>Userscripts can capture and rewrite GLSL shader code before it
+compiles on the GPU. By wrapping <code>gl.shaderSource()</code>, a
+script can inspect incoming vertex and fragment shaders and modify them
+dynamically to change lighting, textures, or visibility rules.</p>
+<h2 id="technical-limitations-and-challenges">Technical Limitations and
+Challenges</h2>
+<ul>
+<li><strong>Timing Constraints:</strong> WebGL contexts created
+<em>before</em> the userscript runs cannot be retroactively intercepted
+via <code>getContext</code> overrides. Setting
+<code>// @run-at document-start</code> in the userscript header is
+required to execute the script before page scripts run.</li>
+<li><strong>Performance Impact:</strong> Injecting heavy logic into
+frequently called WebGL functions (such as per-frame draw loops) can
+introduce noticeable performance degradation and frame drops.</li>
+<li><strong>Anti-Tampering Detection:</strong> Modern web applications
+can detect userscript interventions by checking if native functions have
+been modified (e.g., calling <code>.toString()</code> on
+<code>getContext</code> to verify native browser execution).</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

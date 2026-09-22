@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Translate Webpages with Userscripts and APIs - userscript</title>
+    <meta name="description" content="Userscripts can automatically translate text on any webpage by combining browser automation with external translation APIs. By executing JavaScript directly in the browser via extensions like Tampermonkey or Violentmonkey, a userscript can scan web conte">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/auto-translate-webpages-with-userscripts-and-ap-is">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Auto Translate Webpages with Userscripts and APIs - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/auto-translate-webpages-with-userscripts-and-ap-is" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can automatically translate text on any webpage by combining browser automation with external translation APIs. By executing JavaScript directly in the browser via extensions like Tampermonkey or Violentmonkey, a userscript can scan web conte" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="auto-translate-webpages-with-userscripts-and-apis">Auto
+Translate Webpages with Userscripts and APIs</h1>
+<p>Userscripts can automatically translate text on any webpage by
+combining browser automation with external translation APIs. By
+executing JavaScript directly in the browser via extensions like
+Tampermonkey or Violentmonkey, a userscript can scan web content, send
+text to services such as Google Translate, DeepL, or LibreTranslate, and
+dynamically display the translated output without requiring a full page
+reload.</p>
+<h2 id="how-userscript-translation-works">How Userscript Translation
+Works</h2>
+<p>Userscripts interact with the webpage's Document Object Model (DOM)
+to locate and process text nodes. The automated translation workflow
+generally follows these key steps:</p>
+<ol type="1">
+<li><strong>Targeting Text:</strong> The script identifies target
+elements using standard DOM selection methods or a
+<code>MutationObserver</code> to catch dynamically loaded content.</li>
+<li><strong>Making API Requests:</strong> To avoid Cross-Origin Resource
+Sharing (CORS) restrictions that typically block web pages from querying
+external domains, userscripts use specialized manager functions like
+<code>GM_xmlhttpRequest</code> or <code>GM.xmlHttpRequest</code>.</li>
+<li><strong>DOM Mutation:</strong> Once the API returns the JSON
+response containing the translated string, the script updates the
+original text elements or inserts inline translations alongside the
+native text.</li>
+</ol>
+<h2 id="choosing-an-external-translation-api">Choosing an External
+Translation API</h2>
+<p>The choice of API determines the script's speed, cost, and
+translation accuracy:</p>
+<ul>
+<li><strong>Free Public APIs / Unofficial Endpoints:</strong> Simple
+scripts often query free endpoints (like basic web translation
+endpoints), though these carry risks of rate-limiting or IP blocks.</li>
+<li><strong>Official Paid APIs:</strong> Services like DeepL API or
+Google Cloud Translation offer high reliability and accuracy but require
+an API key and usage fees. Userscripts can store these keys locally
+using <code>GM_setValue</code>.</li>
+<li><strong>Self-Hosted APIs:</strong> Open-source translation engines
+like LibreTranslate allow users to host their own translation server,
+offering complete data privacy and removing third-party usage caps.</li>
+</ul>
+<h2 id="key-implementation-features">Key Implementation Features</h2>
+<p>Developers customize translation userscripts to fit specific browsing
+needs:</p>
+<ul>
+<li><strong>Hover or Selection Translation:</strong> Instead of
+translating entire pages, scripts can trigger API calls only when a user
+highlights text or hovers over a paragraph, saving API credits.</li>
+<li><strong>Bypassing Built-in Translation Limits:</strong> Userscripts
+work across all modern browsers, making automated translation available
+on browsers that lack native, full-page translation engines.</li>
+<li><strong>Custom Styling:</strong> Translated text can be styled with
+custom CSS to visually distinguish it from the original content or to
+fit specific layout constraints.</li>
+</ul>
+<h2 id="technical-considerations">Technical Considerations</h2>
+<p>While highly effective, building a translation userscript requires
+handling dynamic single-page applications (SPAs) where content
+re-renders frequently. Additionally, developers must manage API rate
+limits by implementing caching mechanisms in local storage
+(<code>GM_getValue</code>/<code>GM_setValue</code>) so duplicate
+requests are not sent for previously translated phrases.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

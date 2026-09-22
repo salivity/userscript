@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prevent Redirect Loops Using Userscripts and History API - userscript</title>
+    <meta name="description" content="Userscripts can effectively manipulate the browser's History API and location parameters to detect, intercept, and break client-side redirect loops. By running custom JavaScript directly within the web page context, userscripts can override native method">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/prevent-redirect-loops-using-userscripts-and-history-api">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Prevent Redirect Loops Using Userscripts and History API - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/prevent-redirect-loops-using-userscripts-and-history-api" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can effectively manipulate the browser's History API and location parameters to detect, intercept, and break client-side redirect loops. By running custom JavaScript directly within the web page context, userscripts can override native method" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="prevent-redirect-loops-using-userscripts-and-history-api">Prevent
+Redirect Loops Using Userscripts and History API</h1>
+<p>Userscripts can effectively manipulate the browser's History API and
+location parameters to detect, intercept, and break client-side redirect
+loops. By running custom JavaScript directly within the web page
+context, userscripts can override native methods like
+<code>history.pushState</code> and <code>history.replaceState</code>,
+monitor URL navigation events, and track routing frequency using session
+storage. This article explains how userscripts control browser history
+and provides actionable strategies to stop recurring redirection
+scripts.</p>
+<h2 id="how-userscripts-intercept-the-history-api">How Userscripts
+Intercept the History API</h2>
+<p>The browser's History API enables web applications to update the
+address bar without triggering full page reloads using
+<code>history.pushState()</code> and
+<code>history.replaceState()</code>. When misconfigured web applications
+or aggressive tracking scripts repeatedly invoke these functions or
+modify <code>window.location</code>, the user becomes stuck in a
+client-side redirect loop.</p>
+<p>Because userscripts execute in the context of the page, they can
+monkey-patch native browser methods. By replacing the built-in History
+API methods with custom wrappers, a userscript can inspect every
+navigation attempt and block execution if a loop pattern is
+detected.</p>
+<h2 id="practical-techniques-to-stop-redirect-loops">Practical
+Techniques to Stop Redirect Loops</h2>
+<h3 id="intercepting-pushstate-and-replacestate">Intercepting
+<code>pushState</code> and <code>replaceState</code></h3>
+<p>Userscripts can store references to the original API methods and
+validate the target URL against recent navigation attempts before
+permitting the state change:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalPushState <span class="op">=</span> history<span class="op">.</span><span class="at">pushState</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalReplaceState <span class="op">=</span> history<span class="op">.</span><span class="at">replaceState</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">isLooping</span>(targetUrl) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> lastUrl <span class="op">=</span> sessionStorage<span class="op">.</span><span class="fu">getItem</span>(<span class="st">&#39;last_redirect_url&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> count <span class="op">=</span> <span class="pp">parseInt</span>(sessionStorage<span class="op">.</span><span class="fu">getItem</span>(<span class="st">&#39;redirect_count&#39;</span>) <span class="op">||</span> <span class="st">&#39;0&#39;</span><span class="op">,</span> <span class="dv">10</span>)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (lastUrl <span class="op">===</span> targetUrl) {</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (count <span class="op">&gt;</span> <span class="dv">3</span>) <span class="cf">return</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    sessionStorage<span class="op">.</span><span class="fu">setItem</span>(<span class="st">&#39;redirect_count&#39;</span><span class="op">,</span> (count <span class="op">+</span> <span class="dv">1</span>)<span class="op">.</span><span class="fu">toString</span>())<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    sessionStorage<span class="op">.</span><span class="fu">setItem</span>(<span class="st">&#39;last_redirect_url&#39;</span><span class="op">,</span> targetUrl)<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    sessionStorage<span class="op">.</span><span class="fu">setItem</span>(<span class="st">&#39;redirect_count&#39;</span><span class="op">,</span> <span class="st">&#39;1&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>history<span class="op">.</span><span class="at">pushState</span> <span class="op">=</span> <span class="kw">function</span>(<span class="op">...</span>args) {</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">isLooping</span>(args[<span class="dv">2</span>])) {</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&#39;Redirect loop blocked by userscript.&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> originalPushState<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> args)<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>history<span class="op">.</span><span class="at">replaceState</span> <span class="op">=</span> <span class="kw">function</span>(<span class="op">...</span>args) {</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">isLooping</span>(args[<span class="dv">2</span>])) {</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">warn</span>(<span class="st">&#39;Redirect loop blocked by userscript.&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> originalReplaceState<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> args)<span class="op">;</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="tracking-navigation-across-reloads">Tracking Navigation Across
+Reloads</h3>
+<p>Client-side redirect loops often involve full page reloads via
+<code>window.location.href</code> or
+<code>window.location.replace()</code>. Standard JavaScript variables
+reset on reload, so userscripts rely on <code>sessionStorage</code> or
+extension-provided storage functions (<code>GM_setValue</code> and
+<code>GM_getValue</code>) to maintain state.</p>
+<p>By storing a timestamp and URL history, the userscript can execute at
+<code>@run-at document-start</code> to evaluate whether the page was
+reloaded repeatedly within a short interval. If a loop is detected, the
+script can call <code>window.stop()</code> to cancel navigation and halt
+page execution entirely.</p>
+<h2 id="scope-and-limitations">Scope and Limitations</h2>
+<p>Userscripts are fully capable of stopping client-side,
+JavaScript-driven redirect loops. However, they cannot prevent
+server-side redirect loops caused by HTTP status codes like 301 or 302.
+HTTP response redirects occur at the network layer before the browser
+loads the DOM or executes userscripts. Halting server-side HTTP loops
+requires web extensions utilizing raw network request interception APIs
+rather than standard userscripts.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Bypass Browser Cache to Reload Assets - userscript</title>
+    <meta name="description" content="Userscripts execute within the web browser to alter web page content and functionality, but they often encounter stale content due to aggressive browser caching. To force asset reloading, userscripts cannot directly clear the browser's internal storage;">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-bypass-browser-cache-to-reload-assets">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Bypass Browser Cache to Reload Assets - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-bypass-browser-cache-to-reload-assets" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts execute within the web browser to alter web page content and functionality, but they often encounter stale content due to aggressive browser caching. To force asset reloading, userscripts cannot directly clear the browser's internal storage;" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-bypass-browser-cache-to-reload-assets">How
+Userscripts Bypass Browser Cache to Reload Assets</h1>
+<p>Userscripts execute within the web browser to alter web page content
+and functionality, but they often encounter stale content due to
+aggressive browser caching. To force asset reloading, userscripts cannot
+directly clear the browser's internal storage; instead, they manipulate
+resource request URLs, alter HTTP headers, and override native
+JavaScript fetching methods. This article explains the technical
+mechanisms userscripts use to force the browser into fetching fresh
+assets directly from the web server.</p>
+<h2 id="cache-busting-via-query-parameters">Cache-Busting via Query
+Parameters</h2>
+<p>The primary method a userscript uses to force asset reloading is
+cache-busting. Web browsers store and retrieve cached assets using the
+exact resource URL as the key. By appending a dynamically generated
+parameter to the URL, the userscript tricks the browser into seeing the
+asset as an entirely new resource.</p>
+<p>When modifying elements like <code>&lt;img&gt;</code>,
+<code>&lt;link&gt;</code>, or <code>&lt;script&gt;</code>, the
+userscript appends a unique value, such as a UNIX timestamp or a random
+string, to the URL:</p>
+<ul>
+<li><strong>Original URL:</strong>
+<code>https://example.com/styles.css</code></li>
+<li><strong>Modified URL:</strong>
+<code>https://example.com/styles.css?t=1672531199000</code></li>
+</ul>
+<p>Because the modified URL creates a new cache key, the browser
+bypasses its local cache and issues a direct network request to the
+server.</p>
+<h2 id="overriding-native-fetch-and-xmlhttprequest">Overriding Native
+Fetch and XMLHttpRequest</h2>
+<p>Userscripts running at <code>document-start</code> can hook into or
+replace the browser's native networking APIs (<code>window.fetch</code>
+and <code>XMLHttpRequest</code>). By monkey-patching these APIs, the
+userscript intercepts every network request initiated by the page.</p>
+<p>Inside the overridden functions, the userscript can:</p>
+<ol type="1">
+<li>Automatically append cache-busting query strings to all outbound
+requests.</li>
+<li>Set custom HTTP request headers, such as
+<code>Cache-Control: no-cache</code> or
+<code>Pragma: no-cache</code>.</li>
+</ol>
+<p>When a request includes these <code>Cache-Control</code> directives,
+the browser's network stack bypasses the local disk and memory cache,
+demanding a fresh response or revalidation from the remote server.</p>
+<h2 id="leveraging-extension-apis-gm_xmlhttprequest">Leveraging
+Extension APIs (GM_xmlhttpRequest)</h2>
+<p>Userscript managers (such as Tampermonkey or Violentmonkey) provide
+privileged APIs like <code>GM_xmlhttpRequest</code>. Unlike standard
+page scripts constrained by browser security models,
+<code>GM_xmlhttpRequest</code> executes within the extension's
+background context.</p>
+<p>This grants the script direct control over request headers and
+caching behavior. A userscript can execute a request with specific
+headers:</p>
+<ul>
+<li><code>Cache-Control: no-cache, no-store, must-revalidate</code></li>
+<li><code>Pragma: no-cache</code></li>
+</ul>
+<p>Once <code>GM_xmlhttpRequest</code> fetches the updated asset from
+the network, the userscript can convert the payload into a Blob URL or
+inline base64 string and inject it directly into the web page, fully
+replacing the browser's cached asset.</p>
+<h2 id="dom-node-removal-and-re-injection">DOM Node Removal and
+Re-injection</h2>
+<p>For scripts, stylesheets, or images embedded static in the original
+HTML, userscripts force reloads by removing the existing DOM nodes and
+re-creating them.</p>
+<p>The userscript performs the following sequence:</p>
+<ol type="1">
+<li>Locates the targeted target element (e.g.,
+<code>&lt;script src="app.js"&gt;</code>).</li>
+<li>Removes the element from the DOM to stop execution or
+rendering.</li>
+<li>Creates a new DOM element of the same type.</li>
+<li>Assigns the source attribute with an added cache-busting
+parameter.</li>
+<li>Re-attaches the element to the <code>&lt;head&gt;</code> or
+<code>&lt;body&gt;</code>.</li>
+</ol>
+<p>This forces the browser's HTML parser and renderer to treat the
+element as a newly inserted node, prompting an immediate background
+fetch for the updated asset.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

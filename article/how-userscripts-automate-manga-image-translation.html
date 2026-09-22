@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Automate Manga Image Translation - userscript</title>
+    <meta name="description" content="Userscripts automate the translation of raw manga and webcomic images by combining browser-based text extraction, cloud machine translation, and dynamic image rendering directly in the web browser. By executing custom JavaScript on specific websites, the">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-automate-manga-image-translation">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Automate Manga Image Translation - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-automate-manga-image-translation" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts automate the translation of raw manga and webcomic images by combining browser-based text extraction, cloud machine translation, and dynamic image rendering directly in the web browser. By executing custom JavaScript on specific websites, the" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-automate-manga-image-translation">How
+Userscripts Automate Manga Image Translation</h1>
+<p>Userscripts automate the translation of raw manga and webcomic images
+by combining browser-based text extraction, cloud machine translation,
+and dynamic image rendering directly in the web browser. By executing
+custom JavaScript on specific websites, these scripts scan raw comic
+pages, extract original Japanese, Korean, or Chinese text using Optical
+Character Recognition (OCR), process it through translation engines like
+DeepL or Google Translate, and overlay the resulting text back onto
+speech bubbles in real time. This process creates a seamless, on-the-fly
+reading experience without requiring pre-edited scanlations.</p>
+<h2 id="1-image-capture-and-region-detection">1. Image Capture and
+Region Detection</h2>
+<p>When a reader loads a raw manga page, the userscript intercepts the
+image elements on the Web page. Using JavaScript's HTML5 Canvas API or
+background network requests, the script retrieves the raw image data.
+Advanced scripts analyze the image layout to identify coordinates for
+speech bubbles and text blocks, isolating regions that contain text
+while ignoring background artwork.</p>
+<h2 id="2-optical-character-recognition-ocr">2. Optical Character
+Recognition (OCR)</h2>
+<p>Once the relevant image regions are isolated, the script sends the
+pixel data to an OCR engine:</p>
+<ul>
+<li><strong>Client-Side OCR:</strong> Scripts can run lightweight
+WebAssembly or JavaScript OCR engines (such as Tesseract.js) directly
+inside the browser.</li>
+<li><strong>Server-Side OCR APIs:</strong> For complex languages like
+Japanese or Korean, scripts often send cropped image coordinates via API
+requests to specialized vision models, such as Manga OCR, Google Cloud
+Vision, or custom deep-learning models trained specifically for comic
+typography.</li>
+</ul>
+<p>The OCR engine returns the recognized source text along with the
+exact bounding box coordinates <code>(X, Y, Width, Height)</code> for
+every text block on the page.</p>
+<h2 id="3-machine-translation-processing">3. Machine Translation
+Processing</h2>
+<p>The raw text extracted by the OCR engine is compiled and sent to
+automated translation services. Userscripts typically allow readers to
+configure their own API keys or select preferred providers, including
+DeepL, Google Translate, Papago, or OpenAI's GPT models. The translation
+service returns the converted text in the target language while
+maintaining the original sentence order.</p>
+<h2 id="4-canvas-cleaning-and-text-overlay">4. Canvas Cleaning and Text
+Overlay</h2>
+<p>To display the translated text naturally over the original comic
+page, the userscript performs two visual steps:</p>
+<ul>
+<li><strong>Inpainting/Masking:</strong> The script draws colored shapes
+(usually white or solid background colors matching the speech bubble)
+over the original text coordinates using an HTML5 Canvas element
+overlay, effectively erasing the raw Japanese or foreign text.</li>
+<li><strong>Text Insertion:</strong> The translated text is drawn on top
+of the masked area using absolute CSS positioning or SVG elements. The
+script calculates font size, word wrapping, line height, and alignment
+so that the translation fits neatly within the original speech bubble
+bounds.</li>
+</ul>
+<h2 id="5-automation-and-caching">5. Automation and Caching</h2>
+<p>To ensure smooth performance, userscripts utilize
+<code>MutationObserver</code> APIs to detect when new manga pages are
+loaded as the user scrolls. Most scripts implement a local caching
+system using <code>localStorage</code> or <code>IndexedDB</code>. When a
+page is translated, the resulting coordinates and text are stored
+locally, preventing redundant OCR and translation API requests if the
+reader revisits the same page.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automate Email Categorization Using Browser Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can indeed automate the categorization of emails in webmail clients like Gmail and Outlook by executing custom JavaScript directly within your web browser. By leveraging browser extensions such as Tampermonkey or Violentmonkey, these scripts">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/automate-email-categorization-using-browser-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Automate Email Categorization Using Browser Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/automate-email-categorization-using-browser-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can indeed automate the categorization of emails in webmail clients like Gmail and Outlook by executing custom JavaScript directly within your web browser. By leveraging browser extensions such as Tampermonkey or Violentmonkey, these scripts" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="automate-email-categorization-using-browser-userscripts">Automate
+Email Categorization Using Browser Userscripts</h1>
+<p>Userscripts can indeed automate the categorization of emails in
+webmail clients like Gmail and Outlook by executing custom JavaScript
+directly within your web browser. By leveraging browser extensions such
+as Tampermonkey or Violentmonkey, these scripts interact with the web
+app's Document Object Model (DOM) to read message metadata, apply visual
+tags, and move messages based on highly complex criteria. While
+userscripts provide unmatched customization and client-side privacy,
+they require basic technical setup and only process emails while the
+webmail tab remains open in your browser.</p>
+<h2 id="how-userscripts-work-in-webmail-clients">How Userscripts Work in
+Webmail Clients</h2>
+<p>Userscripts inject JavaScript code into the web page after the
+application loads. In webmail interfaces like Gmail or Outlook Web
+Access (OWA), a userscript uses a <code>MutationObserver</code> to
+monitor the inbox UI for newly rendered email rows.</p>
+<p>When a new message appears, the script scans specific DOM elements
+containing the sender's address, subject line, or preview text. If the
+message matches pre-defined logical rules (such as regular expressions
+or advanced keywords), the script can programmatically simulate user
+actions—such as clicking built-in label buttons, dragging elements, or
+injecting custom HTML badges directly into the inbox view.</p>
+<h2 id="capabilities-in-gmail-and-outlook">Capabilities in Gmail and
+Outlook</h2>
+<p>With a userscript, you can extend the native automation capabilities
+of web clients beyond what standard setting menus allow:</p>
+<ul>
+<li><strong>Gmail:</strong> While Gmail offers robust built-in filters,
+userscripts allow for conditional logic based on time of day, body text
+length, or dynamic calculations. You can automatically apply custom CSS
+styling, highlight emails from specific domains with unique background
+colors, or group messages using complex matching patterns that standard
+search operators do not support.</li>
+<li><strong>Outlook Web:</strong> Outlook's web client features strict
+rule limits for free and organizational accounts. Userscripts bypass
+these backend limits by applying categorization on the client side. You
+can dynamically tag messages, automatically flag items based on priority
+rules, or re-sort the visual display of the main message list.</li>
+</ul>
+<h2 id="key-advantages">Key Advantages</h2>
+<ul>
+<li><strong>Advanced Customization:</strong> Userscripts support full
+JavaScript execution, allowing you to use complex regular expressions,
+external API calls, or date math to decide how an email should be
+categorized.</li>
+<li><strong>Enhanced Privacy:</strong> Unlike third-party email
+management services that require full API access to your inbox on an
+external server, userscripts run entirely locally within your browser
+context.</li>
+<li><strong>No Server-Side Modifications:</strong> Userscripts alter how
+the web client displays and handles data on your machine without
+requiring administrative rights on enterprise Google Workspace or
+Microsoft 365 accounts.</li>
+</ul>
+<h2 id="limitations-and-drawbacks">Limitations and Drawbacks</h2>
+<p>Despite their flexibility, userscripts have distinct technical
+constraints:</p>
+<ul>
+<li><strong>Active Browser Requirement:</strong> Userscripts only run
+when the email client tab is open in your active browser. They cannot
+organize incoming mail on the server while your computer is turned
+off.</li>
+<li><strong>UI Sensitivity:</strong> Web clients like Gmail and Outlook
+frequently update their frontend markup and CSS class names. A minor
+update by Google or Microsoft can break DOM selectors, requiring script
+updates.</li>
+<li><strong>Performance Impact:</strong> Inefficient script logic or
+aggressive DOM polling can slow down tab performance, leading to input
+lag in heavy inboxes.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

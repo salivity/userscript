@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscript Global Variable Name Collisions Explained - userscript</title>
+    <meta name="description" content="When two different userscripts attempt to define the same global variable, the actual outcome depends on how the scripts are sandboxed and the method used to declare the variable. In standard userscript environments where sandboxing is enabled, each scri">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscript-global-variable-name-collisions-explained">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscript Global Variable Name Collisions Explained - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscript-global-variable-name-collisions-explained" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="When two different userscripts attempt to define the same global variable, the actual outcome depends on how the scripts are sandboxed and the method used to declare the variable. In standard userscript environments where sandboxing is enabled, each scri" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="userscript-global-variable-name-collisions-explained">Userscript
+Global Variable Name Collisions Explained</h1>
+<p>When two different userscripts attempt to define the same global
+variable, the actual outcome depends on how the scripts are sandboxed
+and the method used to declare the variable. In standard userscript
+environments where sandboxing is enabled, each script operates in its
+own isolated context, preventing any conflict. However, if both scripts
+execute in the page's main context or explicitly modify the global
+<code>window</code> object, the scripts will either overwrite each
+other's data or cause a JavaScript execution error.</p>
+<h2 id="sandboxed-execution-default-behavior">Sandboxed Execution
+(Default Behavior)</h2>
+<p>Most modern userscript managers—such as Tampermonkey, Violentmonkey,
+and Greasemonkey—run scripts inside a safe, isolated sandbox by
+default.</p>
+<ul>
+<li><strong>Isolated Scopes:</strong> When a script uses default API
+grants (like <code>GM_getValue</code> or
+<code>GM_xmlhttpRequest</code>), the manager wraps the code in a private
+closure.</li>
+<li><strong>No Collision:</strong> If Script A and Script B both declare
+<code>var userConfig = {}</code>, each script gets its own independent
+version of <code>userConfig</code>. Neither script can see or interfere
+with the other's variable.</li>
+</ul>
+<h2 id="unsandboxed-execution-grant-none-or-window-scope">Unsandboxed
+Execution (<code>@grant none</code> or <code>window</code> Scope)</h2>
+<p>If userscripts explicitly opt out of sandboxing (using
+<code>@grant none</code>) or deliberately attach properties to the
+page's <code>window</code> object, global variable conflicts will occur.
+The result depends on how the variable is declared:</p>
+<h3 id="1-overwriting-via-var-or-window-properties">1. Overwriting via
+<code>var</code> or <code>window</code> Properties</h3>
+<p>If both scripts use <code>var</code> at the top level or attach
+properties directly to the <code>window</code> object:</p>
+<ul>
+<li><strong>Script A:</strong>
+<code>window.sharedData = "Script A";</code></li>
+<li><strong>Script B:</strong>
+<code>window.sharedData = "Script B";</code></li>
+</ul>
+<p><strong>Outcome:</strong> The script that executes last will
+overwrite the value set by the earlier script. Script A may break or
+behave unpredictably because its expected global state was changed by
+Script B.</p>
+<h3 id="2-syntax-errors-via-let-and-const">2. Syntax Errors via
+<code>let</code> and <code>const</code></h3>
+<p>If both scripts inject code into the page's top-level scope (for
+example, by appending <code>&lt;script&gt;</code> tags to the DOM) using
+<code>let</code> or <code>const</code>:</p>
+<ul>
+<li><strong>Script A:</strong>
+<code>let mySettings = { active: true };</code></li>
+<li><strong>Script B:</strong>
+<code>let mySettings = { active: false };</code></li>
+</ul>
+<p><strong>Outcome:</strong> JavaScript does not allow re-declaration of
+block-scoped variables in the same scope. The script running second will
+throw a
+<code>Uncaught SyntaxError: Identifier 'mySettings' has already been declared</code>
+and stop executing entirely.</p>
+<h2 id="how-execution-order-affects-the-outcome">How Execution Order
+Affects the Outcome</h2>
+<p>The order in which userscripts run is determined by the browser
+extension manager and directives like <code>@run-at</code>.</p>
+<ul>
+<li><strong>First Script:</strong> Executes successfully and sets the
+initial state.</li>
+<li><strong>Second Script:</strong> Either silently overwrites the
+initial state or throws an error that breaks its own functionality.</li>
+</ul>
+<p>Because execution order can vary based on page load speed and script
+settings, global variable collisions often result in inconsistent,
+hard-to-debug errors.</p>
+<h2 id="preventing-variable-collisions">Preventing Variable
+Collisions</h2>
+<p>To avoid conflicts when writing userscripts:</p>
+<ol type="1">
+<li><strong>Maintain Sandboxing:</strong> Avoid using
+<code>@grant none</code> unless strictly necessary.</li>
+<li><strong>Use IIFEs:</strong> Wrap script code in an Immediately
+Invoked Function Expression <code>(function() { ... })();</code> to keep
+variables out of the global scope.</li>
+<li><strong>Namespace Custom Globals:</strong> If writing to
+<code>window</code> is required, group variables under a unique object
+name (e.g., <code>window.MyUniqueScript_Data</code>).</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

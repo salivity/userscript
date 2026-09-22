@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using @resource to Load Local JSON in Userscripts - userscript</title>
+    <meta name="description" content="The @resource metadata tag in userscript managers like Tampermonkey, Violentmonkey, and Greasemonkey allows developers to pre-download, cache, and access external or local files within a script. When working with JSON configuration files, @resource acts">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/using-resource-to-load-local-json-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Using @resource to Load Local JSON in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/using-resource-to-load-local-json-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @resource metadata tag in userscript managers like Tampermonkey, Violentmonkey, and Greasemonkey allows developers to pre-download, cache, and access external or local files within a script. When working with JSON configuration files, @resource acts" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="using-resource-to-load-local-json-in-userscripts">Using
+@resource to Load Local JSON in Userscripts</h1>
+<p>The <code>@resource</code> metadata tag in userscript managers like
+Tampermonkey, Violentmonkey, and Greasemonkey allows developers to
+pre-download, cache, and access external or local files within a script.
+When working with JSON configuration files, <code>@resource</code> acts
+as a reliable bridge to load structural data without making repetitive
+asynchronous HTTP requests during runtime. This article explains the
+functional role of the <code>@resource</code> header, why it is ideal
+for JSON configs, and how to access local JSON data inside your
+userscripts.</p>
+<h2 id="understanding-the-role-of-resource">Understanding the Role of
+<code>@resource</code></h2>
+<p>The <code>@resource</code> tag tells the userscript engine to
+download a file when the script is installed or updated, rather than
+every time the script executes.</p>
+<p>The basic syntax defines a custom key name followed by the URL or
+file path:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// @resource  MY_CONFIG  file:///C:/path/to/config.json</span></span></code></pre></div>
+<p>By assigning a key (<code>MY_CONFIG</code>), you create a reference
+that your script can retrieve later through dedicated userscript
+APIs.</p>
+<h2 id="key-benefits-for-json-configuration-files">Key Benefits for JSON
+Configuration Files</h2>
+<p>Using <code>@resource</code> for JSON configurations provides several
+distinct advantages over traditional <code>fetch</code> or
+<code>XMLHttpRequest</code> methods:</p>
+<ul>
+<li><strong>Bypassing CORS Restrictions:</strong> Browsers strictly
+block scripts from fetching local <code>file://</code> URIs or
+cross-domain endpoints via standard HTTP requests due to Same-Origin
+Policy. The <code>@resource</code> tag runs within the privileged
+background environment of the script manager, bypassing these
+restrictions.</li>
+<li><strong>Offline Availability and Speed:</strong> Because the JSON
+file is downloaded and stored locally by the script manager, your
+configuration data loads instantly without relying on a live network
+request every time the webpage refreshes.</li>
+<li><strong>Synchronous Access:</strong> Utilizing API helpers alongside
+<code>@resource</code> allows you to access text data synchronously
+during script startup, eliminating complex asynchronous promises before
+script execution begins.</li>
+</ul>
+<h2 id="how-to-load-and-parse-local-json">How to Load and Parse Local
+JSON</h2>
+<p>To load and use a local JSON configuration file, follow these three
+main steps within your userscript metadata and code logic.</p>
+<h3 id="1-declare-the-resource-and-grant-permissions">1. Declare the
+<code>@resource</code> and Grant Permissions</h3>
+<p>Specify the local file path or local server URL in the metadata
+block, and declare access to the <code>GM_getResourceText</code> (or
+<code>GM.getResourceText</code>) permission.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Local JSON Config Example</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*/*</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @resource     APP_CONFIG file:///C:/Users/Name/Documents/config.json</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getResourceText</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p><em>Note: For <code>file://</code> URIs to work, you must enable
+"Allow access to file URLs" for your userscript extension in your
+browser's extension management settings.</em></p>
+<h3 id="2-retrieve-and-parse-the-resource-text">2. Retrieve and Parse
+the Resource Text</h3>
+<p>Inside the main script body, call <code>GM_getResourceText</code>
+using the key defined in your metadata, then pass the string into
+<code>JSON.parse()</code>.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;useJS&#39;</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Retrieve the raw JSON string from cache</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> rawConfig <span class="op">=</span> <span class="fu">GM_getResourceText</span>(<span class="st">&quot;APP_CONFIG&quot;</span>)<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Parse string into a JavaScript object</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> config <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(rawConfig)<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Use your configuration properties</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Loaded configuration:&quot;</span><span class="op">,</span> config)<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (config<span class="op">.</span><span class="at">enableFeatureX</span>) {</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Feature logic here</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">catch</span> (e) {</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Failed to parse local JSON configuration:&quot;</span><span class="op">,</span> e)<span class="op">;</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="summary">Summary</h2>
+<p>The <code>@resource</code> tag provides a secure, efficient mechanism
+for userscript developers to load static or local JSON configurations.
+By letting the userscript manager handle the downloading, caching, and
+local storage permissions, you avoid cross-origin security errors and
+simplify data management within your code.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

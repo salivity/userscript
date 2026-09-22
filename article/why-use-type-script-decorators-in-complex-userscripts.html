@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Use TypeScript Decorators in Complex Userscripts? - userscript</title>
+    <meta name="description" content="TypeScript decorators offer a clean, declarative approach to managing state, DOM events, and browser extension APIs within large-scale userscripts. By abstracting repetitive boilerplate—such as registering menu commands, binding event listeners, rate-l">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/why-use-type-script-decorators-in-complex-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Why Use TypeScript Decorators in Complex Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/why-use-type-script-decorators-in-complex-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="TypeScript decorators offer a clean, declarative approach to managing state, DOM events, and browser extension APIs within large-scale userscripts. By abstracting repetitive boilerplate—such as registering menu commands, binding event listeners, rate-l" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="why-use-typescript-decorators-in-complex-userscripts">Why Use
+TypeScript Decorators in Complex Userscripts?</h1>
+<p>TypeScript decorators offer a clean, declarative approach to managing
+state, DOM events, and browser extension APIs within large-scale
+userscripts. By abstracting repetitive boilerplate—such as registering
+menu commands, binding event listeners, rate-limiting actions, and
+tracking performance—decorators separate infrastructure logic from
+primary features. This creates a modular architecture that makes complex
+userscripts easier to read, scale, and maintain over time.</p>
+<h2 id="streamlining-userscript-api-integration">Streamlining Userscript
+API Integration</h2>
+<p>Userscripts frequently interact with greasemonkey-style APIs like
+<code>GM_getValue</code>, <code>GM_setValue</code>, or
+<code>GM_registerMenuCommand</code>. Manually hooking these APIs into
+class methods during script initialization can lead to bloated setup
+functions.</p>
+<p>Decorators allow you to wire these APIs directly to class properties
+and methods:</p>
+<ul>
+<li><strong>State Persistence:</strong> A property decorator can
+automatically read from and write to storage whenever a value
+changes.</li>
+<li><strong>Menu Command Registration:</strong> A method decorator can
+mark a function to automatically register as a menu item upon script
+boot, removing the need for explicit setup code.</li>
+</ul>
+<h2 id="declarative-event-handling-and-dom-binding">Declarative Event
+Handling and DOM Binding</h2>
+<p>Architecting complex userscripts requires reacting to dynamic website
+changes, user inputs, and DOM updates. Decorators transform imperative
+event setup into clean declarative metadata.</p>
+<p>Instead of writing verbose <code>addEventListener</code> calls inside
+lifecycle hooks, a decorator can annotate a method with its target
+element and event type. When the target class initializes, the decorator
+binds the method automatically. This keeps the setup phase concise and
+groups event configuration directly with the handler code.</p>
+<h2 id="managing-cross-cutting-concerns">Managing Cross-Cutting
+Concerns</h2>
+<p>Complex userscripts often require logging, performance monitoring,
+error boundaries, and rate limiting (debouncing or throttling). Blending
+these requirements directly into business logic degrades code quality
+and complicates debugging.</p>
+<p>Decorators implement Aspect-Oriented Programming (AOP), isolating
+operational tasks from main logic:</p>
+<ul>
+<li><strong>Debouncing &amp; Throttling:</strong> Prevent rapid button
+clicks or excessive network calls on host pages by decorating handler
+methods with execution limits.</li>
+<li><strong>Error Boundaries:</strong> Wrap critical UI injections or
+API calls in try-catch logic automatically to prevent host page scripts
+from breaking your userscript.</li>
+<li><strong>Performance Logging:</strong> Measure execution times of DOM
+processing functions without modifying the target function's interior
+code.</li>
+</ul>
+<h2 id="improved-maintainability-and-reusability">Improved
+Maintainability and Reusability</h2>
+<p>As a userscript grows to hundreds or thousands of lines, maintaining
+clear class responsibilities becomes vital. Decorators reduce code
+duplication by standardizing behaviors into reusable annotations.</p>
+<p>Developers can create a shared library of custom decorators—such as
+<code>@WaitUntilElementExists</code> or
+<code>@RequireStorageKey</code>—and apply them across multiple script
+features or distinct userscript projects. This reduces boilerplate,
+ensures consistent behavior, and makes codebases easier to navigate for
+teams or open-source contributors.</p>
+<h2 id="stronger-type-safety-during-refactoring">Stronger Type Safety
+During Refactoring</h2>
+<p>When combined with TypeScript’s build pipeline, decorators provide
+early feedback if applied incorrectly. Type checking guarantees that a
+method decorator targets a method with compatible parameters or return
+types. This automated checking prevents runtime bugs when refactoring
+large userscript codebases, ensuring that event handlers and state
+decorators maintain expected signatures.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

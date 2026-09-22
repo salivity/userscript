@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Developers Mock Browser Environments for Userscripts - userscript</title>
+    <meta name="description" content="Testing userscripts requires simulating both standard browser APIs and specialized user manager APIs like GMgetValue or GMxmlhttpRequest. Developers isolate and unit test userscripts by combining headless DOM implementations such as jsdom or Happy DOM, c">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-developers-mock-browser-environments-for-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Developers Mock Browser Environments for Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-developers-mock-browser-environments-for-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Testing userscripts requires simulating both standard browser APIs and specialized user manager APIs like GMgetValue or GMxmlhttpRequest. Developers isolate and unit test userscripts by combining headless DOM implementations such as jsdom or Happy DOM, c" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-developers-mock-browser-environments-for-userscripts">How
+Developers Mock Browser Environments for Userscripts</h1>
+<p>Testing userscripts requires simulating both standard browser APIs
+and specialized user manager APIs like <code>GM_getValue</code> or
+<code>GM_xmlhttpRequest</code>. Developers isolate and unit test
+userscripts by combining headless DOM implementations such as jsdom or
+Happy DOM, creating custom stubs for Greasemonkey and Tampermonkey
+functions, and executing tests inside modern runners like Jest or
+Vitest. This guide explores the primary tools and techniques developers
+use to build lightweight, reliable mock environments for userscript
+development.</p>
+<h2 id="1-simulating-the-dom-with-virtual-environments">1. Simulating
+the DOM with Virtual Environments</h2>
+<p>Userscripts interact heavily with the Document Object Model (DOM).
+Since Node.js lacks a native DOM, developers use lightweight virtual
+browser environments to execute DOM manipulations without launching an
+actual browser.</p>
+<ul>
+<li><strong>jsdom:</strong> The most widely used JavaScript
+implementation of web standards for Node.js. It recreates the
+<code>window</code>, <code>document</code>, and HTML element APIs.</li>
+<li><strong>Happy DOM:</strong> A faster, lighter alternative to jsdom
+often paired with Vitest for faster execution.</li>
+</ul>
+<p>In a test setup file, developers attach these virtual instances to
+the global Node.js scope:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { JSDOM } <span class="im">from</span> <span class="st">&#39;jsdom&#39;</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> dom <span class="op">=</span> <span class="kw">new</span> <span class="fu">JSDOM</span>(<span class="st">&#39;&lt;!querySelectorAll(&quot;html&quot;)&gt;&lt;html&gt;&lt;body&gt;&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;&#39;</span><span class="op">,</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">url</span><span class="op">:</span> <span class="st">&#39;https://example.com/&#39;</span><span class="op">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">window</span> <span class="op">=</span> dom<span class="op">.</span><span class="at">window</span><span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">document</span> <span class="op">=</span> dom<span class="op">.</span><span class="at">window</span><span class="op">.</span><span class="at">document</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">HTMLElement</span> <span class="op">=</span> dom<span class="op">.</span><span class="at">window</span><span class="op">.</span><span class="at">HTMLElement</span><span class="op">;</span></span></code></pre></div>
+<h2 id="2-mocking-gm_-and-user-script-manager-apis">2. Mocking GM_* and
+User Script Manager APIs</h2>
+<p>Userscripts rely on privileged functions provided by extension
+managers like Tampermonkey, Violentmonkey, or Greasemonkey (e.g.,
+<code>GM_setValue</code>, <code>GM_getResourceText</code>). Because
+these APIs do not exist in standard browser environments or Node.js,
+they must be manually mocked.</p>
+<h3 id="synchronous-storage-mocks-gm_getvalue--gm_setvalue">Synchronous
+Storage Mocks (<code>GM_getValue</code> / <code>GM_setValue</code>)</h3>
+<p>Developers frequently mock persistent storage APIs using simple
+JavaScript <code>Map</code> objects or in-memory key-value stores:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> storage <span class="op">=</span> <span class="kw">new</span> <span class="bu">Map</span>()<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">GM_setValue</span> <span class="op">=</span> (key<span class="op">,</span> value) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  storage<span class="op">.</span><span class="fu">set</span>(key<span class="op">,</span> value)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">GM_getValue</span> <span class="op">=</span> (key<span class="op">,</span> defaultValue) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> storage<span class="op">.</span><span class="fu">has</span>(key) <span class="op">?</span> storage<span class="op">.</span><span class="fu">get</span>(key) <span class="op">:</span> defaultValue<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h3 id="modern-object-based-apis-gm">Modern Object-Based APIs
+(<code>GM.*</code>)</h3>
+<p>For scripts using the modern <code>GM.getValue</code> promise-based
+syntax, mocks are wrapped in resolved promises:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">GM</span> <span class="op">=</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">getValue</span><span class="op">:</span> <span class="kw">async</span> (key<span class="op">,</span> defaultValue) <span class="kw">=&gt;</span> storage<span class="op">.</span><span class="fu">get</span>(key) <span class="op">??</span> defaultValue<span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">setValue</span><span class="op">:</span> <span class="kw">async</span> (key<span class="op">,</span> value) <span class="kw">=&gt;</span> storage<span class="op">.</span><span class="fu">set</span>(key<span class="op">,</span> value)<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<h2 id="3-mocking-network-requests-gm_xmlhttprequest">3. Mocking Network
+Requests (<code>GM_xmlhttpRequest</code>)</h2>
+<p>Standard <code>fetch</code> or <code>XMLHttpRequest</code> mocks
+often fail to capture <code>GM_xmlhttpRequest</code> behavior due to its
+cross-origin capabilities and specific event-driven callback structure
+(<code>onload</code>, <code>onerror</code>,
+<code>onreadystatechange</code>).</p>
+<p>Developers create functional stubs using spying libraries like
+Sinon.js or built-in test runner functions (<code>jest.fn()</code> /
+<code>vi.fn()</code>):</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">global</span><span class="op">.</span><span class="at">GM_xmlhttpRequest</span> <span class="op">=</span> jest<span class="op">.</span><span class="fu">fn</span>((details) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (details<span class="op">.</span><span class="at">url</span><span class="op">.</span><span class="fu">includes</span>(<span class="st">&#39;/api/data&#39;</span>)) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    details<span class="op">.</span><span class="fu">onload</span>({</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">status</span><span class="op">:</span> <span class="dv">200</span><span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">responseText</span><span class="op">:</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">success</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">,</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    details<span class="op">.</span><span class="fu">onerror</span>({ <span class="dt">status</span><span class="op">:</span> <span class="dv">404</span> })<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="4-structuring-scripts-for-testability">4. Structuring Scripts
+for Testability</h2>
+<p>To make userscripts testable, developers move away from monolithic
+single-file scripts and adopt modular architectures using build tools
+like Rollup, Webpack, or Vite.</p>
+<ol type="1">
+<li><strong>Separate Logic from Metadata:</strong> The userscript header
+block (<code>// ==UserScript==</code>) is maintained separately or
+prepended during the build step.</li>
+<li><strong>Export Functions via ESM:</strong> Core functions are
+exported as standard ES modules for unit testing and bundled into an
+IIFE (Immediately Invoked Function Expression) for production
+deployment.</li>
+<li><strong>Dependency Injection:</strong> Functions accept APIs (like
+storage or network utilities) as parameters rather than referencing
+global variables directly, simplifying mock substitution.</li>
+</ol>
+<h2 id="5-integrating-mocks-into-test-runners">5. Integrating Mocks into
+Test Runners</h2>
+<p>Modern frameworks like Vitest and Jest simplify environment mocking
+using configuration options and setup files.</p>
+<h3 id="example-vitest-setup">Example Vitest Setup</h3>
+<p>In <code>vitest.config.js</code>:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="im">default</span> {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">test</span><span class="op">:</span> {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">environment</span><span class="op">:</span> <span class="st">&#39;happy-dom&#39;</span><span class="op">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">setupFiles</span><span class="op">:</span> [<span class="st">&#39;./test/setup-gm-mocks.js&#39;</span>]<span class="op">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>The <code>setup-gm-mocks.js</code> file populates the global
+namespace before any unit test suite runs, ensuring seamless API access
+across all tests.</p>
+<h2 id="summary-of-common-stack-configurations">Summary of Common Stack
+Configurations</h2>
+<ul>
+<li><strong>Vitest + Happy DOM + Custom Stubs:</strong> Fast, modern
+setup ideal for TypeScript-based userscripts.</li>
+<li><strong>Jest + jsdom + <code>jest.fn()</code>:</strong> Highly
+stable setup suitable for complex DOM manipulation testing.</li>
+<li><strong>Playwright / Puppeteer:</strong> Used for end-to-end (E2E)
+integration testing in actual browser instances when unit mocks are
+insufficient.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

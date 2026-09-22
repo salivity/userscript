@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Function in Headless Browsers - userscript</title>
+    <meta name="description" content="Userscripts modify web pages by injecting custom JavaScript into the browser runtime, altering page behavior, layout, or functionality. In a headless browser environment—where a browser runs without a graphical user interface—userscripts operate prog">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-function-in-headless-browsers">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Function in Headless Browsers - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-function-in-headless-browsers" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts modify web pages by injecting custom JavaScript into the browser runtime, altering page behavior, layout, or functionality. In a headless browser environment—where a browser runs without a graphical user interface—userscripts operate prog" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-function-in-headless-browsers">How Userscripts
+Function in Headless Browsers</h1>
+<p>Userscripts modify web pages by injecting custom JavaScript into the
+browser runtime, altering page behavior, layout, or functionality. In a
+headless browser environment—where a browser runs without a graphical
+user interface—userscripts operate programmatically through automation
+frameworks like Puppeteer, Playwright, or Selenium. This article
+explains how headless environments load and execute userscripts, how DOM
+context isolation works, and the core mechanisms required to manage
+script execution during automated tasks.</p>
+<h2 id="script-injection-mechanisms">Script Injection Mechanisms</h2>
+<p>Traditional browser extensions like Tampermonkey or Violentmonkey
+automatically detect metadata headers (such as <code>@match</code> or
+<code>@run-at</code>) and inject scripts into web pages. Headless
+browsers typically run without extensions enabled by default. Instead,
+developers manually replicate script injection using automation
+APIs.</p>
+<p>Automation frameworks handle userscripts using two primary execution
+methods:</p>
+<ul>
+<li><strong>Pre-load Injection:</strong> Scripts are registered to
+execute <em>before</em> the target web page's scripts run. In Puppeteer,
+this is achieved using <code>page.evaluateOnNewDocument()</code>, while
+Playwright uses <code>page.addInitScript()</code>. This method is
+essential for userscripts that rely on
+<code>@run-at document-start</code> to modify window properties or
+intercept network requests early.</li>
+<li><strong>Post-load Execution:</strong> Scripts are injected
+<em>after</em> the DOM has fully rendered or reached a specific loading
+state (such as <code>@run-at document-idle</code>). Frameworks execute
+these using methods like <code>page.evaluate()</code> or by appending a
+<code>&lt;script&gt;</code> tag directly into the DOM tree.</li>
+</ul>
+<h2 id="execution-context-and-isolation">Execution Context and
+Isolation</h2>
+<p>When a userscript runs in a headless browser, it operates within the
+context of the target web page's JavaScript runtime. Understanding the
+execution context is crucial for predictable functionality:</p>
+<ol type="1">
+<li><strong>DOM Access:</strong> Userscripts have full access to the
+page's Document Object Model (DOM). They can query elements, attach
+event listeners, alter CSS styles, or trigger clicks
+programmatically.</li>
+<li><strong>Global Scope:</strong> Unlike node scripts driving the
+automation, userscripts run inside the browser instance. Variables
+declared in the userscript live within the page's <code>window</code>
+object unless explicitly contained within an IIFE (Immediately Invoked
+Function Expression) or a block scope.</li>
+<li><strong>Security Restrictions (CORS &amp; CSP):</strong> In a
+graphical browser, extension managers bypass strict Content Security
+Policies (CSP) and Cross-Origin Resource Sharing (CORS) restrictions. In
+a headless browser using plain injection, native scripts might be
+blocked by CSP header policies unless the headless browser is configured
+to bypass web security flags (e.g.,
+<code>--disable-web-security</code>).</li>
+</ol>
+<h2 id="handling-special-gm_-apis">Handling Special GM_* APIs</h2>
+<p>Standard userscripts often rely on Tampermonkey-specific APIs, such
+as <code>GM_getValue</code>, <code>GM_setValue</code>, or
+<code>GM_xmlhttpRequest</code>. In a headless browser without an
+extension manager installed, these APIs do not exist natively.</p>
+<p>To run scripts that depend on these functions, developers must
+provide shim implementations before the userscript executes:</p>
+<ul>
+<li><strong>Storage Emulation:</strong> <code>GM_getValue</code> and
+<code>GM_setValue</code> can be polyfilled using the browser's native
+<code>localStorage</code> API or mapped to host-level database
+calls.</li>
+<li><strong>Cross-Domain Requests:</strong>
+<code>GM_xmlhttpRequest</code> can be replaced with native
+<code>fetch()</code> calls or intercepted at the browser framework level
+using request interception features provided by Playwright or
+Puppeteer.</li>
+</ul>
+<h2 id="workflow-of-userscript-execution">Workflow of Userscript
+Execution</h2>
+<p>The lifecycle of a userscript in a headless environment follows a
+defined path:</p>
+<ol type="1">
+<li><strong>Browser Initialization:</strong> The automation tool
+launches a headless browser instance (e.g., Chromium, Firefox, or
+WebKit).</li>
+<li><strong>Script Registration:</strong> The userscript file is read
+from the file system and registered with the browser context using
+pre-load functions.</li>
+<li><strong>Page Navigation:</strong> The headless browser navigates to
+the target URL (<code>page.goto()</code>).</li>
+<li><strong>Script Trigger:</strong> As the page loads, the browser
+engine executes the injected userscript code automatically at the
+designated lifecycle event.</li>
+<li><strong>Result Retrieval:</strong> The automation host extracts any
+modified data, logs, or state changes produced by the userscript using
+evaluation promises.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

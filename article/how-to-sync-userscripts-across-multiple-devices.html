@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Sync Userscripts Across Multiple Devices - userscript</title>
+    <meta name="description" content="Userscript synchronization allows you to keep your custom browser scripts, automated tweaks, and UI enhancements consistent across all your computers and browsers. While standard browser sync features often leave third-party extensions untouched, popular">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-sync-userscripts-across-multiple-devices">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Sync Userscripts Across Multiple Devices - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-sync-userscripts-across-multiple-devices" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscript synchronization allows you to keep your custom browser scripts, automated tweaks, and UI enhancements consistent across all your computers and browsers. While standard browser sync features often leave third-party extensions untouched, popular" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-sync-userscripts-across-multiple-devices">How to Sync
+Userscripts Across Multiple Devices</h1>
+<p>Userscript synchronization allows you to keep your custom browser
+scripts, automated tweaks, and UI enhancements consistent across all
+your computers and browsers. While standard browser sync features often
+leave third-party extensions untouched, popular userscript managers like
+Tampermonkey and Violentmonkey offer built-in cloud integrations to
+seamlessly mirror your script library. This guide explores the most
+effective methods to synchronize userscripts across multiple devices,
+comparing automated cloud backups, manual exports, and
+developer-oriented setups.</p>
+<h2 id="automated-cloud-sync-via-userscript-managers">Automated Cloud
+Sync via Userscript Managers</h2>
+<p>The easiest way to keep your scripts updated across devices is by
+leveraging the built-in cloud storage options available in major
+userscript manager extensions.</p>
+<h3 id="1-tampermonkey-cloud-sync">1. Tampermonkey Cloud Sync</h3>
+<p>Tampermonkey supports native synchronization with several cloud
+providers, including Google Drive, Dropbox, OneDrive, and WebDAV.</p>
+<ul>
+<li><strong>How to set it up:</strong></li>
+</ul>
+<ol type="1">
+<li>Click the <strong>Tampermonkey icon</strong> in your browser and
+open the <strong>Dashboard</strong>.</li>
+<li>Go to the <strong>Settings</strong> tab.</li>
+<li>Scroll down to the <strong>Config Mode</strong> section and change
+it to <strong>Advanced</strong>.</li>
+<li>Find the <strong>Sync</strong> section, choose your preferred cloud
+storage service, and toggle <strong>Enable</strong>.</li>
+<li>Follow the authorization prompts to link your cloud account.</li>
+<li>Repeat the process on your other devices using the same cloud
+account.</li>
+</ol>
+<h3 id="2-violentmonkey-sync">2. Violentmonkey Sync</h3>
+<p>Violentmonkey provides an equally streamlined, lightweight sync
+feature supporting Google Drive, Dropbox, OneDrive, and custom WebDAV
+servers.</p>
+<ul>
+<li><strong>How to set it up:</strong></li>
+</ul>
+<ol type="1">
+<li>Open the <strong>Violentmonkey Control Panel</strong>.</li>
+<li>Click the <strong>Settings</strong> gear icon on the left menu.</li>
+<li>Under the <strong>Sync</strong> section, select your desired cloud
+provider.</li>
+<li>Authorize access and click <strong>Sync Now</strong> to push your
+current scripts to the cloud.</li>
+</ol>
+<hr />
+<h2 id="alternative-synchronization-methods">Alternative Synchronization
+Methods</h2>
+<p>If you prefer not to grant third-party extensions access to your
+cloud storage accounts, several alternative methods offer varying
+degrees of control.</p>
+<h3 id="manual-export-and-import">Manual Export and Import</h3>
+<p>For a quick, one-time transfer without linking external accounts:</p>
+<ul>
+<li>Export your scripts as a single <code>.zip</code> or
+<code>.json</code> file directly from your userscript manager’s settings
+menu.</li>
+<li>Transfer the file to your target device via USB, email, or messaging
+apps, then use the <strong>Import</strong> feature in the destination
+browser.</li>
+</ul>
+<h3 id="git-based-sync-for-developers">Git-Based Sync (For
+Developers)</h3>
+<p>If you actively develop or heavily customize your scripts, hosting
+them in a private or public GitHub/GitLab repository provides version
+control alongside synchronization.</p>
+<ul>
+<li>Save your script <code>.user.js</code> files in a remote
+repository.</li>
+<li>In your browser's userscript manager, add the script using its
+<strong>Raw URL</strong> from GitHub.</li>
+<li>Enable <strong>Auto-update</strong> in your manager settings. When
+you push changes to your Git repository, your devices will automatically
+fetch the updated script.</li>
+</ul>
+<h2 id="summary-of-sync-methods">Summary of Sync Methods</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Setup Difficulty</th>
+<th>Best Used For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Built-in Cloud Sync</strong></td>
+<td>Low</td>
+<td>Everyday users wanting seamless background updates</td>
+</tr>
+<tr>
+<td><strong>Manual Export/Import</strong></td>
+<td>Very Low</td>
+<td>One-off transfers or privacy-conscious users</td>
+</tr>
+<tr>
+<td><strong>Git Repository</strong></td>
+<td>Medium</td>
+<td>Developers and users running custom-written scripts</td>
+</tr>
+</tbody>
+</table></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

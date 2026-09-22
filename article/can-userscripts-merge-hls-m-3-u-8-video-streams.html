@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Merge HLS m3u8 Video Streams? - userscript</title>
+    <meta name="description" content="Yes, userscripts can automatically download and merge segmented video streams, such as HTTP Live Streaming (HLS) .m3u8 playlists, into a single downloadable file directly within your web browser. By leveraging browser APIs, JavaScript asynchronous fetchi">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-merge-hls-m-3-u-8-video-streams">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Merge HLS m3u8 Video Streams? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-merge-hls-m-3-u-8-video-streams" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can automatically download and merge segmented video streams, such as HTTP Live Streaming (HLS) .m3u8 playlists, into a single downloadable file directly within your web browser. By leveraging browser APIs, JavaScript asynchronous fetchi" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-merge-hls-m3u8-video-streams">Can Userscripts
+Merge HLS m3u8 Video Streams?</h1>
+<p>Yes, userscripts can automatically download and merge segmented video
+streams, such as HTTP Live Streaming (HLS) <code>.m3u8</code> playlists,
+into a single downloadable file directly within your web browser. By
+leveraging browser APIs, JavaScript asynchronous fetching, and
+WebAssembly, a userscript can parse the playlist, collect the underlying
+video segments, combine their binary data, and prompt a browser download
+for the final video file.</p>
+<h2 id="how-userscripts-process-and-merge-hls-streams">How Userscripts
+Process and Merge HLS Streams</h2>
+<p>To combine HLS segments into a single file, a userscript follows a
+specific execution process:</p>
+<ol type="1">
+<li><strong>Playlist Parsing:</strong> The script intercepts or fetches
+the master <code>.m3u8</code> index file, extracts the stream quality of
+choice, and parses the media playlist to get a list of individual
+segment URLs (typically <code>.ts</code> or <code>.m4s</code>
+files).</li>
+<li><strong>Segment Retrieval:</strong> Using elevated privilege
+functions provided by userscript managers (such as
+<code>GM_xmlhttpRequest</code>), the script bypasses standard
+cross-origin (CORS) limitations to download each segment sequentially or
+in parallel as raw binary data (<code>ArrayBuffer</code>).</li>
+<li><strong>Decryption (If Required):</strong> If the <code>.m3u8</code>
+playlist utilizes AES-128 encryption, the userscript fetches the
+decryption key specified in the <code>#EXT-X-KEY</code> tag and decrypts
+each segment using Web Crypto APIs or custom JavaScript libraries.</li>
+<li><strong>Binary Merging:</strong> For basic Transport Stream
+(<code>.ts</code>) segments, the script simply concatenates the
+<code>Uint8Array</code> binary data of all segments in order.</li>
+<li><strong>Transmuxing (Optional):</strong> If the output needs to be a
+standard <code>.mp4</code> file and the source uses fragmented MP4
+(<code>.m4s</code>), the script integrates lightweight JavaScript
+libraries like <code>mux.js</code> to remux the container format
+in-memory.</li>
+<li><strong>File Export:</strong> The merged binary buffer is converted
+into a <code>Blob</code> object, and a temporary download link
+(<code>URL.createObjectURL</code>) is generated to trigger the browser's
+native file download interface.</li>
+</ol>
+<h2 id="technical-limitations-and-challenges">Technical Limitations and
+Challenges</h2>
+<p>While functional, performing this process purely through a browser
+userscript has notable limitations compared to native desktop
+applications:</p>
+<ul>
+<li><strong>RAM and Memory Restrictions:</strong> Browsers impose strict
+memory limits on single tabs and <code>Blob</code> objects. Downloading
+long, high-definition videos (such as a 1080p feature film) can easily
+consume several gigabytes of RAM, causing the browser tab to crash
+before the merge completes.</li>
+<li><strong>CPU Overhead:</strong> Remuxing or decrypting large files in
+JavaScript can cause high CPU utilization, potentially freezing the web
+page during processing.</li>
+<li><strong>DRM Protection:</strong> If the stream is protected by
+digital rights management (DRM) technologies like Google Widevine or
+Microsoft PlayReady, userscripts cannot decrypt or merge the
+stream.</li>
+</ul>
+<h2 id="practical-recommendations">Practical Recommendations</h2>
+<p>For short clips, social media videos, or lower-resolution streams,
+userscripts offer a convenient, installation-free solution for grabbing
+HLS streams. However, for full-length movies, high-bitrate streams, or
+batch processing, native command-line tools such as
+<strong>yt-dlp</strong> or <strong>FFmpeg</strong> remain significantly
+more reliable as they write data directly to the disk without memory
+caps.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

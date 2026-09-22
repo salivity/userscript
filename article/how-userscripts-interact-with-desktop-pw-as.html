@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Interact with Desktop PWAs - userscript</title>
+    <meta name="description" content="Desktop Progressive Web Apps (PWAs) installed through web browsers run on the same underlying browser engine and user profile as standard web tabs. Because of this shared context, userscripts managed by browser extensions like Tampermonkey, Violentmonkey">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-interact-with-desktop-pw-as">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Interact with Desktop PWAs - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-interact-with-desktop-pw-as" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Desktop Progressive Web Apps (PWAs) installed through web browsers run on the same underlying browser engine and user profile as standard web tabs. Because of this shared context, userscripts managed by browser extensions like Tampermonkey, Violentmonkey" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-interact-with-desktop-pwas">How Userscripts
+Interact with Desktop PWAs</h1>
+<p>Desktop Progressive Web Apps (PWAs) installed through web browsers
+run on the same underlying browser engine and user profile as standard
+web tabs. Because of this shared context, userscripts managed by browser
+extensions like Tampermonkey, Violentmonkey, or Greasemonkey can
+interact with PWAs seamlessly in most cases. This article explains the
+underlying mechanism of how userscripts execute inside desktop PWAs, key
+behavior differences across browsers, potential execution limitations,
+and configuration tips to ensure your scripts run properly inside
+installed web applications.</p>
+<h2 id="shared-execution-context-and-extension-support">Shared Execution
+Context and Extension Support</h2>
+<p>When you install a PWA using a Chromium-based browser (such as Google
+Chrome, Microsoft Edge, or Brave), the browser creates a dedicated
+standalone app window. Despite lacking standard browser UI elements like
+the address bar or tab strip, this window is fundamentally a browser
+instance running under your primary user profile.</p>
+<p>Because the PWA uses your main profile:</p>
+<ul>
+<li><strong>Extensions remain active:</strong> Browser extensions
+installed in your main browser context, including userscript managers,
+load in the background.</li>
+<li><strong>Content scripts inject automatically:</strong> Userscript
+managers rely on extension content scripts. When a PWA opens a page
+matching a userscript's rules, the manager injects the script into the
+PWA's Document Object Model (DOM) just as it would in a standard
+tab.</li>
+<li><strong>Storage is shared:</strong> Cookies,
+<code>localStorage</code>, <code>indexedDB</code>, and userscript
+storage (<code>GM_setValue</code>) are shared between the browser tab
+version of the site and the standalone PWA window.</li>
+</ul>
+<h2 id="how-userscripts-target-pwas">How Userscripts Target PWAs</h2>
+<p>Userscripts do not require special code to target a PWA specifically.
+They target websites based on URL patterns defined in the script header
+using metadata directives like <code>@match</code> or
+<code>@include</code>.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         PWA Customizer</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://app.example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-end</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>Because an installed PWA navigates to standard web URLs (e.g.,
+<code>https://app.example.com/</code>), any active userscript matching
+that URL pattern will execute inside the PWA automatically.</p>
+<h2 id="limitations-and-potential-issues">Limitations and Potential
+Issues</h2>
+<p>While userscript execution in PWAs generally works out of the box,
+several factors can prevent scripts from running:</p>
+<h3 id="1-extension-access-restrictions">1. Extension Access
+Restrictions</h3>
+<p>In some browsers, extensions must be explicitly allowed to run in
+standalone app windows or app-specific contexts. If extension support is
+disabled for app windows in browser flags or settings, userscript
+managers will fail to inject scripts.</p>
+<h3 id="2-manifest-v3-changes">2. Manifest V3 Changes</h3>
+<p>Modern Chromium browsers utilize Manifest V3 for extensions. Strict
+Content Security Policies (CSP) and background script limitations in
+Manifest V3 can alter how dynamic code is injected, potentially
+affecting complex userscripts that rely on heavy DOM manipulation or
+external library fetching inside PWA windows.</p>
+<h3 id="3-navigation-outside-the-scope">3. Navigation Outside the
+Scope</h3>
+<p>PWAs operate within a defined scope (URL path). If a user clicks a
+link inside a PWA that navigates outside the app's scope, the browser
+may either open the link in a full browser tab or keep it within the PWA
+window. Userscripts with restrictive <code>@match</code> rules might
+stop executing if the current URL leaves the matching pattern.</p>
+<h3 id="4-background-and-offline-execution">4. Background and Offline
+Execution</h3>
+<p>PWAs often rely on Service Workers to handle offline caching and
+background sync. Userscripts execute in the main thread (DOM context)
+and cannot directly modify or intercept background Service Worker
+scripts.</p>
+<h2 id="how-to-ensure-userscripts-work-in-pwas">How to Ensure
+Userscripts Work in PWAs</h2>
+<p>If a userscript works in a standard browser tab but fails inside an
+installed PWA, follow these steps to resolve the issue:</p>
+<ol type="1">
+<li><strong>Check Extension Settings:</strong> Open your browser's
+extension management page (<code>chrome://extensions</code> or
+<code>edge://extensions</code>) and verify that your userscript manager
+has permission to run on all sites or specifically on the PWA
+domain.</li>
+<li><strong>Verify the URL Match Pattern:</strong> Open the PWA, inspect
+the exact URL structure, and ensure your script's <code>@match</code>
+rule covers the precise domain and path.</li>
+<li><strong>Inspect the PWA DOM:</strong> Right-click inside the PWA
+window and select <strong>Inspect</strong> (or press <code>F12</code>).
+Check the <strong>Console</strong> tab for script execution errors, CSP
+violations, or extension loading failures.</li>
+<li><strong>Grant File/Incognito Permissions:</strong> If your PWA runs
+in a specialized container or relies on local file access, ensure "Allow
+in Incognito" or "Allow access to file URLs" is toggled on inside the
+userscript extension's details page.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Interact With Host Website APIs? - userscript</title>
+    <meta name="description" content="Userscripts can interact directly with the APIs of the host website they run on. Depending on the script manager and execution context, userscripts can access the host page's global JavaScript objects, invoke existing frontend API functions, make standar">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-interact-with-host-website-ap-is">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Interact With Host Website APIs? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-interact-with-host-website-ap-is" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can interact directly with the APIs of the host website they run on. Depending on the script manager and execution context, userscripts can access the host page's global JavaScript objects, invoke existing frontend API functions, make standar" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-interact-with-host-website-apis">Can Userscripts
+Interact With Host Website APIs?</h1>
+<p>Userscripts can interact directly with the APIs of the host website
+they run on. Depending on the script manager and execution context,
+userscripts can access the host page's global JavaScript objects, invoke
+existing frontend API functions, make standard network requests using
+<code>fetch</code> or <code>XMLHttpRequest</code>, or use special
+extension-level functions to bypass cross-origin restrictions.</p>
+<h2 id="page-context-vs-isolated-context">Page Context vs. Isolated
+Context</h2>
+<p>Browser extensions and userscript managers (such as Tampermonkey or
+Violentmonkey) typically execute scripts in an isolated execution
+environment. This setup grants the script access to the page's Document
+Object Model (DOM) while keeping its global <code>window</code> object
+separate from the website's native scripts to prevent variable
+collisions and security leaks.</p>
+<p>To interact with a host website's internal JavaScript APIs, a
+userscript must bridge this gap using one of two primary methods:</p>
+<ul>
+<li><strong><code>unsafeWindow</code> Object:</strong> Userscript
+managers provide an <code>unsafeWindow</code> object that grants direct
+access to the host page's native <code>window</code> object, including
+global variables, modules, and API helper functions.</li>
+<li><strong>DOM Script Injection:</strong> A userscript can dynamically
+create and append a <code>&lt;script&gt;</code> tag into the DOM. Code
+inside this injected tag executes directly within the host page's main
+thread and context.</li>
+</ul>
+<h2 id="interacting-with-internal-and-endpoint-apis">Interacting with
+Internal and Endpoint APIs</h2>
+<p>Once access to the host context or network capabilities is
+established, userscripts interact with host APIs through two main
+methods:</p>
+<h3 id="1-directly-invoking-native-page-functions">1. Directly Invoking
+Native Page Functions</h3>
+<p>If the host website exposes global functions, state stores (like
+Redux or Vuex), or API client objects on the <code>window</code> scope,
+a userscript can call these functions directly to perform actions on
+behalf of the user.</p>
+<h3 id="2-issuing-http-requests">2. Issuing HTTP Requests</h3>
+<p>Userscripts can send requests directly to the website's backend
+endpoints using:</p>
+<ul>
+<li><strong>Standard <code>fetch()</code> or
+<code>XMLHttpRequest</code>:</strong> Executing these inside the host
+context automatically inherits the user's active session cookies,
+headers, and authentication tokens.</li>
+<li><strong><code>GM_xmlhttpRequest</code>:</strong> A specialized API
+provided by userscript managers that runs outside the browser's standard
+CORS restrictions, allowing scripts to communicate with both the host
+API and third-party services seamlessly.</li>
+</ul>
+<h2 id="security-considerations">Security Considerations</h2>
+<p>While interacting with host APIs enables powerful customizations, it
+also carries security implications:</p>
+<ul>
+<li><strong>Authentication &amp; Tokens:</strong> Scripts executing
+within the page context inherit the logged-in user's privileges, meaning
+untrusted userscripts could perform unauthorized actions.</li>
+<li><strong>Content Security Policy (CSP):</strong> Strict host CSP
+rules may block inline script injection, requiring developers to rely on
+built-in userscript manager privileges rather than DOM
+manipulation.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

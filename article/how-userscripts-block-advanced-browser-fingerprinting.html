@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Block Advanced Browser Fingerprinting - userscript</title>
+    <meta name="description" content="Browser fingerprinting extends far beyond basic canvas rendering to track users via unique hardware and browser configurations. Userscripts—custom JavaScript snippets executed via browser extensions like Tampermonkey or Violentmonkey—bypass these tra">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-block-advanced-browser-fingerprinting">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Block Advanced Browser Fingerprinting - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-block-advanced-browser-fingerprinting" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Browser fingerprinting extends far beyond basic canvas rendering to track users via unique hardware and browser configurations. Userscripts—custom JavaScript snippets executed via browser extensions like Tampermonkey or Violentmonkey—bypass these tra" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-block-advanced-browser-fingerprinting">How
+Userscripts Block Advanced Browser Fingerprinting</h1>
+<p>Browser fingerprinting extends far beyond basic canvas rendering to
+track users via unique hardware and browser configurations.
+Userscripts—custom JavaScript snippets executed via browser extensions
+like Tampermonkey or Violentmonkey—bypass these tracking methods by
+intercepting native JavaScript APIs before fingerprinting scripts can
+read them. By executing at <code>document-start</code>, userscripts
+redefine standard DOM properties, inject subtle statistical noise, and
+spoof device specifications across vectors such as WebGL, Web Audio,
+navigator attributes, and font detection.</p>
+<h2 id="1-intercepting-the-navigator-and-screen-objects">1. Intercepting
+the Navigator and Screen Objects</h2>
+<p>Tracker scripts frequently inspect the <code>navigator</code> and
+<code>screen</code> objects to build a profile based on operating
+system, CPU cores, memory, and display metrics. Userscripts alter these
+static values using standard JavaScript object manipulation:</p>
+<ul>
+<li><strong>Property Overriding:</strong> Using
+<code>Object.defineProperty()</code>, userscripts override read-only
+properties such as <code>navigator.userAgent</code>,
+<code>navigator.hardwareConcurrency</code> (CPU cores),
+<code>navigator.deviceMemory</code>, and
+<code>navigator.platform</code>.</li>
+<li><strong>Screen Resolution Spoofing:</strong> Userscripts redefine
+<code>window.screen.width</code>, <code>window.screen.height</code>, and
+<code>window.devicePixelRatio</code> to generic, highly common values
+(e.g., 1920x1080) to blend in with standard user cohorts.</li>
+</ul>
+<h2 id="2-spoofing-webgl-and-gpu-details">2. Spoofing WebGL and GPU
+Details</h2>
+<p>WebGL fingerprinting extracts detailed information about the user's
+graphics card, vendor, and driver capabilities. Userscripts neutralize
+this tracking by wrapping the WebGL context methods:</p>
+<ul>
+<li><strong>Parameter Hooking:</strong> Scripts intercept
+<code>WebGLRenderingContext.prototype.getParameter</code> and
+<code>WebGL2RenderingContext.prototype.getParameter</code>.</li>
+<li><strong>Vendor/Renderer Masking:</strong> When a tracking script
+requests <code>UNMASKED_VENDOR_WEBGL</code> or
+<code>UNMASKED_RENDERER_WEBGL</code>, the userscript returns
+standardized strings (such as a generic Intel or ANGLE driver) instead
+of revealing the underlying graphics processing unit.</li>
+<li><strong>Extension Neutralization:</strong> Userscripts can
+selectively hide supported WebGL extensions via
+<code>getSupportedExtensions()</code> to reduce uniqueness.</li>
+</ul>
+<h2 id="3-modifying-web-audio-api-signatures">3. Modifying Web Audio API
+Signatures</h2>
+<p>Audio fingerprinting analyzes how a browser's audio processing engine
+processes synthesized signals, producing minor variations based on the
+underlying audio card and OS architecture.</p>
+<p>Userscripts combat this by injecting non-deterministic micro-noise
+into audio processing outputs:</p>
+<ul>
+<li><strong>Buffer Interception:</strong> Scripts hook
+<code>AudioBuffer.prototype.getChannelData</code> or
+<code>AnalyserNode.prototype.getFloatFrequencyData</code>.</li>
+<li><strong>Noise Injection:</strong> A tiny amount of mathematical
+noise ( imperceptible to human hearing ) is added to the float values of
+the audio buffer array. This alters the calculated hash every time a
+fingerprinting script attempts to analyze an audio signal without
+breaking actual media playback on the webpage.</li>
+</ul>
+<h2 id="4-preventing-font-enumeration">4. Preventing Font
+Enumeration</h2>
+<p>Tracking scripts measure the rendered dimensions of text using common
+and obscure fonts to determine which fonts are installed on the local
+system.</p>
+<ul>
+<li><strong>DOM Element Hooking:</strong> Userscripts override
+<code>HTMLElement.prototype.offsetWidth</code> and
+<code>HTMLElement.prototype.offsetHeight</code>.</li>
+<li><strong>Dimension Normalization:</strong> When a script attempts to
+measure text elements styled with fallbacks or target fonts, the
+userscript returns uniform dimensions for missing fonts, preventing the
+tracker from identifying system-specific font installations.</li>
+</ul>
+<h2 id="5-blocking-battery-and-media-devices-apis">5. Blocking Battery
+and Media Devices APIs</h2>
+<p>Modern browsers offer APIs that detail remaining battery life or
+connected hardware devices, both of which serve as secondary
+fingerprinting signals.</p>
+<ul>
+<li><strong>Battery API Blocking:</strong> Userscripts modify
+<code>navigator.getBattery()</code> to return a rejected promise or a
+spoofed static battery state (e.g., fully charged and plugged in).</li>
+<li><strong>Media Devices Masking:</strong> By hooking
+<code>navigator.mediaDevices.enumerateDevices()</code>, userscripts
+return empty or homogenized lists of available microphones, webcams, and
+speakers.</li>
+</ul>
+<h2 id="implementation-mechanism-prototype-hooking">Implementation
+Mechanism: Prototype Hooking</h2>
+<p>To ensure protection before tracking scripts execute, userscripts run
+at <code>document-start</code> using <code>unsafeWindow</code> or
+page-context script injection. By replacing native prototype functions
+with customized wrappers before standard scripts load, userscripts
+effectively control what data fingerprinting scripts receive,
+substituting unique device identifiers with uniform or randomized
+attributes.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

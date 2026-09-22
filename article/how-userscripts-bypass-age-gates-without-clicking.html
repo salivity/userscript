@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Bypass Age Gates Without Clicking - userscript</title>
+    <meta name="description" content="Userscripts automate the removal of age-verification screens on restricted websites by modifying the structure and behavior of web pages in real time. Instead of requiring manual input or clicking an "I am 18+" button, these custom JavaScript scripts run">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-bypass-age-gates-without-clicking">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Bypass Age Gates Without Clicking - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-bypass-age-gates-without-clicking" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts automate the removal of age-verification screens on restricted websites by modifying the structure and behavior of web pages in real time. Instead of requiring manual input or clicking an "I am 18+" button, these custom JavaScript scripts run" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-bypass-age-gates-without-clicking">How
+Userscripts Bypass Age Gates Without Clicking</h1>
+<p>Userscripts automate the removal of age-verification screens on
+restricted websites by modifying the structure and behavior of web pages
+in real time. Instead of requiring manual input or clicking an "I am
+18+" button, these custom JavaScript scripts run via browser extensions
+like Tampermonkey or Violentmonkey to alter page elements, update
+client-side storage, intercept network requests, or rewrite embedded
+media players before the restriction overlay can block the content.</p>
+<h2 id="direct-dom-manipulation-and-css-overrides">Direct DOM
+Manipulation and CSS Overrides</h2>
+<p>Most basic age-gate systems rely on HTML elements layered over the
+content (overlays or modals) combined with CSS properties that disable
+page scrolling. Userscripts neutralize this design through the following
+steps:</p>
+<ul>
+<li><strong>Removing the Overlay:</strong> The script identifies the
+specific HTML element responsible for the popup (e.g.,
+<code>&lt;div id="age-gate"&gt;</code>) and removes it from the Document
+Object Model (DOM) using standard JavaScript methods like
+<code>element.remove()</code>.</li>
+<li><strong>Restoring Page Scroll:</strong> Websites often apply CSS
+styles like <code>overflow: hidden</code> to the
+<code>&lt;body&gt;</code> or <code>&lt;html&gt;</code> tags to prevent
+users from scrolling past the prompt. The userscript overrides these
+inline styles or injects custom CSS
+(<code>overflow: auto !important</code>) to make the page interactive
+again.</li>
+</ul>
+<h2 id="pre-empting-cookie-and-localstorage-checks">Pre-empting Cookie
+and LocalStorage Checks</h2>
+<p>Websites frequently store verification status in the user's browser
+so that age checks do not appear on every page load. Userscripts exploit
+this mechanism by setting these flags before the site's own code
+executes:</p>
+<ul>
+<li><strong>Cookie Injection:</strong> The script sets the necessary
+verification cookies (such as <code>age_verified=true</code> or
+<code>birthdate=1990-01-01</code>) directly in
+<code>document.cookie</code>.</li>
+<li><strong>Storage Modification:</strong> Using
+<code>localStorage.setItem()</code> or
+<code>sessionStorage.setItem()</code>, the script populates key-value
+pairs that tell the site the user has already passed validation.</li>
+</ul>
+<p>When the web page loads its own scripts, it checks these storage
+areas, finds the expected values, and skips rendering the age gate
+entirely.</p>
+<h2 id="modifying-global-javascript-variables-and-functions">Modifying
+Global JavaScript Variables and Functions</h2>
+<p>Many media platforms use JavaScript variables to track user state or
+gate content access. Userscripts can intercept and redefine these
+scripts in the browser environment:</p>
+<ul>
+<li><strong>Variable Overriding:</strong> If a site relies on a global
+variable like <code>window.isAdult = false</code>, a userscript set to
+run at <code>document-start</code> or <code>document-idle</code>
+redefines that value to <code>true</code>.</li>
+<li><strong>Function Spoofing:</strong> If access depends on a function
+returning a boolean check (e.g., <code>checkAge()</code>), the
+userscript can overwrite that function to always return
+<code>true</code>, bypassing internal checks without user
+interaction.</li>
+</ul>
+<h2 id="intercepting-network-requests-and-rewriting-embeds">Intercepting
+Network Requests and Rewriting Embeds</h2>
+<p>For strict age gates where the underlying media source is withheld by
+an API call or restricted embed URL, simple overlay removal is
+insufficient because the video file itself has not loaded. Userscripts
+bypass these restrictions through advanced techniques:</p>
+<ul>
+<li><strong>URL Rewriting:</strong> On platforms where embedded players
+lack age restrictions compared to standard watch pages, userscripts
+automatically detect the URL and swap the player format (for example,
+transforming standard watch page parameters into direct embed
+URLs).</li>
+<li><strong>API Interception:</strong> By hooking into native browser
+APIs like <code>fetch()</code> or <code>XMLHttpRequest</code>,
+userscripts intercept outgoing data requests and alter headers or
+parameters. They can also inspect incoming JSON responses and modify
+payload flags that indicate whether content is restricted, forcing the
+web player to stream the media directly.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

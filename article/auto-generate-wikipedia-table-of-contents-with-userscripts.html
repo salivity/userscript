@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Generate Wikipedia Table of Contents with Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can easily auto-generate and insert custom table-of-contents (TOC) menus into long Wikipedia articles to enhance navigation. By running lightweight JavaScript through browser extensions like Tampermonkey or Violentmonkey, these scripts scan a">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/auto-generate-wikipedia-table-of-contents-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Auto-Generate Wikipedia Table of Contents with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/auto-generate-wikipedia-table-of-contents-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can easily auto-generate and insert custom table-of-contents (TOC) menus into long Wikipedia articles to enhance navigation. By running lightweight JavaScript through browser extensions like Tampermonkey or Violentmonkey, these scripts scan a" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="auto-generate-wikipedia-table-of-contents-with-userscripts">Auto-Generate
+Wikipedia Table of Contents with Userscripts</h1>
+<p>Userscripts can easily auto-generate and insert custom
+table-of-contents (TOC) menus into long Wikipedia articles to enhance
+navigation. By running lightweight JavaScript through browser extensions
+like Tampermonkey or Violentmonkey, these scripts scan an article's
+heading tags, construct a dynamic outline, and inject a fixed, floating,
+or enhanced TOC menu directly onto the page.</p>
+<h2 id="how-userscripts-generate-a-table-of-contents">How Userscripts
+Generate a Table of Contents</h2>
+<p>Userscripts interact directly with the Document Object Model (DOM) of
+a Wikipedia page after it loads. The process works in three basic
+steps:</p>
+<ol type="1">
+<li><strong>Scanning Headings:</strong> The script queries the page HTML
+for structural heading elements (such as <code>&lt;h2&gt;</code>,
+<code>&lt;h3&gt;</code>, and <code>&lt;h4&gt;</code> tags).</li>
+<li><strong>Building the Menu:</strong> It extracts the text titles and
+corresponding element IDs from these headings to create a hierarchical
+nested list.</li>
+<li><strong>Injecting the DOM Element:</strong> The script creates a
+styled HTML container for the new menu—such as a persistent sidebar or
+floating modal—and attaches it to the page layout.</li>
+</ol>
+<h2 id="key-advantages-of-custom-toc-scripts">Key Advantages of Custom
+TOC Scripts</h2>
+<p>While Wikipedia includes a built-in table of contents, custom
+userscripts provide significant usability improvements for long, dense
+entries:</p>
+<ul>
+<li><strong>Persistent Scrolling Visibility:</strong> Floating or sticky
+TOC menus remain pinned to the screen while scrolling, eliminating the
+need to return to the top of the article to jump between sections.</li>
+<li><strong>Active Section Tracking (Scroll-Spy):</strong> Scripts can
+automatically highlight the heading currently visible in the viewport,
+making it easier to maintain context within massive articles.</li>
+<li><strong>Collapsible Levels:</strong> Users can expand or collapse
+sub-sections dynamically to keep the outline clean and readable.</li>
+<li><strong>In-Menu Filtering:</strong> Some advanced scripts add a
+micro-search bar inside the generated TOC, allowing instant filtering of
+sections by keyword.</li>
+</ul>
+<h2 id="setting-up-a-toc-userscript">Setting Up a TOC Userscript</h2>
+<p>Setting up an automated TOC on Wikipedia requires two components:</p>
+<ol type="1">
+<li><strong>A Userscript Manager:</strong> Install a browser extension
+such as Tampermonkey, Violentmonkey, or Greasemonkey.</li>
+<li><strong>The Script:</strong> Download an existing Wikipedia TOC
+script from repositories like Greasy Fork, or write a custom script set
+to execute on <code>https://*.wikipedia.org/wiki/*</code>.</li>
+</ol>
+<p>Once active, the script runs automatically in the background whenever
+a Wikipedia article loads, instantly parsing the page and displaying the
+enhanced navigation menu.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

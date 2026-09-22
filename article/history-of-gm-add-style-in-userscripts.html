@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History of GM_addStyle in Userscripts - userscript</title>
+    <meta name="description" content="The GMaddStyle function is a core utility in the userscript ecosystem that revolutionized how developers alter web page designs. Originating as part of the Greasemonkey Firefox extension, it streamlined the process of injecting custom Cascading Style She">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/history-of-gm-add-style-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="History of GM_addStyle in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/history-of-gm-add-style-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMaddStyle function is a core utility in the userscript ecosystem that revolutionized how developers alter web page designs. Originating as part of the Greasemonkey Firefox extension, it streamlined the process of injecting custom Cascading Style She" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="history-of-gm_addstyle-in-userscripts">History of GM_addStyle in
+Userscripts</h1>
+<p>The <code>GM_addStyle</code> function is a core utility in the
+userscript ecosystem that revolutionized how developers alter web page
+designs. Originating as part of the Greasemonkey Firefox extension, it
+streamlined the process of injecting custom Cascading Style Sheets (CSS)
+into third-party websites. This article explores the origins of
+<code>GM_addStyle</code>, the technical dynamic it replaced, and how it
+established a unified standard across various userscript managers like
+Tampermonkey and Violentmonkey.</p>
+<h2 id="the-origin-of-gm_addstyle">The Origin of GM_addStyle</h2>
+<p>In the early 2000s, Aaron Boodman created Greasemonkey, an extension
+for the Mozilla Firefox browser that allowed users to run custom
+JavaScript snippets ("userscripts") to modify the behavior and
+appearance of web pages.</p>
+<p>Initially, modifying site styling required writing repetitive
+Document Object Model (DOM) manipulation code. Developers had to
+manually construct DOM elements, set attributes, and attach them to the
+document head. To eliminate this boilerplate code, the Greasemonkey team
+introduced <code>GM_addStyle</code> as an explicit API accessible within
+the userscript execution context.</p>
+<h2 id="the-problem-it-solved">The Problem It Solved</h2>
+<p>Before <code>GM_addStyle</code>, applying a small CSS tweak required
+several lines of code:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">var</span> style <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;style&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>style<span class="op">.</span><span class="at">type</span> <span class="op">=</span> <span class="st">&#39;text/css&#39;</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>style<span class="op">.</span><span class="fu">appendChild</span>(<span class="bu">document</span><span class="op">.</span><span class="fu">createTextNode</span>(<span class="st">&#39;body { background-color: #000; }&#39;</span>))<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">getElementsByTagName</span>(<span class="st">&#39;head&#39;</span>)[<span class="dv">0</span>]<span class="op">.</span><span class="fu">appendChild</span>(style)<span class="op">;</span></span></code></pre></div>
+<p>This approach presented several technical challenges:</p>
+<ol type="1">
+<li><strong>Verbose Boilerplate:</strong> Simple CSS changes required
+complex JavaScript wrappers.</li>
+<li><strong>Timing Issues:</strong> If a script ran before the
+<code>&lt;head&gt;</code> element was fully constructed,
+<code>document.getElementsByTagName('head')[0]</code> returned
+<code>undefined</code>, causing script errors.</li>
+<li><strong>Frame and Context Isolation:</strong> Early user script
+engines ran in isolated sandboxes. Standard DOM injection sometimes
+struggled with scope boundary issues.</li>
+</ol>
+<p><code>GM_addStyle</code> abstracted this entire process into a single
+function call:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addStyle</span>(<span class="st">&#39;body { background-color: #000; }&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Behind the scenes, <code>GM_addStyle</code> automatically handled
+context safety, validated elements, and reliably appended styles to the
+document regardless of loading states.</p>
+<h2 id="standardization-across-userscript-managers">Standardization
+Across Userscript Managers</h2>
+<p>As web browsing expanded beyond Firefox, userscript managers emerged
+on other platforms:</p>
+<ul>
+<li><strong>Tampermonkey</strong> (initially for Google Chrome)</li>
+<li><strong>Violentmonkey</strong> (for Opera and modern browsers)</li>
+<li><strong>NinjaKit</strong> (for Safari)</li>
+</ul>
+<p>To maintain compatibility with the vast existing ecosystem of
+Greasemonkey scripts, these alternative engines adopted the
+<code>GM_*</code> API specification, including
+<code>GM_addStyle</code>.</p>
+<p>The function was formalized in metadata headers. By defining
+<code>@grant GM_addStyle</code> in the script's header block, script
+managers granted explicit permission to expose the API safely inside
+modern sandbox environments.</p>
+<h2 id="modern-evolution-and-legacy">Modern Evolution and Legacy</h2>
+<p>With the release of Greasemonkey 4 in 2017, the developers rewrote
+the extension to conform to modern WebExtensions APIs, dropping support
+for many synchronous legacy <code>GM_*</code> functions, including
+<code>GM_addStyle</code>.</p>
+<p>However, because developers widely preferred the simple syntax of
+<code>GM_addStyle</code>, alternative engines like Tampermonkey and
+Violentmonkey maintained support for it. Furthermore, the community
+created lightweight polyfills to re-implement the functionality using
+standard DOM APIs or modern constructable stylesheets
+(<code>CSSStyleSheet</code>).</p>
+<p>Today, <code>GM_addStyle</code> remains a fundamental historical
+landmark in browser customization, serving as the primary design pattern
+for injection of custom user styles across the web.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

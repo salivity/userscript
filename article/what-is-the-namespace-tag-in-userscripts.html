@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is the @namespace Tag in Userscripts? - userscript</title>
+    <meta name="description" content="The @namespace metadata tag in browser userscripts acts as a unique identifier for a script, preventing conflicts when multiple scripts share the same name. By pairing @namespace with the @name tag, userscript managers such as Tampermonkey, Violentmonkey">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-namespace-tag-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is the @namespace Tag in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-namespace-tag-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @namespace metadata tag in browser userscripts acts as a unique identifier for a script, preventing conflicts when multiple scripts share the same name. By pairing @namespace with the @name tag, userscript managers such as Tampermonkey, Violentmonkey" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-namespace-tag-in-userscripts">What Is the @namespace
+Tag in Userscripts?</h1>
+<p>The <code>@namespace</code> metadata tag in browser userscripts acts
+as a unique identifier for a script, preventing conflicts when multiple
+scripts share the same name. By pairing <code>@namespace</code> with the
+<code>@name</code> tag, userscript managers such as Tampermonkey,
+Violentmonkey, and Greasemonkey can distinguish between different
+scripts and manage updates accurately.</p>
+<h2 id="preventing-script-name-collisions">Preventing Script Name
+Collisions</h2>
+<p>Userscript repositories contain thousands of scripts created by
+different developers. It is common for two separate authors to create a
+script with the exact same <code>@name</code>, such as "YouTube Dark
+Theme" or "Auto Login."</p>
+<p>Without a namespace, a browser extension would not know if a newly
+installed script is an update to an existing one or a completely
+different project. The <code>@namespace</code> tag solves this by
+providing a domain, email, or custom string that belongs to the
+developer.</p>
+<p>The combination of <code>@name</code> and <code>@namespace</code>
+forms a globally unique identifier:</p>
+<ul>
+<li><strong>Script A:</strong> <code>@name</code> Auto Dark Mode +
+<code>@namespace</code> <a
+href="https://developer-a.com">https://developer-a.com</a></li>
+<li><strong>Script B:</strong> <code>@name</code> Auto Dark Mode +
+<code>@namespace</code> <a
+href="https://developer-b.com">https://developer-b.com</a></li>
+</ul>
+<p>Even though both scripts share the title "Auto Dark Mode," the
+browser extension treats them as entirely separate programs because
+their namespaces differ.</p>
+<h2 id="syntax-and-conventions">Syntax and Conventions</h2>
+<p>The <code>@namespace</code> tag is declared within the
+<code>==UserScript==</code> metadata block at the top of a script
+file.</p>
+<p>While the value can technically be any arbitrary string, standard
+convention is to use a URL associated with the author, such as a
+personal website, a GitHub profile, or a repository URL.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Custom Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    https://github.com/yourusername</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Enhances website functionality.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>If no <code>@namespace</code> is defined, most modern userscript
+managers will default to using an empty string or the domain of the
+script manager itself, which increases the risk of accidental script
+overwrites.</p>
+<h2 id="managing-script-updates">Managing Script Updates</h2>
+<p>Userscript managers rely on the metadata block to handle automatic
+updates securely:</p>
+<ol type="1">
+<li><strong>Identification:</strong> The manager checks
+<code>@namespace</code> and <code>@name</code> to locate the existing
+script on the user's system.</li>
+<li><strong>Comparison:</strong> It reads the <code>@version</code> tag
+of the remote file to see if a newer build exists.</li>
+<li><strong>Execution:</strong> If a higher version number is detected
+for that specific namespace and name combination, it safely overwrites
+the old script version with the new one.</li>
+</ol>
+<p>Defining a distinct <code>@namespace</code> ensures that user
+settings and script updates remain tied specifically to your project
+without conflicting with other installed extensions.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

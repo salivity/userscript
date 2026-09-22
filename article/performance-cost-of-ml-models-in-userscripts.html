@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Cost of ML Models in Userscripts - userscript</title>
+    <meta name="description" content="Running heavy machine learning frameworks like TensorFlow.js within browser userscripts introduces significant performance overhead, primarily impacting system memory, CPU/GPU utilization, page load times, and user interface responsiveness. Because users">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/performance-cost-of-ml-models-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Performance Cost of ML Models in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/performance-cost-of-ml-models-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Running heavy machine learning frameworks like TensorFlow.js within browser userscripts introduces significant performance overhead, primarily impacting system memory, CPU/GPU utilization, page load times, and user interface responsiveness. Because users" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="performance-cost-of-ml-models-in-userscripts">Performance Cost
+of ML Models in Userscripts</h1>
+<p>Running heavy machine learning frameworks like TensorFlow.js within
+browser userscripts introduces significant performance overhead,
+primarily impacting system memory, CPU/GPU utilization, page load times,
+and user interface responsiveness. Because userscripts operate directly
+inside the user's browser environment—often sharing the main execution
+thread with the host webpage—executing complex inferencing tasks can
+severely degrade overall browser performance and host site
+usability.</p>
+<h2 id="memory-consumption-and-garbage-collection">Memory Consumption
+and Garbage Collection</h2>
+<p>Machine learning models, particularly deep neural networks, require
+substantial memory to store weight matrices, tensors, and execution
+graphs.</p>
+<ul>
+<li><strong>High Baseline RAM Usage:</strong> Loading TensorFlow.js
+alongside a pre-trained model can easily consume hundreds of megabytes
+to several gigabytes of RAM per open tab.</li>
+<li><strong>Out-of-Memory (OOM) Crashes:</strong> Web browsers enforce
+strict per-tab memory limits. Heavy tensor allocation inside a
+userscript frequently triggers browser tab crashes due to heap
+exhaustion.</li>
+<li><strong>Garbage Collection (GC) Pauses:</strong> Continuous creation
+and destruction of temporary tensors generate high GC pressure. If
+tensors are not explicitly disposed of using <code>tf.dispose()</code>
+or <code>tf.tidy()</code>, memory leaks occur rapidly, causing periodic
+micro-stutters or severe interface freezes.</li>
+</ul>
+<h2 id="main-thread-blocking-and-frame-drops">Main Thread Blocking and
+Frame Drops</h2>
+<p>By default, userscripts run on the browser's main thread, which is
+also responsible for rendering the UI, processing user interactions, and
+executing host-page JavaScript.</p>
+<ul>
+<li><strong>UI Latency:</strong> Matrix multiplication and tensor
+transformations are computationally intense. Executing these operations
+synchronously on the main thread blocks the event loop, causing dropped
+frames (FPS degradation), delayed input response, and temporary frozen
+page states.</li>
+<li><strong>Host Site Interference:</strong> Severe event-loop lag
+impacts the performance of the underlying website, making navigation
+frustrating or unusable for the end user.</li>
+</ul>
+<h2 id="gpu-and-cpu-resource-contention">GPU and CPU Resource
+Contention</h2>
+<p>TensorFlow.js utilizes WebGL or WebGPU backends to accelerate
+computations via the graphics processor. When GPU acceleration is
+unavailable, it falls back to WebAssembly (WASM) or CPU execution.</p>
+<ul>
+<li><strong>WebGL/WebGPU Overhead:</strong> Initializing graphics
+contexts within an injected userscript context incurs startup latency.
+Compiling shaders and moving data back and forth between the CPU and GPU
+creates bandwidth bottlenecks.</li>
+<li><strong>Thermal Throttling and Battery Drain:</strong> Sustained
+high CPU/GPU utilization causes rapid battery depletion on laptops and
+mobile devices. Prolonged processing leads to device overheating,
+triggering hardware thermal throttling that slows down the entire
+operating system.</li>
+<li><strong>WASM Fallback Penalty:</strong> If WebGL or WebGPU fails to
+initialize, CPU-based WASM execution significantly increases execution
+times, often slowing down inference by orders of magnitude compared to
+native or GPU execution.</li>
+</ul>
+<h2 id="network-bandwidth-and-initialization-overhead">Network Bandwidth
+and Initialization Overhead</h2>
+<ul>
+<li><strong>Large Asset Downloads:</strong> Heavy models range from tens
+to hundreds of megabytes. Downloading these assets on page load drains
+user bandwidth and delays the execution time of the userscript.</li>
+<li><strong>Cold-Start Latency:</strong> Parsing large model files and
+allocating initial tensor structures creates a noticeable delay ("cold
+start") before the userscript becomes functional.</li>
+</ul>
+<h2 id="performance-optimization-strategies">Performance Optimization
+Strategies</h2>
+<p>To minimize the performance impact of heavy ML models in userscripts,
+consider the following technical adjustments:</p>
+<ol type="1">
+<li><strong>Web Workers:</strong> Offload TensorFlow.js execution to a
+Web Worker to keep tensor computations off the main UI thread.</li>
+<li><strong>Explicit Memory Management:</strong> Wrap all tensor
+operations in <code>tf.tidy()</code> or manually call
+<code>.dispose()</code> on unused tensors to prevent memory leaks.</li>
+<li><strong>Model Quantization:</strong> Use 8-bit or 16-bit quantized
+models to reduce file size, memory footprint, and computation load.</li>
+<li><strong>Lazy Loading:</strong> Load the machine learning engine and
+model weights only when specific trigger conditions are met, rather than
+on every page load.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

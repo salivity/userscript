@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standard Etiquette for Modifying Userscripts - userscript</title>
+    <meta name="description" content="Modifying or forking existing userscripts is a common practice in the browser customization community to fix bugs, add features, or adapt functionality for personal use. However, doing so responsibly requires adhering to established open-source etiquette">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/standard-etiquette-for-modifying-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Standard Etiquette for Modifying Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/standard-etiquette-for-modifying-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modifying or forking existing userscripts is a common practice in the browser customization community to fix bugs, add features, or adapt functionality for personal use. However, doing so responsibly requires adhering to established open-source etiquette" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="standard-etiquette-for-modifying-userscripts">Standard Etiquette
+for Modifying Userscripts</h1>
+<p>Modifying or forking existing userscripts is a common practice in the
+browser customization community to fix bugs, add features, or adapt
+functionality for personal use. However, doing so responsibly requires
+adhering to established open-source etiquette. Key practices include
+respecting software licenses, providing clear attribution, changing
+script metadata to prevent technical conflicts, and attempting to
+contribute back to the original project before publishing a separate
+version.</p>
+<h2 id="check-the-original-license">Check the Original License</h2>
+<p>Before modifying or redistributing any code, review the original
+userscript’s license. Open-source licenses such as MIT, GPL, or Apache
+explicitly state how the code can be modified and shared. If a script
+has no license specified, standard copyright law applies, meaning the
+original author retains all rights. In cases without a license, keep
+your modifications private or contact the developer for permission
+before publishing your changes.</p>
+<h2 id="attempt-to-contribute-first">Attempt to Contribute First</h2>
+<p>If you notice a bug or want to add a useful feature, contact the
+author or submit a pull request to the original repository first. Most
+developers appreciate community contributions that improve the script
+for everyone. Creating a public fork should primarily occur when the
+original script is abandoned, the author declines the proposed changes,
+or your modifications significantly alter the script's core purpose.</p>
+<h2 id="provide-proper-attribution">Provide Proper Attribution</h2>
+<p>Always credit the original author. Include a direct link to the
+original script, repository, or profile within your code's header
+comments and on the distribution page. Acknowledging the original
+creator respects their effort and allows users to trace the script's
+history.</p>
+<h2 id="update-script-metadata">Update Script Metadata</h2>
+<p>To prevent technical conflicts for users who might have both versions
+installed, update the metadata block at the top of the userscript:</p>
+<ul>
+<li><strong><code>@name</code></strong>: Change the title slightly
+(e.g., append "Fork" or "Fixed") to differentiate it from the
+original.</li>
+<li><strong><code>@namespace</code></strong>: Update this to your own
+unique URL or identifier.</li>
+<li><strong><code>@downloadURL</code> and
+<code>@updateURL</code></strong>: Change these pointers to your own
+hosting site so automatic updates do not overwrite the original script
+or pull updates from the wrong source.</li>
+</ul>
+<h2 id="document-your-modifications">Document Your Modifications</h2>
+<p>Provide a clear summary of what you changed, added, or removed in the
+description or release notes of your forked script. Transparency helps
+users understand why your version exists and whether it suits their
+specific needs better than the original version.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

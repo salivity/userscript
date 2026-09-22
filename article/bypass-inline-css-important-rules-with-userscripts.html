@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bypass Inline CSS Important Rules with Userscripts - userscript</title>
+    <meta name="description" content="Inline CSS styles defined with the !important declaration occupy the highest priority level in the standard CSS cascade, preventing normal external stylesheets from overriding them. Userscripts bypass this restriction by using JavaScript to interact dire">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/bypass-inline-css-important-rules-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Bypass Inline CSS Important Rules with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/bypass-inline-css-important-rules-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Inline CSS styles defined with the !important declaration occupy the highest priority level in the standard CSS cascade, preventing normal external stylesheets from overriding them. Userscripts bypass this restriction by using JavaScript to interact dire" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="bypass-inline-css-important-rules-with-userscripts">Bypass
+Inline CSS Important Rules with Userscripts</h1>
+<p>Inline CSS styles defined with the <code>!important</code>
+declaration occupy the highest priority level in the standard CSS
+cascade, preventing normal external stylesheets from overriding them.
+Userscripts bypass this restriction by using JavaScript to interact
+directly with the Document Object Model (DOM). Instead of relying on CSS
+specificity, userscripts modify element style properties at runtime,
+strip inline attributes entirely, or observe DOM changes to suppress
+dynamically enforced styles.</p>
+<h2 id="the-challenge-of-inline-important-styles">The Challenge of
+Inline <code>!important</code> Styles</h2>
+<p>In the CSS cascade, specificity determines which rule applies to an
+element. An inline style (defined directly on the HTML tag via the
+<code>style</code> attribute) combined with <code>!important</code>
+overrides virtually all standard CSS declarations in author
+stylesheets:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- Hard to override with standard CSS --&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;target&quot;</span><span class="ot"> style</span><span class="op">=</span><span class="st">&quot;display: block !important;&quot;</span><span class="dt">&gt;</span>Content<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span></code></pre></div>
+<p>Because external CSS rules cannot beat an inline
+<code>!important</code> declaration, JavaScript execution via
+userscripts (such as Violentmonkey, Tampermonkey, or Greasemonkey) is
+required to break the cascade.</p>
+<h2 id="method-1-modifying-style-properties-via-setproperty">Method 1:
+Modifying Style Properties via <code>setProperty()</code></h2>
+<p>JavaScript's <code>CSSStyleDeclaration.setProperty()</code> method
+allows developers to pass an optional third argument specifying
+priority. Setting a new value with <code>'important'</code> directly
+overwrites the existing inline declaration.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> element <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#target&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (element) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    element<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="fu">setProperty</span>(<span class="st">&#39;display&#39;</span><span class="op">,</span> <span class="st">&#39;none&#39;</span><span class="op">,</span> <span class="st">&#39;important&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This updates the element's inline <code>style</code> attribute
+directly, replacing the old <code>!important</code> value with the new
+one.</p>
+<h2 id="method-2-removing-the-inline-style-attribute">Method 2: Removing
+the Inline Style Attribute</h2>
+<p>If the goal is to disable the inline styling completely so that
+custom CSS stylesheets can take control, the userscript can remove the
+style property or clear the attribute entirely.</p>
+<h3 id="option-a-remove-specific-property">Option A: Remove Specific
+Property</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> element <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#target&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>element<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="fu">removeProperty</span>(<span class="st">&#39;display&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="option-b-wipe-the-entire-style-attribute">Option B: Wipe the
+Entire Style Attribute</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> element <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#target&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>element<span class="op">.</span><span class="fu">removeAttribute</span>(<span class="st">&#39;style&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Once removed, standard stylesheet declarations or injected
+<code>@grant GM_addStyle</code> rules apply normally.</p>
+<h2
+id="method-3-neutralizing-dynamic-inline-styles-with-mutationobserver">Method
+3: Neutralizing Dynamic Inline Styles with
+<code>MutationObserver</code></h2>
+<p>Many modern websites use JavaScript single-page applications (SPAs)
+or framework event handlers that continuously re-apply inline
+<code>!important</code> styles whenever a user interacts with the page.
+To counter this, userscripts use a <code>MutationObserver</code> to
+watch for attribute modifications and instantly override them.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> targetNode <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;#target&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutationsList) <span class="kw">=&gt;</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (<span class="kw">const</span> mutation <span class="kw">of</span> mutationsList) {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (mutation<span class="op">.</span><span class="at">type</span> <span class="op">===</span> <span class="st">&#39;attributes&#39;</span> <span class="op">&amp;&amp;</span> mutation<span class="op">.</span><span class="at">attributeName</span> <span class="op">===</span> <span class="st">&#39;style&#39;</span>) {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Disconnect temporarily to avoid infinite loops during modification</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>            observer<span class="op">.</span><span class="fu">disconnect</span>()<span class="op">;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Enforce desired style</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            targetNode<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="fu">setProperty</span>(<span class="st">&#39;display&#39;</span><span class="op">,</span> <span class="st">&#39;none&#39;</span><span class="op">,</span> <span class="st">&#39;important&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            <span class="co">// Reconnect the observer</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            <span class="fu">observe</span>()<span class="op">;</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">observe</span>() {</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    observer<span class="op">.</span><span class="fu">observe</span>(targetNode<span class="op">,</span> { <span class="dt">attributes</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">attributeFilter</span><span class="op">:</span> [<span class="st">&#39;style&#39;</span>] })<span class="op">;</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="fu">observe</span>()<span class="op">;</span></span></code></pre></div>
+<h2 id="method-4-overriding-global-css-rules-via-shadow-dom">Method 4:
+Overriding Global CSS Rules via Shadow DOM</h2>
+<p>When target elements are isolated within a Web Component's Shadow
+DOM, userscripts access the <code>shadowRoot</code> to modify inline
+styles directly within that shadow tree.</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> hostElement <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;custom-component&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (hostElement <span class="op">&amp;&amp;</span> hostElement<span class="op">.</span><span class="at">shadowRoot</span>) {</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> internalElement <span class="op">=</span> hostElement<span class="op">.</span><span class="at">shadowRoot</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.inner-element&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    internalElement<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="fu">setProperty</span>(<span class="st">&#39;color&#39;</span><span class="op">,</span> <span class="st">&#39;blue&#39;</span><span class="op">,</span> <span class="st">&#39;important&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="summary-of-techniques">Summary of Techniques</h2>
+<ol type="1">
+<li><strong><code>setProperty('prop', 'value', 'important')</code></strong>:
+Replaces the inline rule directly.</li>
+<li><strong><code>removeAttribute('style')</code></strong>: Completely
+strips inline declarations to yield control to external CSS.</li>
+<li><strong><code>MutationObserver</code></strong>: Prevents web
+applications from re-enforcing inline styles dynamically.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

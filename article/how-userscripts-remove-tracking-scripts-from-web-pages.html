@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Remove Tracking Scripts From Web Pages - userscript</title>
+    <meta name="description" content="Userscripts enhance online privacy by allowing web browsers to execute custom JavaScript code that modifies, blocks, or neutralizes tracking scripts on websites. Managed through browser extensions like Tampermonkey or Violentmonkey, these scripts give us">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-remove-tracking-scripts-from-web-pages">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Remove Tracking Scripts From Web Pages - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-remove-tracking-scripts-from-web-pages" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts enhance online privacy by allowing web browsers to execute custom JavaScript code that modifies, blocks, or neutralizes tracking scripts on websites. Managed through browser extensions like Tampermonkey or Violentmonkey, these scripts give us" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-remove-tracking-scripts-from-web-pages">How
+Userscripts Remove Tracking Scripts From Web Pages</h1>
+<p>Userscripts enhance online privacy by allowing web browsers to
+execute custom JavaScript code that modifies, blocks, or neutralizes
+tracking scripts on websites. Managed through browser extensions like
+Tampermonkey or Violentmonkey, these scripts give users direct control
+over the code running on their devices. This article explains how
+userscripts identify and disable tracking mechanisms, how they alter
+webpage behavior, and why they serve as a powerful tool for
+anti-tracking protection.</p>
+<h2 id="how-userscripts-stop-web-trackers">How Userscripts Stop Web
+Trackers</h2>
+<p>Userscripts operate inside the browser after or during the page load
+process. They interact directly with the Document Object Model (DOM) and
+the browser's JavaScript environment to disable tracking in several key
+ways:</p>
+<h3 id="1-removing-script-elements-from-the-dom">1. Removing Script
+Elements from the DOM</h3>
+<p>Trackers are typically loaded into web pages via external
+<code>&lt;script&gt;</code> tags (such as Google Analytics, Meta Pixel,
+or Hotjar). A userscript can scan the HTML structure before or
+immediately after these scripts load, locate the elements pointing to
+known tracking domains, and delete them from the DOM before they can
+execute.</p>
+<h3 id="2-function-overriding-monkey-patching">2. Function Overriding
+(Monkey Patching)</h3>
+<p>When tracking scripts cannot be completely removed without breaking
+page functionality, userscripts can override the global functions that
+trackers rely on. For example, a userscript can replace
+<code>navigator.sendBeacon</code> or specific analytics functions
+(<code>window.ga</code>, <code>fbq</code>) with dummy functions ("noop"
+functions). When the web page attempts to send tracking data, the
+overwritten function executes safely without transmitting information to
+remote servers.</p>
+<h3 id="3-cleaning-tracking-parameters-from-urls">3. Cleaning Tracking
+Parameters from URLs</h3>
+<p>Many platforms track user movement across the web by appending
+identification tags to links (such as <code>utm_source</code>,
+<code>gclid</code>, or <code>fbclid</code>). Userscripts can
+automatically intercept link clicks or monitor the address bar to strip
+these telemetry parameters in real time, preventing cross-site user
+profiling.</p>
+<h3 id="4-intercepting-network-requests">4. Intercepting Network
+Requests</h3>
+<p>Advanced userscripts hook into the browser's native API methods, such
+as <code>fetch()</code> and <code>XMLHttpRequest</code>. By monitoring
+outgoing network calls, the script can inspect the destination URL and
+block network traffic heading toward known tracking endpoints or
+third-party telemetry servers.</p>
+<h2 id="advantages-of-using-userscripts-for-privacy">Advantages of Using
+Userscripts for Privacy</h2>
+<p>While dedicated ad-blocking extensions use static filter lists to
+block domains, userscripts offer distinct advantages for
+privacy-conscious users:</p>
+<ul>
+<li><strong>Customization and Granular Control:</strong> Users can write
+or modify scripts to target specific tracking scripts unique to
+individual websites that standard filter lists might miss.</li>
+<li><strong>Bypassing Anti-Adblockers:</strong> Some websites detect
+traditional ad blockers and block access. Userscripts can bypass these
+detections by silently neutralizing the tracker's functionality rather
+than blocking the network request outright.</li>
+<li><strong>Dynamic Page Modification:</strong> Userscripts can alter
+webpage behavior on the fly, dynamically stripping embedded inline
+tracking scripts that standard domain blockers cannot easily
+isolate.</li>
+</ul>
+<h2 id="getting-started-with-anti-tracking-userscripts">Getting Started
+with Anti-Tracking Userscripts</h2>
+<p>To use userscripts for tracking protection:</p>
+<ol type="1">
+<li><strong>Install a Userscript Manager:</strong> Add a browser
+extension such as Tampermonkey, Violentmonkey, or Greasemonkey to your
+web browser.</li>
+<li><strong>Find or Write a Script:</strong> Obtain open-source privacy
+scripts from trusted repositories (like Greasy Fork or GitHub) or write
+custom JavaScript tailored to target specific tracking behaviors.</li>
+<li><strong>Enable and Monitor:</strong> Enable the script in your
+manager settings. The extension will automatically run the script
+whenever you visit matching web pages, neutralizing tracking code in the
+background.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

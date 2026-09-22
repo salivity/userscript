@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Handle Dynamic CSS Class Names - userscript</title>
+    <meta name="description" content="Modern websites frequently randomize or hash CSS class names during automated deployment pipelines, breaking traditional userscript selectors. This article explores how userscript developers bypass dynamic, hashed classes by leveraging stable HTML attrib">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-handle-dynamic-css-class-names">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Handle Dynamic CSS Class Names - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-handle-dynamic-css-class-names" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Modern websites frequently randomize or hash CSS class names during automated deployment pipelines, breaking traditional userscript selectors. This article explores how userscript developers bypass dynamic, hashed classes by leveraging stable HTML attrib" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-handle-dynamic-css-class-names">How Userscripts
+Handle Dynamic CSS Class Names</h1>
+<p>Modern websites frequently randomize or hash CSS class names during
+automated deployment pipelines, breaking traditional userscript
+selectors. This article explores how userscript developers bypass
+dynamic, hashed classes by leveraging stable HTML attributes, CSS
+substring matching, DOM hierarchy traversal, text content filtering, and
+MutationObservers to build resilient scripts.</p>
+<h2 id="1-targeting-stable-attributes">1. Targeting Stable
+Attributes</h2>
+<p>Developers often rely on non-styling HTML attributes that remain
+identical across builds. Front-end frameworks frequently preserve
+functional attributes for accessibility or testing purposes:</p>
+<ul>
+<li><strong>Test Identifiers:</strong> Attributes like
+<code>data-testid</code>, <code>data-qa</code>, or <code>data-cy</code>
+are added specifically for automated testing and rarely change between
+deployments.</li>
+<li><strong>Accessibility Roles:</strong> Attributes like
+<code>aria-label</code>, <code>role</code>, and <code>title</code> offer
+reliable anchors for standard UI elements.</li>
+<li><strong>Standard Form Attributes:</strong> Input fields usually
+retain fixed <code>name</code>, <code>type</code>,
+<code>placeholder</code>, or <code>autocomplete</code> attributes.</li>
+</ul>
+<p>Example CSS selector using attributes:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode css"><code class="sourceCode css"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>button<span class="ex">[</span><span class="ss">aria-label</span><span class="op">=</span><span class="st">&quot;Close dialog&quot;</span><span class="ex">]</span></span></code></pre></div>
+<h2 id="2-using-partial-substring-attribute-selectors">2. Using Partial
+Substring Attribute Selectors</h2>
+<p>Even when build tools like Webpack or CSS Modules append random
+hashes to class names, they often preserve a readable prefix or suffix.
+CSS attribute selectors allow matching based on partial strings:</p>
+<ul>
+<li><strong>Starts with (<code>^=</code>):</strong> Matches classes
+beginning with a specific string.
+<code>div[class^="Header_navBar__"]</code></li>
+<li><strong>Contains (<code>*=</code>):</strong> Matches classes
+containing a keyword anywhere in the string.
+<code>button[class*="submitButton"]</code></li>
+<li><strong>Ends with (<code>$=</code>):</strong> Matches classes ending
+with a specific pattern. <code>span[class$="-icon"]</code></li>
+</ul>
+<h2 id="3-dom-hierarchy-and-structural-traversal">3. DOM Hierarchy and
+Structural Traversal</h2>
+<p>When element classes are completely randomized without identifiable
+patterns, userscripts anchor to stable parent nodes or semantic HTML
+elements (<code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>,
+<code>&lt;table&gt;</code>, <code>&lt;ul&gt;</code>). Once a stable
+parent is found, relational traversal reaches the target child
+element:</p>
+<ul>
+<li><strong>CSS Structural Pseudo-classes:</strong> Use selectors like
+<code>:nth-child()</code>, <code>:first-of-type</code>, or
+<code>&gt; div &gt; span</code> to navigate static layouts.</li>
+<li><strong>JavaScript DOM Navigation:</strong> Target a known element
+and move through the DOM tree using properties like
+<code>.parentElement</code>, <code>.closest()</code>, or
+<code>.querySelectorAll()</code>.</li>
+</ul>
+<h2 id="4-xpath-and-text-based-locators">4. XPath and Text-Based
+Locators</h2>
+<p>When the underlying markup offers no distinct structural cues,
+searching for visible text or using XPath provides a durable
+fallback.</p>
+<ul>
+<li><strong>XPath Queries:</strong> XPath can search for elements
+containing specific text regardless of CSS classes.
+<code>//button[contains(text(), 'Save Changes')]</code></li>
+<li><strong>JavaScript Content Filtering:</strong> Query all broad
+elements and filter them using standard array methods in JavaScript:
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> buttons <span class="op">=</span> <span class="bu">Array</span><span class="op">.</span><span class="fu">from</span>(<span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">&#39;button&#39;</span>))<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> targetButton <span class="op">=</span> buttons<span class="op">.</span><span class="fu">find</span>(btn <span class="kw">=&gt;</span> btn<span class="op">.</span><span class="at">textContent</span><span class="op">.</span><span class="fu">trim</span>() <span class="op">===</span> <span class="st">&#39;Submit&#39;</span>)<span class="op">;</span></span></code></pre></div></li>
+</ul>
+<h2 id="5-observing-dynamic-rendering-with-mutationobserver">5.
+Observing Dynamic Rendering with MutationObserver</h2>
+<p>Dynamic websites built with frameworks like React, Vue, or Angular
+frequently load elements asynchronously or replace entire DOM trees
+without page reloads. Hardcoded timeouts (<code>setTimeout</code>) are
+unreliable for dynamic elements.</p>
+<p>Userscripts monitor changes to the DOM using the
+<code>MutationObserver</code> API. This allows the script to evaluate
+new nodes immediately upon insertion:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations<span class="op">,</span> obs) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> target <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;button[aria-label=&quot;Submit&quot;]&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (target) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Perform actions on the target element</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    target<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">backgroundColor</span> <span class="op">=</span> <span class="st">&#39;red&#39;</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    obs<span class="op">.</span><span class="fu">disconnect</span>()<span class="op">;</span> <span class="co">// Stop observing once found</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>By combining robust element selection techniques with dynamic
+observation, userscripts remain fully functional despite frequent site
+deployments and obfuscated class names.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

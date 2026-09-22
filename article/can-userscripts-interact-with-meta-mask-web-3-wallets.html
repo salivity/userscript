@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Interact With MetaMask Web3 Wallets? - userscript</title>
+    <meta name="description" content="Userscripts can interact with Web3 wallet extensions like MetaMask because these wallets inject global JavaScript objects into the webpage's Document Object Model (DOM). By accessing these injected objects—most notably window.ethereum—userscripts can">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-interact-with-meta-mask-web-3-wallets">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Interact With MetaMask Web3 Wallets? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-interact-with-meta-mask-web-3-wallets" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can interact with Web3 wallet extensions like MetaMask because these wallets inject global JavaScript objects into the webpage's Document Object Model (DOM). By accessing these injected objects—most notably window.ethereum—userscripts can" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-interact-with-metamask-web3-wallets">Can
+Userscripts Interact With MetaMask Web3 Wallets?</h1>
+<p>Userscripts can interact with Web3 wallet extensions like MetaMask
+because these wallets inject global JavaScript objects into the
+webpage's Document Object Model (DOM). By accessing these injected
+objects—most notably <code>window.ethereum</code>—userscripts can detect
+wallet connections, request accounts, read network data, and trigger
+transaction signatures. This article details how this interaction works,
+execution context considerations, common use cases, and the associated
+security risks.</p>
+<h2 id="how-userscripts-access-injected-web3-providers">How Userscripts
+Access Injected Web3 Providers</h2>
+<p>When a browser extension like MetaMask is enabled, it automatically
+injects an Ethereum provider object into the global scope of every
+webpage (or pages authorized by the user). This object, standardly
+exposed as <code>window.ethereum</code>, serves as the bridge between
+the webpage and the wallet extension.</p>
+<p>Because userscripts execute within the context of the loaded webpage,
+they can reference this injected provider to communicate with the
+wallet. A basic userscript can execute standard Web3 methods such as
+<code>window.ethereum.request({ method: 'eth_requestAccounts' })</code>
+to trigger the wallet popup.</p>
+<h2 id="execution-contexts-and-unsafewindow">Execution Contexts and
+<code>unsafeWindow</code></h2>
+<p>Browser script managers (such as Tampermonkey or Violentmonkey) run
+userscripts in an isolated context to prevent page scripts from
+modifying the userscript's variables. Depending on how the script
+manager handles DOM isolation, accessing the injected Web3 provider
+requires specific setup:</p>
+<ul>
+<li><strong>Direct Access (<code>@grant none</code>):</strong> If a
+userscript does not request special API privileges, it runs in the main
+window context and can directly read <code>window.ethereum</code>.</li>
+<li><strong>Isolated Context (<code>unsafeWindow</code>):</strong> If a
+script uses <code>@grant</code> directives (like
+<code>GM_xmlhttpRequest</code>), it runs in a sandbox. To access the
+page's global variables in this state, the script must reference
+<code>unsafeWindow.ethereum</code> instead of
+<code>window.ethereum</code>.</li>
+<li><strong>Script Injection:</strong> Alternatively, a userscript can
+dynamically create and append a standard <code>&lt;script&gt;</code>
+element to the document body to run native Web3 JavaScript within the
+page's original execution environment.</li>
+</ul>
+<h2 id="what-userscripts-can-and-cannot-do">What Userscripts Can and
+Cannot Do</h2>
+<h3 id="capabilities">Capabilities</h3>
+<ul>
+<li><strong>Read Public Data:</strong> Userscripts can query the user's
+active wallet address, current network chain ID, and account
+balances.</li>
+<li><strong>Initiate Actions:</strong> Userscripts can programmatically
+trigger wallet prompts for network switches, token imports, message
+signatures, and smart contract transactions.</li>
+<li><strong>Automate UI Workflows:</strong> Userscripts can combine
+standard dApp interactions with wallet calls, streamlining repetitive
+actions on Web3 interfaces.</li>
+</ul>
+<h3 id="limitations">Limitations</h3>
+<ul>
+<li><strong>No Direct Access to Private Keys:</strong> Userscripts
+operate entirely outside the browser extension's secure storage. They
+cannot access private keys, seed phrases, or wallet passwords.</li>
+<li><strong>Mandatory User Authorization:</strong> A userscript cannot
+execute transactions or sign messages silently. Every transaction
+request generated by a userscript forces the wallet extension interface
+to pop up, requiring explicit approval from the user.</li>
+</ul>
+<h2 id="security-considerations">Security Considerations</h2>
+<p>While userscripts cannot directly steal private keys, running
+untrusted or malicious userscripts on Web3-enabled pages introduces
+risk. A malicious userscript can attempt to display fake dApp
+interfaces, alter transaction parameters (such as changing the
+destination address or token amount), or repeatedly trigger signature
+prompts in an effort to trick the user into approving a malicious
+transaction. Users should only install userscripts from trusted sources
+and carefully review transaction details inside the wallet confirmation
+window before approving any request.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

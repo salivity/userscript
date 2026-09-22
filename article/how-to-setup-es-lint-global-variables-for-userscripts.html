@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Setup ESLint Global Variables for Userscripts - userscript</title>
+    <meta name="description" content="Userscripts designed for browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey frequently rely on custom API functions and variables such as GMgetValue, GMxmlhttpRequest, and unsafeWindow. Because ESLint does not recognize these environmen">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-setup-es-lint-global-variables-for-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Setup ESLint Global Variables for Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-setup-es-lint-global-variables-for-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts designed for browser extensions like Tampermonkey, Violentmonkey, or Greasemonkey frequently rely on custom API functions and variables such as GMgetValue, GMxmlhttpRequest, and unsafeWindow. Because ESLint does not recognize these environmen" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-setup-eslint-global-variables-for-userscripts">How to
+Setup ESLint Global Variables for Userscripts</h1>
+<p>Userscripts designed for browser extensions like Tampermonkey,
+Violentmonkey, or Greasemonkey frequently rely on custom API functions
+and variables such as <code>GM_getValue</code>,
+<code>GM_xmlhttpRequest</code>, and <code>unsafeWindow</code>. Because
+ESLint does not recognize these environment-specific APIs by default, it
+flags them as undefined variables (<code>no-undef</code>). Developers
+resolve this issue by explicitly defining these global variables in
+their ESLint configuration files—using modern flat config, legacy
+JSON/JS configs, or inline file comments—ensuring strict code checking
+without false-positive errors.</p>
+<h2
+id="defining-globals-in-modern-eslint-flat-config-eslintconfigjs">Defining
+Globals in Modern ESLint Flat Config
+(<code>eslint.config.js</code>)</h2>
+<p>In ESLint v9+ (and v8 when flat config is enabled), global variables
+are defined under the <code>languageOptions.globals</code> key within
+your <code>eslint.config.js</code> file.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> globals <span class="im">from</span> <span class="st">&quot;globals&quot;</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">export</span> <span class="im">default</span> [</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">languageOptions</span><span class="op">:</span> {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">globals</span><span class="op">:</span> {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">...</span>globals<span class="op">.</span><span class="at">browser</span><span class="op">,</span> <span class="co">// Include standard browser globals like window and document</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_getValue</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_setValue</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_deleteValue</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_xmlhttpRequest</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_addStyle</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_log</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_getResourceText</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_getResourceURL</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_registerMenuCommand</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_unregisterMenuCommand</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_openInTab</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_notification</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_setClipboard</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="dt">GM_info</span><span class="op">:</span> <span class="st">&quot;readonly&quot;</span><span class="op">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="dt">unsafeWindow</span><span class="op">:</span> <span class="st">&quot;writable&quot;</span><span class="op">,</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="dt">rules</span><span class="op">:</span> {</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;no-undef&quot;</span><span class="op">:</span> <span class="st">&quot;error&quot;</span><span class="op">,</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>]<span class="op">;</span></span></code></pre></div>
+<p>Setting a variable to <code>"readonly"</code> (or <code>false</code>)
+prevents accidental modification, while <code>"writable"</code> (or
+<code>true</code>) allows the script to mutate the global object.</p>
+<h2
+id="defining-globals-in-legacy-configs-eslintrcjson-or-eslintrcjs">Defining
+Globals in Legacy Configs (<code>.eslintrc.json</code> or
+<code>.eslintrc.js</code>)</h2>
+<p>If you are using ESLint v8 or earlier with the traditional
+configuration format, specify the custom APIs in the
+<code>globals</code> object of your <code>.eslintrc.json</code> or
+<code>.eslintrc.js</code> file:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;env&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;browser&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;es2021&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;globals&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_getValue&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_setValue&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_deleteValue&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_xmlhttpRequest&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_addStyle&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_registerMenuCommand&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM_info&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;GM&quot;</span><span class="fu">:</span> <span class="st">&quot;readonly&quot;</span><span class="fu">,</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;unsafeWindow&quot;</span><span class="fu">:</span> <span class="st">&quot;writable&quot;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;rules&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;no-undef&quot;</span><span class="fu">:</span> <span class="st">&quot;error&quot;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>For Greasemonkey v4+ API calls using the <code>GM.</code> namespace
+(such as <code>GM.setValue</code>), simply add
+<code>"GM": "readonly"</code> to your configuration.</p>
+<h2 id="using-inline-directives-for-single-files">Using Inline
+Directives for Single Files</h2>
+<p>For quick setup or smaller projects without a dedicated build
+pipeline, you can define global variables directly at the top of your
+userscript file using block comments:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* global GM_getValue, GM_setValue, GM_xmlhttpRequest, unsafeWindow */</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// Your userscript code starts here</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> savedData <span class="op">=</span> <span class="fu">GM_getValue</span>(<span class="st">&quot;key&quot;</span><span class="op">,</span> <span class="st">&quot;default&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<p>To specify write permissions directly in the inline comment, append
+<code>:writable</code> to the variable name:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* global unsafeWindow:writable, GM_info:readonly */</span></span></code></pre></div>
+<h2 id="automating-globals-via-eslint-plugins">Automating Globals via
+ESLint Plugins</h2>
+<p>Instead of manually typing every <code>GM_*</code> function,
+developers often use community packages that pre-package userscript
+global definitions.</p>
+<ol type="1">
+<li>Install an existing userscript environment package, such as
+<code>eslint-plugin-userscript</code>.</li>
+<li>Reference the plugin or environment in your configuration file.</li>
+</ol>
+<p>With legacy config:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;plugins&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;userscript&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;env&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;browser&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;jquery&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;plugin:userscript/greasemonkey&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p>This automatically provides the complete context of Greasemonkey or
+Tampermonkey functions across all scripts in the project.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

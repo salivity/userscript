@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use GM_info.scriptHandler in Userscripts - userscript</title>
+    <meta name="description" content="The GMinfo.scriptHandler property allows userscripts to identify which userscript manager is currently executing the script, such as Tampermonkey, Violentmonkey, or Greasemonkey. By querying this property, developers can write cross-manager compatible co">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-use-gm-info-script-handler-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Use GM_info.scriptHandler in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-use-gm-info-script-handler-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMinfo.scriptHandler property allows userscripts to identify which userscript manager is currently executing the script, such as Tampermonkey, Violentmonkey, or Greasemonkey. By querying this property, developers can write cross-manager compatible co" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-use-gm_infoscripthandler-in-userscripts">How to Use
+GM_info.scriptHandler in Userscripts</h1>
+<p>The <code>GM_info.scriptHandler</code> property allows userscripts to
+identify which userscript manager is currently executing the script,
+such as Tampermonkey, Violentmonkey, or Greasemonkey. By querying this
+property, developers can write cross-manager compatible code, execute
+engine-specific features, and work around environment-specific bugs or
+limitations. This article covers how <code>GM_info.scriptHandler</code>
+works, common values it returns, and practical code patterns for
+adapting your scripts across different managers.</p>
+<h2 id="what-is-gm_infoscripthandler">What is
+GM_info.scriptHandler?</h2>
+<p>The <code>GM_info</code> object contains metadata about the running
+script and the environment provided by the extension. Within this
+object, <code>scriptHandler</code> is a string property that returns the
+name of the active extension manager.</p>
+<p>Common return values include:</p>
+<ul>
+<li><code>"Tampermonkey"</code></li>
+<li><code>"Violentmonkey"</code></li>
+<li><code>"Greasemonkey"</code></li>
+<li><code>"AdGuard"</code></li>
+</ul>
+<p>If a userscript is running in an older or unsupported environment,
+<code>GM_info</code> or <code>GM_info.scriptHandler</code> might be
+<code>undefined</code>.</p>
+<h2 id="why-adapt-scripts-to-different-managers">Why Adapt Scripts to
+Different Managers?</h2>
+<p>While modern managers adhere to common standards, differences remain
+in API support and runtime behavior:</p>
+<ol type="1">
+<li><strong>Manager-Specific APIs:</strong> Features like
+<code>GM_cookie</code> or advanced tab management options may only be
+fully implemented in specific extensions like Tampermonkey.</li>
+<li><strong>Behavioral Quirks:</strong> Synchronous versus asynchronous
+storage handling, sandbox execution contexts, or header parsing in
+<code>GM_xmlhttpRequest</code> can vary slightly between Violentmonkey,
+Greasemonkey, and Tampermonkey.</li>
+<li><strong>Legacy Compatibility:</strong> Greasemonkey 4 shifted
+heavily to asynchronous <code>GM.*</code> methods, whereas Tampermonkey
+and Violentmonkey support both legacy <code>GM_</code> syntax and
+promise-based APIs.</li>
+</ol>
+<h2 id="practical-code-patterns">Practical Code Patterns</h2>
+<h3 id="1-basic-extension-detection">1. Basic Extension Detection</h3>
+<p>To inspect the environment, safely read
+<code>GM_info.scriptHandler</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> handler <span class="op">=</span> <span class="kw">typeof</span> GM_info <span class="op">!==</span> <span class="st">&#39;undefined&#39;</span> <span class="op">?</span> GM_info<span class="op">.</span><span class="at">scriptHandler</span> <span class="op">:</span> <span class="st">&#39;Unknown&#39;</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Running on: </span><span class="sc">${</span>handler<span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="2-executing-engine-specific-features">2. Executing
+Engine-Specific Features</h3>
+<p>If a script relies on an API unique to a specific engine, use
+<code>scriptHandler</code> to conditionally call that feature or fall
+back to an alternative:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">manageCookies</span>() {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> handler <span class="op">=</span> GM_info<span class="op">?.</span><span class="at">scriptHandler</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (handler <span class="op">===</span> <span class="st">&#39;Tampermonkey&#39;</span> <span class="op">&amp;&amp;</span> <span class="kw">typeof</span> GM_cookie <span class="op">!==</span> <span class="st">&#39;undefined&#39;</span>) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Use Tampermonkey&#39;s native cookie API</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        GM_cookie<span class="op">.</span><span class="fu">list</span>({}<span class="op">,</span> (cookies<span class="op">,</span> error) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (<span class="op">!</span>error) <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(cookies)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Fallback to standard document.cookie for other managers</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="bu">document</span><span class="op">.</span><span class="at">cookie</span>)<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="3-normalizing-api-differences">3. Normalizing API
+Differences</h3>
+<p>You can use <code>scriptHandler</code> alongside feature detection to
+normalize environment behavior during script initialization:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> isGreasemonkey <span class="op">=</span> GM_info<span class="op">?.</span><span class="at">scriptHandler</span> <span class="op">===</span> <span class="st">&#39;Greasemonkey&#39;</span><span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> isViolentmonkey <span class="op">=</span> GM_info<span class="op">?.</span><span class="at">scriptHandler</span> <span class="op">===</span> <span class="st">&#39;Violentmonkey&#39;</span><span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (isGreasemonkey) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Handle GM4+ async-only context quirks</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (isViolentmonkey) {</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Handle Violentmonkey specific behavior</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="best-practices">Best Practices</h2>
+<ul>
+<li><strong>Combine with Feature Detection:</strong> Prefer checking if
+a function exists (e.g., <code>typeof GM_download === 'function'</code>)
+before relying solely on <code>scriptHandler</code>.</li>
+<li><strong>Safely Access Properties:</strong> Always use optional
+chaining (<code>GM_info?.scriptHandler</code>) or defensive checks to
+prevent runtime <code>TypeError</code> exceptions if
+<code>GM_info</code> is missing.</li>
+<li><strong>Provide Fallbacks:</strong> Ensure the core functionality of
+your script still executes gracefully if the script is run in an
+unrecognized manager.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

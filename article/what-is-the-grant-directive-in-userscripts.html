@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is the @grant Directive in Userscripts? - userscript</title>
+    <meta name="description" content="The @grant directive is a crucial header element in userscript metadata that controls access to specialized, elevated APIs provided by script managers like Tampermonkey, Violentmonkey, and Greasemonkey. By explicitly declaring the privileges a script req">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-grant-directive-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What is the @grant Directive in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-grant-directive-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @grant directive is a crucial header element in userscript metadata that controls access to specialized, elevated APIs provided by script managers like Tampermonkey, Violentmonkey, and Greasemonkey. By explicitly declaring the privileges a script req" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-grant-directive-in-userscripts">What is the @grant
+Directive in Userscripts?</h1>
+<p>The <code>@grant</code> directive is a crucial header element in
+userscript metadata that controls access to specialized, elevated APIs
+provided by script managers like Tampermonkey, Violentmonkey, and
+Greasemonkey. By explicitly declaring the privileges a script requires,
+<code>@grant</code> acts as a security barrier between the webpage
+environment and your custom code. It determines whether your script
+operates in a restricted sandbox with access to enhanced browser
+capabilities or in a standard JavaScript execution context.</p>
+<h2 id="why-the-grant-directive-is-essential">Why the
+<code>@grant</code> Directive is Essential</h2>
+<p>Userscripts run on top of third-party websites, which creates
+inherent security risks. If a userscript has unrestricted access to
+sensitive browser APIs while running alongside untrusted web pages,
+malicious scripts on those pages could potentially hijack those
+privileges.</p>
+<p>The <code>@grant</code> directive solves this issue through a strict
+permission model:</p>
+<ul>
+<li><strong>Security Sandboxing:</strong> It isolates the userscript's
+execution context from the page's native scripts, preventing page-level
+JavaScript from tampering with the userscript or accessing its
+privileges.</li>
+<li><strong>Explicit Permissions:</strong> It requires developers to
+declare exactly which enhanced features (like cross-domain HTTP requests
+or persistent storage) the script needs before execution.</li>
+<li><strong>API Unlocking:</strong> It gives the script access to
+special <code>GM_*</code> or <code>GM.*</code> functions that standard
+page JavaScript cannot use due to same-origin policies and browser
+security restrictions.</li>
+</ul>
+<h2 id="common-grant-values-and-functions">Common <code>@grant</code>
+Values and Functions</h2>
+<p>Depending on what your script needs to accomplish, you will specify
+different values in the metadata block.</p>
+<h3 id="1-requesting-specific-gm-apis">1. Requesting Specific GM
+APIs</h3>
+<p>When your script needs specific elevated privileges, you list each
+function name individually:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Custom Data Saver</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_setValue</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getValue</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_xmlhttpRequest</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<p>Key APIs unlocked by these grants include:</p>
+<ul>
+<li><strong><code>GM_setValue</code> /
+<code>GM_getValue</code>:</strong> Allows the script to store and
+retrieve data persistently across different browsing sessions and web
+domains.</li>
+<li><strong><code>GM_xmlhttpRequest</code>:</strong> Bypasses standard
+same-origin policy limitations, enabling cross-domain AJAX requests to
+external APIs.</li>
+<li><strong><code>GM_addStyle</code>:</strong> Inject custom CSS styles
+directly into the target document safely.</li>
+<li><strong><code>GM_registerMenuCommand</code>:</strong> Adds custom
+interactive entries to the extension's browser popup menu.</li>
+</ul>
+<h3 id="2-grant-none">2. <code>@grant none</code></h3>
+<p>Setting <code>@grant none</code> tells the script manager that your
+script does not require any special privileges.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Simple DOM Modifier</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<p>When <code>@grant none</code> is used:</p>
+<ul>
+<li>The script runs directly in the context of the target webpage rather
+than a sandbox.</li>
+<li>Execution performance is slightly faster because context-bridging
+overhead is eliminated.</li>
+<li>The script can directly access and modify global window variables
+(<code>window.myVariable</code>) created by the host page.</li>
+</ul>
+<h3 id="3-grant-windowclose-or-grant-windowfocus">3.
+<code>@grant window.close</code> or
+<code>@grant window.focus</code></h3>
+<p>Some script managers allow specific browser window capabilities to be
+granted directly, enabling functionality that standard web pages
+normally restrict for security reasons.</p>
+<h2 id="security-implications-of-privileged-grants">Security
+Implications of Privileged Grants</h2>
+<p>Using <code>@grant</code> directives that unlock powerful APIs comes
+with a responsibility to write safe code.</p>
+<p>For instance, granting <code>GM_xmlhttpRequest</code> alongside
+dynamic input handling can expose users to security risks if data
+fetched from external sources is injected directly into the DOM without
+sanitization. Script managers enforce the <code>@grant</code> model
+specifically so users can inspect a script's requested permissions
+before installing it, ensuring full transparency regarding what the
+script can do behind the scenes.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Deploy Automated Linting for Userscripts - userscript</title>
+    <meta name="description" content="Automating formatting checks and code analysis for userscripts ensures code quality, prevents runtime errors in browser environments, and maintains standard metadata header structures. This article explores the most common strategies for deploying automa">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-deploy-automated-linting-for-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Deploy Automated Linting for Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-deploy-automated-linting-for-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Automating formatting checks and code analysis for userscripts ensures code quality, prevents runtime errors in browser environments, and maintains standard metadata header structures. This article explores the most common strategies for deploying automa" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-deploy-automated-linting-for-userscripts">How to Deploy
+Automated Linting for Userscripts</h1>
+<p>Automating formatting checks and code analysis for userscripts
+ensures code quality, prevents runtime errors in browser environments,
+and maintains standard metadata header structures. This article explores
+the most common strategies for deploying automated linting for
+userscripts, ranging from local editor configurations and pre-commit
+hooks to continuous integration pipelines and custom ESLint rules
+tailored for browser extension scripts.</p>
+<h2 id="1-local-editor-integration">1. Local Editor Integration</h2>
+<p>The first line of defense is integrating linters directly into the
+code editor (such as Visual Studio Code, Neovim, or WebStorm). By
+installing tools like ESLint and Prettier alongside their respective
+editor extensions, developers receive instant visual feedback on syntax
+errors, formatting inconsistencies, and uninitialized variables as they
+type.</p>
+<p>To support userscripts, local configurations must define
+browser-specific globals. Adding environments or explicit definitions
+for userscript APIs (such as <code>GM_getValue</code>,
+<code>GM_xmlhttpRequest</code>, or <code>unsafeWindow</code>) prevents
+the linter from incorrectly flagging valid userscript functions as
+undefined variables.</p>
+<h2 id="2-pre-commit-git-hooks">2. Pre-Commit Git Hooks</h2>
+<p>Relying on developers to manually fix formatting issues before
+committing code often leads to inconsistent code repositories.
+Implementing pre-commit Git hooks automates this step locally before any
+code reaches the version control system.</p>
+<p>Using tools like <strong>Husky</strong> combined with
+<strong>lint-staged</strong>, projects automatically trigger linting and
+formatting scripts only on the files modified in a commit.</p>
+<p>Common workflow:</p>
+<ul>
+<li>The developer runs <code>git commit</code>.</li>
+<li>Husky triggers <code>lint-staged</code>.</li>
+<li><code>lint-staged</code> runs ESLint and Prettier on changed
+<code>.user.js</code> files.</li>
+<li>If errors exist, the commit aborts until the developer resolves
+them.</li>
+</ul>
+<h2 id="3-continuous-integration-ci-pipelines">3. Continuous Integration
+(CI) Pipelines</h2>
+<p>Deploying automated linting in CI services—such as GitHub Actions,
+GitLab CI, or CircleCI—ensures that unformatted or broken code cannot be
+merged into the primary repository branch.</p>
+<p>A standard CI job pulls the repository, installs dependencies, and
+runs a headlessly executed linting command (e.g.,
+<code>npm run lint</code>). The pipeline fails if any rules are
+violated, blocking pull requests until code standards are met. This
+approach guarantees that even if a contributor disables their local
+editor rules or git hooks, non-compliant code will not pass review.</p>
+<h2 id="4-userscript-specific-eslint-plugins">4. Userscript-Specific
+ESLint Plugins</h2>
+<p>Standard JavaScript linting rules are often insufficient for
+userscripts due to the unique metadata block required at the beginning
+of each script (<code>// ==UserScript==</code>). Specialized plugins,
+such as <code>eslint-plugin-userscript</code>, extend ESLint to validate
+this metadata block.</p>
+<p>Key checks performed by userscript-specific rules include:</p>
+<ul>
+<li>Verifying required headers like <code>@name</code>,
+<code>@version</code>, and <code>@match</code> or
+<code>@include</code>.</li>
+<li>Catching syntax errors in metadata tags.</li>
+<li>Ensuring valid URL formats for <code>@icon</code>,
+<code>@updateURL</code>, and <code>@downloadURL</code>.</li>
+<li>Warning against grant permissions (<code>@grant</code>) that are
+declared but unused in the body of the script.</li>
+</ul>
+<h2 id="5-build-tool-and-bundler-plugins">5. Build Tool and Bundler
+Plugins</h2>
+<p>Many modern userscripts rely on bundlers like Vite, Rollup, or
+Webpack to compile TypeScript or modern ES modules into a single final
+<code>.user.js</code> file. Deploying automated checks directly inside
+the build process ensures that linting runs automatically whenever a
+build or development server starts.</p>
+<p>Integrating plugins like <code>vite-plugin-eslint</code> or
+<code>eslint-webpack-plugin</code> aborts the build process if critical
+errors exist, preventing broken distribution scripts from being
+generated or published.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

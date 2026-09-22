@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intercept Web Speech API using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can intercept the Web Speech API to capture transcribed text, but they cannot directly convert raw audio into text on their own without relying on the browser's built-in speech recognition service or external libraries. This article explains">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/intercept-web-speech-api-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Intercept Web Speech API using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/intercept-web-speech-api-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can intercept the Web Speech API to capture transcribed text, but they cannot directly convert raw audio into text on their own without relying on the browser's built-in speech recognition service or external libraries. This article explains" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="intercept-web-speech-api-using-userscripts">Intercept Web Speech
+API using Userscripts</h1>
+<p>Userscripts can intercept the Web Speech API to capture transcribed
+text, but they cannot directly convert raw audio into text on their own
+without relying on the browser's built-in speech recognition service or
+external libraries. This article explains how userscripts interact with
+the Web Speech API, how monkey-patching allows you to log or manipulate
+live transcriptions, and the technical limitations when processing audio
+natively without third-party tools.</p>
+<h2 id="how-web-speech-api-interception-works">How Web Speech API
+Interception Works</h2>
+<p>The browser's Web Speech API exposes two main interfaces:
+<code>SpeechSynthesis</code> (text-to-speech) and
+<code>SpeechRecognition</code> (speech-to-text). Because JavaScript in a
+userscript runs within the context of the page (or can access the
+<code>window</code> object via <code>unsafeWindow</code>), you can
+override or "monkey-patch" the global <code>SpeechRecognition</code> or
+<code>webkitSpeechRecognition</code> constructors.</p>
+<p>When a web application calls the Web Speech API to listen to audio,
+the userscript can intercept the initialization, listen to the generated
+events, and extract the transcribed text before or as the page receives
+it.</p>
+<h2 id="steps-to-intercept-speech-recognition-output">Steps to Intercept
+Speech Recognition Output</h2>
+<p>To capture transcribed text in real time without external
+utilities:</p>
+<ol type="1">
+<li><strong>Override the Constructor:</strong> Replace
+<code>window.SpeechRecognition</code> or
+<code>window.webkitSpeechRecognition</code> with a custom wrapper
+function.</li>
+<li><strong>Intercept Event Handlers:</strong> Capture assignments to
+the <code>onresult</code> event handler.</li>
+<li><strong>Extract the Transcript:</strong> Read the
+<code>SpeechRecognitionEvent.results</code> object inside the
+intercepted callback to retrieve the transcribed strings and confidence
+scores.</li>
+</ol>
+<p>Here is a simplified conceptual pattern used by userscripts:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> OriginalSpeechRecognition <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">webkitSpeechRecognition</span> <span class="op">||</span> <span class="bu">window</span><span class="op">.</span><span class="at">SpeechRecognition</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (OriginalSpeechRecognition) {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">window</span><span class="op">.</span><span class="at">webkitSpeechRecognition</span> <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="at">SpeechRecognition</span> <span class="op">=</span> <span class="kw">function</span>() {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> recognition <span class="op">=</span> <span class="kw">new</span> <span class="fu">OriginalSpeechRecognition</span>()<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Intercept the onresult callback</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="kw">let</span> originalOnResult <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="bu">Object</span><span class="op">.</span><span class="fu">defineProperty</span>(recognition<span class="op">,</span> <span class="st">&#39;onresult&#39;</span><span class="op">,</span> {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>            <span class="kw">get</span><span class="op">:</span> () <span class="kw">=&gt;</span> originalOnResult<span class="op">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            <span class="kw">set</span><span class="op">:</span> (fn) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                originalOnResult <span class="op">=</span> <span class="kw">function</span>(<span class="bu">event</span>) {</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="bu">event</span><span class="op">.</span><span class="at">resultIndex</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="bu">event</span><span class="op">.</span><span class="at">results</span><span class="op">.</span><span class="at">length</span><span class="op">;</span> <span class="op">++</span>i) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                        <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="at">results</span>[i]<span class="op">.</span><span class="at">isFinal</span>) {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                            <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Intercepted Transcript:&#39;</span><span class="op">,</span> <span class="bu">event</span><span class="op">.</span><span class="at">results</span>[i][<span class="dv">0</span>]<span class="op">.</span><span class="at">transcript</span>)<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                        }</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                    }</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> fn<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> <span class="kw">arguments</span>)<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                }<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> recognition<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="can-userscripts-transcribe-audio-independently">Can Userscripts
+Transcribe Audio Independently?</h2>
+<p>No, a userscript cannot perform speech-to-text transcription
+completely offline or independently without additional tools due to core
+browser architectural limits:</p>
+<ul>
+<li><strong>Dependency on Browser Speech Engines:</strong> The Web
+Speech API itself does not process audio inside the local JavaScript
+runtime. Browsers like Chrome send audio streams to remote cloud servers
+(such as Google Speech Services) to generate transcripts, while other
+browsers use OS-level speech engines. A userscript merely interacts with
+the API interface, not the underlying machine learning model.</li>
+<li><strong>Microphone Input Constraints:</strong> The standard
+<code>SpeechRecognition</code> interface defaults to capturing live
+microphone input from the user. It does not accept arbitrary
+<code>AudioBuffer</code> or media files directly via pure JavaScript
+without using a virtual audio device or modifying browser flags to mock
+media streams.</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>Userscripts can successfully intercept, read, and manipulate the
+<strong>text output</strong> generated by the Web Speech API without any
+third-party extensions or backend tools. However, to transcribe raw,
+arbitrary audio files, the script must rely on the browser's native
+<code>SpeechRecognition</code> engine playing the audio into the
+recognition context, or load heavy client-side Machine Learning models
+(such as WebAssembly-based Whisper models), which go beyond simple API
+interception.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

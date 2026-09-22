@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What is the @compatible Tag in Userscripts? - userscript</title>
+    <meta name="description" content="The @compatible tag is a metadata directive used in userscripts to explicitly state which web browsers and script managers a script is designed to work with. By adding this tag to a script's header block, developers provide immediate clarity to users abo">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-the-compatible-tag-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What is the @compatible Tag in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-the-compatible-tag-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @compatible tag is a metadata directive used in userscripts to explicitly state which web browsers and script managers a script is designed to work with. By adding this tag to a script's header block, developers provide immediate clarity to users abo" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-the-compatible-tag-in-userscripts">What is the
+@compatible Tag in Userscripts?</h1>
+<p>The <code>@compatible</code> tag is a metadata directive used in
+userscripts to explicitly state which web browsers and script managers a
+script is designed to work with. By adding this tag to a script's header
+block, developers provide immediate clarity to users about supported
+environments, helping to prevent installation on incompatible setups and
+reducing troubleshooting requests. This guide explains how the
+<code>@compatible</code> tag works, its syntax, and how it improves the
+userscript installation process.</p>
+<h2 id="how-the-compatible-tag-works">How the @compatible Tag Works</h2>
+<p>Userscripts rely on a metadata block at the top of the script
+file—enclosed within <code>// ==UserScript==</code> and
+<code>// ==/UserScript==</code>—to define attributes like the script
+name, version, matching URLs, and dependencies.</p>
+<p>The <code>@compatible</code> tag is an optional entry within this
+block. It allows script authors to declare a specific browser (and
+optional version or script manager details) that has been tested and
+confirmed to work properly with the script.</p>
+<h3 id="basic-syntax">Basic Syntax</h3>
+<p>The syntax for the tag is simple:</p>
+<pre class="text"><code>// @compatible browser_or_environment [additional notes]</code></pre>
+<p>You can include multiple <code>@compatible</code> tags in a single
+metadata block to list several supported platforms.</p>
+<h3 id="examples">Examples</h3>
+<ul>
+<li><p><strong>Simple browser declaration:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible firefox</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible chrome</span></span></code></pre></div></li>
+<li><p><strong>Declaration with version details or notes:</strong></p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible chrome Tested on Chrome 114+ with Tampermonkey</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible firefox Works with Violentmonkey</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible edge</span></span></code></pre></div></li>
+</ul>
+<h2 id="how-it-informs-users-about-browser-support">How It Informs Users
+About Browser Support</h2>
+<p>The <code>@compatible</code> tag communicates browser support to
+users primarily through userscript catalog websites and script manager
+extensions.</p>
+<h3 id="1-script-repository-display">1. Script Repository Display</h3>
+<p>When developers upload their scripts to popular userscript hosts
+(such as Greasy Fork or OpenUserJS), the platform parses the metadata
+block. If <code>@compatible</code> tags are present, the website
+automatically displays visual badges, icons, or text lists on the
+script's information page. This allows users to see at a glance whether
+the script will work in their preferred browser before clicking
+"Install."</p>
+<h3 id="2-preventing-unsupported-usage">2. Preventing Unsupported
+Usage</h3>
+<p>Userscripts often rely on browser-specific APIs or
+script-manager-specific features (like Tampermonkey's <code>GM_*</code>
+functions). Declaring compatibility helps manage user expectations. If a
+user runs an unsupported browser, seeing the compatibility list helps
+them realize why a feature might be broken without leaving negative
+reviews for the developer.</p>
+<h3 id="3-complementing-the-incompatible-tag">3. Complementing the
+@incompatible Tag</h3>
+<p>The <code>@compatible</code> tag works alongside the
+<code>@incompatible</code> tag. While <code>@compatible</code> lists
+confirmed environments, <code>@incompatible</code> explicitly warns
+users about browsers or managers where the script is known to fail.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Example Enhancement Script</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://example.com/</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible   chrome Compatible with Tampermonkey</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @compatible   firefox Compatible with Violentmonkey</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @incompatible safari Not supported due to API limitations</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<h2 id="summary-of-benefits">Summary of Benefits</h2>
+<ul>
+<li><strong>Clarity for Users:</strong> Eliminates guesswork regarding
+whether a script will function on a specific setup.</li>
+<li><strong>Better Maintainability for Developers:</strong> Reduces
+invalid bug reports caused by running scripts in untested browser
+environments.</li>
+<li><strong>Automatic Metadata Parsing:</strong> Enables userscript
+sharing platforms to generate helpful UI compatibility badges
+automatically.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

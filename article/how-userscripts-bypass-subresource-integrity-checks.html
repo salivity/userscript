@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Bypass Subresource Integrity Checks - userscript</title>
+    <meta name="description" content="Subresource Integrity (SRI) is a browser security mechanism that validates external scripts using cryptographic hashes, preventing tampered files from executing on a website. Userscripts—custom code executed via browser extension managers like Tampermo">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-bypass-subresource-integrity-checks">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Bypass Subresource Integrity Checks - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-bypass-subresource-integrity-checks" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Subresource Integrity (SRI) is a browser security mechanism that validates external scripts using cryptographic hashes, preventing tampered files from executing on a website. Userscripts—custom code executed via browser extension managers like Tampermo" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-bypass-subresource-integrity-checks">How
+Userscripts Bypass Subresource Integrity Checks</h1>
+<p>Subresource Integrity (SRI) is a browser security mechanism that
+validates external scripts using cryptographic hashes, preventing
+tampered files from executing on a website. Userscripts—custom code
+executed via browser extension managers like Tampermonkey or
+Violentmonkey—handle strict SRI checks by operating outside standard web
+page execution contexts. They typically resolve SRI conflicts by
+stripping integrity attributes from injected HTML tags, utilizing
+built-in metadata directives like <code>@require</code> to fetch
+dependencies securely, or overriding network API methods before the
+browser evaluates file hashes.</p>
+<h2 id="stripping-integrity-attributes-from-the-dom">Stripping Integrity
+Attributes from the DOM</h2>
+<p>When a userscript modifies an existing script tag or replaces a
+remote resource on an SRI-protected website, the browser automatically
+compares the fetched file against the hash in the <code>integrity</code>
+attribute. If the script content is modified by the user, the hash
+validation fails, and the browser blocks execution.</p>
+<p>To prevent this, userscripts often intercept the DOM creation
+process. By removing the <code>integrity</code> attribute before the
+script element is appended to the document, the browser processes the
+script as a standard resource without validating its cryptographic
+signature.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example of stripping SRI attributes from injected scripts</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    mutations<span class="op">.</span><span class="fu">forEach</span>((mutation) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>        mutation<span class="op">.</span><span class="at">addedNodes</span><span class="op">.</span><span class="fu">forEach</span>((node) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> (node<span class="op">.</span><span class="at">tagName</span> <span class="op">===</span> <span class="st">&#39;SCRIPT&#39;</span> <span class="op">&amp;&amp;</span> node<span class="op">.</span><span class="fu">hasAttribute</span>(<span class="st">&#39;integrity&#39;</span>)) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                node<span class="op">.</span><span class="fu">removeAttribute</span>(<span class="st">&#39;integrity&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">documentElement</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<h2 id="using-native-userscript-directives-require-and-resource">Using
+Native Userscript Directives (<code>@require</code> and
+<code>@resource</code>)</h2>
+<p>Userscript managers handle external dependencies differently than
+standard web pages. When a user script requires external libraries, it
+uses the <code>@require</code> or <code>@resource</code> keys in the
+script's metadata block rather than standard HTML
+<code>&lt;script&gt;</code> tags.</p>
+<pre class="text"><code>// ==UserScript==
+// @name         SRI Handling Example
+// @match        https://example.com/*
+// @require      https://code.jquery.com/jquery-3.6.0.min.js
+// ==UserScript==</code></pre>
+<p>The userscript manager downloads and stores these dependency files
+locally in the extension's storage upon installation. When the target
+web page loads, the manager injects the local code directly into the
+browser's execution context. Because the code is executed locally as an
+extension asset or raw JavaScript string, it bypasses the page's native
+network request pipeline and any associated SRI validation rules on the
+host server.</p>
+<h2 id="overriding-network-request-apis">Overriding Network Request
+APIs</h2>
+<p>Some modern web applications perform dynamic asset loading via
+JavaScript using <code>fetch()</code> or <code>XMLHttpRequest</code>,
+passing <code>integrity</code> options directly within the fetch calls.
+Strict SRI policies will fail if the response body does not match the
+hardcoded hash.</p>
+<p>Userscripts overcome this by monkey-patching the global
+<code>window.fetch</code> or <code>XMLHttpRequest.prototype.open</code>
+methods. The script intercepts outgoing requests, inspects the request
+options, and removes the <code>integrity</code> key before the request
+reaches the network layer.</p>
+<p>Alternatively, userscripts can utilize
+<code>GM_xmlhttpRequest</code>. This API routes network requests through
+the browser extension's background script rather than the web page's
+context, bypassing Same-Origin Policy, Content Security Policies (CSP),
+and SRI checks entirely.</p>
+<h2 id="handling-content-security-policy-csp-interactions">Handling
+Content Security Policy (CSP) Interactions</h2>
+<p>SRI is frequently paired with strict Content Security Policies
+(<code>require-sri-for script</code>). In browser environments where
+strict CSP prevents unauthorized inline scripts or unverified remote
+sources, modern userscript managers execute code in an isolated world or
+use browser extension API privileges (such as
+<code>declarativeNetRequest</code> or <code>webRequest</code>) to strip
+CSP and SRI response headers before the web page receives them.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

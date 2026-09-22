@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use GM_addStyle in Userscripts - userscript</title>
+    <meta name="description" content="The GMaddStyle function is a built-in helper provided by popular userscript managers like Tampermonkey and Greasemonkey that allows developers to inject custom CSS directly into a webpage. By simplifying the process of dynamic style injection, it enables">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-use-gm-add-style-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Use GM_addStyle in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-use-gm-add-style-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMaddStyle function is a built-in helper provided by popular userscript managers like Tampermonkey and Greasemonkey that allows developers to inject custom CSS directly into a webpage. By simplifying the process of dynamic style injection, it enables" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-use-gm_addstyle-in-userscripts">How to Use GM_addStyle in
+Userscripts</h1>
+<p>The <code>GM_addStyle</code> function is a built-in helper provided
+by popular userscript managers like Tampermonkey and Greasemonkey that
+allows developers to inject custom CSS directly into a webpage. By
+simplifying the process of dynamic style injection, it enables users to
+seamlessly alter the appearance, layout, or responsiveness of any site.
+This article explains what <code>GM_addStyle</code> is, how to enable it
+in your userscript headers, and provides clear examples of how to apply
+custom CSS rules efficiently.</p>
+<h2 id="what-is-gm_addstyle">What is GM_addStyle?</h2>
+<p>When modifying a web page's design via standard JavaScript,
+developers typically have to create a <code>&lt;style&gt;</code>
+element, insert CSS text into it, and append it to the document's
+<code>&lt;head&gt;</code> element.</p>
+<p>The <code>GM_addStyle</code> function abstracts this standard DOM
+manipulation. It accepts a string of raw CSS, creates the necessary HTML
+style node, attaches your custom styles, and appends the node to the
+active document automatically.</p>
+<h2 id="enabling-gm_addstyle-in-your-script">Enabling GM_addStyle in
+Your Script</h2>
+<p>To use <code>GM_addStyle</code>, you must explicitly request access
+to it in the userscript metadata block using the <code>@grant</code>
+directive.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Custom Style Injector</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_addStyle</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>If you do not include <code>// @grant GM_addStyle</code>, the manager
+will restrict access to the function, causing your script to throw a
+<code>ReferenceError</code>.</p>
+<h2 id="how-to-apply-gm_addstyle">How to Apply GM_addStyle</h2>
+<p>Once granted, you invoke <code>GM_addStyle</code> by passing a string
+containing valid CSS rules as its argument.</p>
+<h3 id="single-line-injection">Single-Line Injection</h3>
+<p>For small modifications, pass a short CSS string directly:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addStyle</span>(<span class="st">&#39;body { background-color: #f0f0f0 !important; }&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="multi-line-injection">Multi-Line Injection</h3>
+<p>For extensive visual redesigns, JavaScript template literals
+(backticks) allow you to write formatted, multi-line CSS rules
+cleanly:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addStyle</span>(<span class="vs">`</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="vs">    .sidebar, .ad-container {</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="vs">        display: none !important;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="vs">    .main-content {</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="vs">        width: 100% !important;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="vs">        max-width: 1200px;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="vs">        margin: 0 auto;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="vs">    a {</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="vs">        color: #0066cc;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="vs">        text-decoration: underline;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="best-practices">Best Practices</h2>
+<ul>
+<li><strong>Override Existing Styles:</strong> Web pages often use
+high-specificity CSS selectors. Append <code>!important</code> to your
+custom CSS declarations to guarantee they override the site's default
+styles.</li>
+<li><strong>Document Injection Timing:</strong> <code>GM_addStyle</code>
+handles DOM readiness automatically. Even if your script executes before
+the page finishes loading (<code>@run-at document-start</code>), the
+manager will safely attach the styles as soon as the DOM is capable of
+receiving them.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

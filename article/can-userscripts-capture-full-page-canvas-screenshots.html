@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Capture Full-Page Canvas Screenshots? - userscript</title>
+    <meta name="description" content="Userscripts can capture full-page screenshots using native HTML5 Canvas methods, but the process relies on re-rendering the Document Object Model (DOM) rather than taking a true system-level screen capture. By serializing HTML into an SVG image container">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-capture-full-page-canvas-screenshots">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Capture Full-Page Canvas Screenshots? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-capture-full-page-canvas-screenshots" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can capture full-page screenshots using native HTML5 Canvas methods, but the process relies on re-rendering the Document Object Model (DOM) rather than taking a true system-level screen capture. By serializing HTML into an SVG image container" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-capture-full-page-canvas-screenshots">Can
+Userscripts Capture Full-Page Canvas Screenshots?</h1>
+<p>Userscripts can capture full-page screenshots using native HTML5
+Canvas methods, but the process relies on re-rendering the Document
+Object Model (DOM) rather than taking a true system-level screen
+capture. By serializing HTML into an SVG image container or using
+DOM-to-canvas rendering techniques, userscripts can construct visual
+representations of an entire web page. However, browser security
+restrictions like Cross-Origin Resource Sharing (CORS) and maximum
+canvas size limits present distinct technical challenges that require
+specific script workarounds.</p>
+<h2 id="how-html5-canvas-screenshot-capture-works">How HTML5 Canvas
+Screenshot Capture Works</h2>
+<p>Native HTML5 <code>&lt;canvas&gt;</code> elements do not possess a
+single direct method to record the visible screen. Instead, userscripts
+capture web content by rendering page elements onto a canvas context.
+This is typically done through two approaches:</p>
+<ol type="1">
+<li><strong>SVG ForeignObject Rendering:</strong> The script serializes
+the page HTML and CSS into a string, wraps it inside an SVG
+<code>&lt;foreignObject&gt;</code> tag, creates an image object with
+that SVG source, and draws it to a canvas using
+<code>canvasContext.drawImage()</code>.</li>
+<li><strong>DOM Parsing (e.g., html2canvas):</strong> The userscript
+iterates through the page's DOM tree, reads computed CSS styles for
+every element, and manually draws matching shapes, text, and borders
+directly onto the canvas context.</li>
+</ol>
+<p>Once rendered on the canvas, the script exports the visual data using
+native methods like <code>canvas.toDataURL()</code> or
+<code>canvas.toBlob()</code>.</p>
+<h2 id="limitations-of-canvas-based-screenshotting">Limitations of
+Canvas-Based Screenshotting</h2>
+<p>While native canvas techniques function inside browser managers like
+Tampermonkey or Violentmonkey, they encounter several inherent web
+limitations:</p>
+<ul>
+<li><strong>Tainted Canvas (CORS Restrictions):</strong> If a page
+includes external images hosted on a domain without proper
+<code>Access-Control-Allow-Origin</code> headers, drawing those images
+onto a canvas "taints" it. A tainted canvas blocks execution of
+<code>toDataURL()</code> and <code>toBlob()</code> for privacy and
+security reasons.</li>
+<li><strong>Canvas Size Constraints:</strong> Browsers enforce strict
+hardware and software limits on maximum canvas dimensions (often 16,384
+pixels in width or height). Long web pages exceeding these limits will
+fail to render or crash the browser tab.</li>
+<li><strong>Missing Dynamic Content:</strong> Native canvas rendering
+struggles to capture cross-origin <code>&lt;iframe&gt;</code> contents,
+native HTML5 video frames, custom WebGL contexts, or elements relying on
+specific browser-rendered controls like scrollbars.</li>
+</ul>
+<h2 id="how-userscripts-handle-canvas-limitations">How Userscripts
+Handle Canvas Limitations</h2>
+<p>Because userscripts run with elevated privileges compared to regular
+page scripts, developers can overcome several standard canvas
+limits:</p>
+<ul>
+<li><strong>Bypassing CORS:</strong> Userscripts can fetch cross-origin
+image files directly using <code>GM_xmlhttpRequest</code>, convert the
+response data into Base64 data URLs, and substitute those URLs into the
+DOM before drawing to the canvas. This prevents the canvas from becoming
+tainted.</li>
+<li><strong>Viewport Stitching:</strong> To handle large pages,
+userscripts can programmatically scroll through the page, capture
+visible viewport chunks using native canvas methods, and stitch those
+pieces sequentially onto a master canvas or stitch them together
+post-process.</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>Userscripts can successfully build full-page screenshots using native
+HTML5 canvas methods, but the resulting image is a reconstructed replica
+of the DOM rather than a raw display capture. For simple pages, canvas
+rendering provides a lightweight solution without external browser
+extensions, while complex pages require userscript-specific privileges
+(such as <code>GM_xmlhttpRequest</code>) to resolve cross-origin asset
+issues.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automate Email Replies Using Userscripts and OpenAI - userscript</title>
+    <meta name="description" content="Userscripts can automatically draft email replies by extracting DOM data from webmail interfaces, transmitting that text to the OpenAI API, and rendering the generated response directly into the composer window. By leveraging browser extensions like Tamp">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/automate-email-replies-using-userscripts-and-open-ai">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Automate Email Replies Using Userscripts and OpenAI - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/automate-email-replies-using-userscripts-and-open-ai" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can automatically draft email replies by extracting DOM data from webmail interfaces, transmitting that text to the OpenAI API, and rendering the generated response directly into the composer window. By leveraging browser extensions like Tamp" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="automate-email-replies-using-userscripts-and-openai">Automate
+Email Replies Using Userscripts and OpenAI</h1>
+<p>Userscripts can automatically draft email replies by extracting DOM
+data from webmail interfaces, transmitting that text to the OpenAI API,
+and rendering the generated response directly into the composer window.
+By leveraging browser extensions like Tampermonkey or Violentmonkey,
+users can create custom workflows that streamline communication on
+platforms such as Gmail or Outlook Web. This article explains how this
+process works technical-wise, key implementation details, and important
+security factors to keep in mind.</p>
+<h2 id="how-userscript-email-automation-works">How Userscript Email
+Automation Works</h2>
+<p>The automated drafting process relies on three main technical steps:
+DOM parsing, API communication, and DOM manipulation.</p>
+<ol type="1">
+<li><strong>Extracting Email Text (DOM Parsing):</strong> When an email
+is opened in a webmail client, the userscript uses JavaScript selector
+methods (such as <code>querySelector</code> or
+<code>MutationObserver</code>) to target the specific HTML elements
+containing the body of the incoming message.</li>
+<li><strong>Sending Data to OpenAI:</strong> Once the message text is
+extracted, the script formats it into a prompt and sends an HTTP POST
+request to the OpenAI API endpoint
+(<code>https://api.openai.com/v1/chat/completions</code>).</li>
+<li><strong>Injecting the Generated Reply:</strong> When the API returns
+the generated text, the userscript locates the active reply text area in
+the webmail interface and inserts the response.</li>
+</ol>
+<h2 id="bypassing-network-restrictions-with-gm_xmlhttprequest">Bypassing
+Network Restrictions with <code>GM_xmlhttpRequest</code></h2>
+<p>Standard web page scripts are restricted by Same-Origin Policy (SOP)
+and Cross-Origin Resource Sharing (CORS) rules, which prevent a script
+running on <code>mail.google.com</code> from making direct requests to
+<code>api.openai.com</code>.</p>
+<p>Userscripts bypass these restrictions using special privileges
+provided by the userscript manager:</p>
+<ul>
+<li><strong><code>GM_xmlhttpRequest</code> /
+<code>GM.xmlHttpRequest</code>:</strong> This API allows the userscript
+to make cross-origin HTTP requests regardless of the web page's strict
+CORS policies.</li>
+<li><strong>UI Integration:</strong> The script can attach custom event
+listeners, such as a "Draft AI Reply" button, directly inside the
+webmail toolbar to let users trigger the generation manually.</li>
+</ul>
+<h2 id="security-and-privacy-considerations">Security and Privacy
+Considerations</h2>
+<p>While technically straightforward, sending webmail DOM data to an
+external API introduces critical security and privacy challenges:</p>
+<ul>
+<li><strong>API Key Safety:</strong> Hardcoding an OpenAI API key inside
+a userscript exposes it to risk. It is safer to prompt the user to input
+their key once and store it securely in the extension's local storage
+(<code>GM_setValue</code>).</li>
+<li><strong>Data Privacy:</strong> Email contents often contain
+sensitive, confidential, or personally identifiable information (PII).
+Transmitting this data to a third-party server subjects it to OpenAI's
+privacy policies and data handling practices.</li>
+<li><strong>Dynamic DOM Changes:</strong> Webmail providers frequently
+update their frontend markup and CSS class names, which can break the
+userscript's DOM selectors without warning.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

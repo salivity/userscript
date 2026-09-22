@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do You Share Custom Userscripts With Others? - userscript</title>
+    <meta name="description" content="Sharing custom userscripts allows you to distribute browser enhancements and custom functionality to other users. You can share your scripts by publishing them to dedicated repository platforms like Greasy Fork or OpenUserJS, hosting them on code reposit">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-you-share-custom-userscripts-with-others">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do You Share Custom Userscripts With Others? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-you-share-custom-userscripts-with-others" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Sharing custom userscripts allows you to distribute browser enhancements and custom functionality to other users. You can share your scripts by publishing them to dedicated repository platforms like Greasy Fork or OpenUserJS, hosting them on code reposit" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-you-share-custom-userscripts-with-others">How Do You
+Share Custom Userscripts With Others?</h1>
+<p>Sharing custom userscripts allows you to distribute browser
+enhancements and custom functionality to other users. You can share your
+scripts by publishing them to dedicated repository platforms like Greasy
+Fork or OpenUserJS, hosting them on code repositories like GitHub or
+GitLab, or directly transferring the raw <code>.user.js</code> files.
+This guide covers the preparation steps, top hosting platforms,
+distribution methods, and best practices to ensure your userscripts are
+easily discoverable, installable, and maintainable for your
+audience.</p>
+<h2 id="preparing-your-userscript-for-sharing">Preparing Your Userscript
+for Sharing</h2>
+<p>Before making your script public, you must ensure that its metadata
+block is correctly configured. Popular script managers such as
+Tampermonkey, Violentmonkey, and GreaseMonkey rely on the
+<code>==UserScript==</code> header block to parse details like the
+script's name, version, update URL, and matching websites.</p>
+<h3 id="essential-metadata-headers">Essential Metadata Headers</h3>
+<ul>
+<li><code>@name</code>: The title of your script as it will appear in
+script managers.</li>
+<li><code>@namespace</code>: A unique identifier, typically your website
+or GitHub username.</li>
+<li><code>@version</code>: The current version number (essential for
+automatic updates).</li>
+<li><code>@description</code>: A short summary explaining what the
+script does.</li>
+<li><code>@match</code> or <code>@include</code>: The target web pages
+where the script should execute.</li>
+<li><code>@downloadURL</code> &amp; <code>@updateURL</code>: The direct
+links where script managers can check for updates.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Custom Web Enhancer</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    https://github.com/yourusername</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Adds custom features to target websites.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @author       Your Name</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="top-platforms-for-publishing-userscripts">Top Platforms for
+Publishing Userscripts</h2>
+<p>Publishing your userscripts on specialized community platforms
+maximizes visibility and allows users to install updates seamlessly.</p>
+<h3 id="1-greasy-fork">1. Greasy Fork</h3>
+<p>Greasy Fork is currently the most popular public script repository.
+It automatically scans uploaded code for security issues, formats script
+descriptions, and handles automatic updates for installed users.</p>
+<ul>
+<li><strong>Pros:</strong> High traffic, automatic script parsing,
+built-in update serving.</li>
+<li><strong>Best for:</strong> Broad public reach and community
+feedback.</li>
+</ul>
+<h3 id="2-openuserjs">2. OpenUserJS</h3>
+<p>OpenUserJS is another open-source platform dedicated to hosting
+userscripts. It integrates cleanly with GitHub accounts and offers
+script version control.</p>
+<ul>
+<li><strong>Pros:</strong> Open-source platform, simple user
+management.</li>
+<li><strong>Best for:</strong> Developers looking for a community-driven
+alternative.</li>
+</ul>
+<h3 id="3-github-or-gitlab-repositories">3. GitHub or GitLab
+Repositories</h3>
+<p>Hosting your script in a public repository or a GitHub Gist provides
+full control over version history, issue tracking, and code reviews.</p>
+<ul>
+<li><strong>Pros:</strong> Total control over code, issue tracking, and
+easy integration with Git workflows.</li>
+<li><strong>Best for:</strong> Collaboration and advanced user
+installation.</li>
+</ul>
+<h2 id="step-by-step-distribution-methods">Step-by-Step Distribution
+Methods</h2>
+<h3 id="method-a-publishing-on-greasy-fork">Method A: Publishing on
+Greasy Fork</h3>
+<ol type="1">
+<li>Create an account on <a href="https://greasyfork.org">Greasy
+Fork</a>.</li>
+<li>Click <strong>Post a Script</strong>.</li>
+<li>Paste your full JavaScript code (including the metadata header) into
+the code editor.</li>
+<li>Add additional documentation or usage instructions in the provided
+description field.</li>
+<li>Save and publish. Users can now install it with a single click.</li>
+</ol>
+<h3 id="method-b-sharing-via-github-raw-file-links">Method B: Sharing
+via GitHub Raw File Links</h3>
+<ol type="1">
+<li>Push your <code>.user.js</code> file to a public GitHub repository
+or create a public GitHub Gist.</li>
+<li>Navigate to the file on GitHub and click the <strong>Raw</strong>
+button.</li>
+<li>Copy the URL of the raw file (which should end in
+<code>.user.js</code>).</li>
+<li>Share this direct raw link with users. When clicked, browser
+extensions like Tampermonkey will automatically detect the file and
+prompt the user to install it.</li>
+</ol>
+<h3 id="method-c-manual-file-sharing">Method C: Manual File Sharing</h3>
+<ol type="1">
+<li>Save your code as a local file ending with the extension
+<code>.user.js</code>.</li>
+<li>Send the file directly to recipients via email or cloud
+storage.</li>
+<li>Instruct users to drag and drop the <code>.user.js</code> file into
+their browser extension's dashboard or management interface.</li>
+</ol>
+<h2 id="best-practices-for-userscript-authors">Best Practices for
+Userscript Authors</h2>
+<ul>
+<li><strong>Use Clear Versioning:</strong> Follow semantic versioning
+(e.g., <code>1.0.0</code>, <code>1.0.1</code>) so script managers can
+detect new releases automatically.</li>
+<li><strong>Include a License:</strong> Specify an open-source license
+(such as MIT or GPL-3.0) to inform others how they may use or modify
+your code.</li>
+<li><strong>Keep Code Readable:</strong> Avoid obfuscating code.
+Transparent, clean code builds trust and speeds up approval processes on
+hosted platforms like Greasy Fork.</li>
+<li><strong>Document Dependencies:</strong> If your script relies on
+libraries like jQuery or custom CSS, declare them using
+<code>@require</code> or <code>@resource</code> headers rather than
+bundling them inline without attribution.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

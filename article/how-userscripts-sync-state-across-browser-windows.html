@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Sync State Across Browser Windows - userscript</title>
+    <meta name="description" content="Managing state across multiple open browser tabs or windows is a common challenge for userscript developers. Userscripts typically rely on web APIs such as the BroadcastChannel API, localStorage event listeners, or extension-specific storage APIs like GM">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-sync-state-across-browser-windows">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Sync State Across Browser Windows - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-sync-state-across-browser-windows" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Managing state across multiple open browser tabs or windows is a common challenge for userscript developers. Userscripts typically rely on web APIs such as the BroadcastChannel API, localStorage event listeners, or extension-specific storage APIs like GM" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-sync-state-across-browser-windows">How
+Userscripts Sync State Across Browser Windows</h1>
+<p>Managing state across multiple open browser tabs or windows is a
+common challenge for userscript developers. Userscripts typically rely
+on web APIs such as the <code>BroadcastChannel</code> API,
+<code>localStorage</code> event listeners, or extension-specific storage
+APIs like <code>GM_addValueChangeListener</code> to keep data
+synchronized in real time. This article explores the primary techniques
+developers use to achieve seamless cross-window state synchronization,
+highlighting their mechanisms, pros, and ideal use cases.</p>
+<h2 id="1-native-userscript-manager-apis-gm_addvaluechangelistener">1.
+Native Userscript Manager APIs
+(<code>GM_addValueChangeListener</code>)</h2>
+<p>The most robust method for userscripts running in environments like
+Tampermonkey or Violentmonkey is using the native
+<code>GM_setValue</code> and <code>GM_addValueChangeListener</code>
+APIs.</p>
+<p>Unlike standard web APIs bound to a single domain context,
+<code>GM_setValue</code> persists data in the extension's isolated
+storage. When one tab updates a value using <code>GM_setValue</code>,
+the userscript manager broadcasts this change to all active instances of
+the script running across different windows.</p>
+<h3 id="how-it-works">How it works:</h3>
+<ul>
+<li><strong>Writing State:</strong> Tab A calls
+<code>GM_setValue('user_state', updatedData)</code>.</li>
+<li><strong>Listening for Changes:</strong> Tab B registers a listener
+using
+<code>GM_addValueChangeListener('user_state', (name, oldValue, newValue, remote) =&gt; { ... })</code>.</li>
+<li><strong>Cross-Origin Capability:</strong> The <code>remote</code>
+boolean flag indicates if the modification came from another tab. This
+method works even across different origins if the script is configured
+to run on multiple domains.</li>
+</ul>
+<h2 id="2-the-broadcastchannel-api">2. The <code>BroadcastChannel</code>
+API</h2>
+<p>For scripts operating entirely within the same domain across tabs,
+the native browser <code>BroadcastChannel</code> API provides a simple
+publish/subscribe communication mechanism.</p>
+<h3 id="how-it-works-1">How it works:</h3>
+<ul>
+<li>A channel is opened with a shared name:
+<code>const channel = new BroadcastChannel('app_state');</code></li>
+<li><strong>Sending Data:</strong> A tab broadcasts a message using
+<code>channel.postMessage(stateData)</code>.</li>
+<li><strong>Receiving Data:</strong> Other open tabs listen via
+<code>channel.onmessage = (event) =&gt; updateState(event.data);</code>.</li>
+</ul>
+<h3 id="advantages">Advantages:</h3>
+<ul>
+<li>Low latency and highly efficient.</li>
+<li>Works natively without relying on persistent storage writes.</li>
+<li>Supports complex JavaScript objects via the structured clone
+algorithm.</li>
+</ul>
+<h3 id="limitations">Limitations:</h3>
+<ul>
+<li>Restricted by the Same-Origin Policy (SOP). Tabs running on
+different domains cannot share a <code>BroadcastChannel</code>.</li>
+</ul>
+<h2 id="3-localstorage-and-the-storage-event">3.
+<code>localStorage</code> and the <code>storage</code> Event</h2>
+<p>Before the <code>BroadcastChannel</code> API became widely supported,
+developers used <code>localStorage</code> as an event bus. When a value
+in <code>localStorage</code> changes in one window, a
+<code>storage</code> event fires in every <em>other</em> window of the
+same origin.</p>
+<h3 id="how-it-works-2">How it works:</h3>
+<ul>
+<li><strong>Writing State:</strong> Tab A updates storage via
+<code>localStorage.setItem('state_key', JSON.stringify(newState))</code>.</li>
+<li><strong>Listening for Changes:</strong> Tab B catches the change:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;storage&#39;</span><span class="op">,</span> (<span class="bu">event</span>) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="bu">event</span><span class="op">.</span><span class="fu">key</span> <span class="op">===</span> <span class="st">&#39;state_key&#39;</span>) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> newState <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(<span class="bu">event</span><span class="op">.</span><span class="at">newValue</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Synchronize internal state</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div></li>
+</ul>
+<h3 id="limitations-1">Limitations:</h3>
+<ul>
+<li>Synchronous disk I/O operations make <code>localStorage</code>
+slower than memory-based messaging.</li>
+<li>The <code>storage</code> event does not fire in the window that
+originated the change.</li>
+<li>Limited to same-origin contexts.</li>
+</ul>
+<h2 id="4-sharedworker-for-complex-shared-logic">4.
+<code>SharedWorker</code> for Complex Shared Logic</h2>
+<p>When multiple windows need not just synchronized data, but shared
+stateful logic (such as maintaining a single WebSocket connection across
+multiple tabs), a <code>SharedWorker</code> is used.</p>
+<h3 id="how-it-works-3">How it works:</h3>
+<ul>
+<li>A <code>SharedWorker</code> script runs in the background,
+independent of any single tab.</li>
+<li>Every open window connects to the same worker instance via a
+<code>MessagePort</code>.</li>
+<li>The worker acts as the single source of truth, managing the central
+state and broadcasting updates to connected ports.</li>
+</ul>
+<h2 id="summary-of-techniques">Summary of Techniques</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Cross-Origin?</th>
+<th style="text-align: left;">Real-Time?</th>
+<th style="text-align: left;">Best Used For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td
+style="text-align: left;"><code>GM_addValueChangeListener</code></td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">General userscript state sync across any
+URL match</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>BroadcastChannel</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">High-frequency messaging between
+same-domain tabs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>localStorage</code> Event</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Yes (Slower)</td>
+<td style="text-align: left;">Basic fallback state sync on the same
+domain</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SharedWorker</code></td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">Complex centralized logic or shared
+background tasks</td>
+</tr>
+</tbody>
+</table></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

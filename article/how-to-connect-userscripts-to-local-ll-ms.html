@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Connect Userscripts to Local LLMs - userscript</title>
+    <meta name="description" content="Userscripts can seamlessly integrate with local Large Language Models (LLMs) like Ollama and LM Studio by taking advantage of the local REST API endpoints exposed by these software engines. By making asynchronous HTTP requests directly from browser exten">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-connect-userscripts-to-local-ll-ms">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Connect Userscripts to Local LLMs - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-connect-userscripts-to-local-ll-ms" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can seamlessly integrate with local Large Language Models (LLMs) like Ollama and LM Studio by taking advantage of the local REST API endpoints exposed by these software engines. By making asynchronous HTTP requests directly from browser exten" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-connect-userscripts-to-local-llms">How to Connect
+Userscripts to Local LLMs</h1>
+<p>Userscripts can seamlessly integrate with local Large Language Models
+(LLMs) like Ollama and LM Studio by taking advantage of the local REST
+API endpoints exposed by these software engines. By making asynchronous
+HTTP requests directly from browser extensions like Tampermonkey,
+userscripts bypass external cloud dependencies, enabling private,
+automated AI features—such as text summarization, form auto-filling, and
+page analysis—directly within any web page.</p>
+<h2 id="understanding-the-local-llm-architecture">Understanding the
+Local LLM Architecture</h2>
+<p>Local LLM runtimes host AI models directly on your machine and expose
+lightweight HTTP servers.</p>
+<ul>
+<li><strong>Ollama</strong> typically serves its API at
+<code>http://localhost:11434/api/generate</code> or
+<code>http://localhost:11434/api/chat</code>.</li>
+<li><strong>LM Studio</strong> provides an OpenAI-compatible endpoint,
+usually running at
+<code>http://localhost:1234/v1/chat/completions</code>.</li>
+</ul>
+<p>Because these local tools expose standard JSON-based REST APIs, any
+web client capable of making HTTP requests can send prompts and receive
+generated responses.</p>
+<h2 id="overcoming-browser-cors-restrictions">Overcoming Browser CORS
+Restrictions</h2>
+<p>When standard JavaScript executing inside a webpage attempts to call
+<code>http://localhost</code>, the browser blocks the request due to
+Cross-Origin Resource Sharing (CORS) security policies. Userscripts
+resolve this issue in two primary ways:</p>
+<ol type="1">
+<li><strong>Using GM_xmlhttpRequest:</strong> Userscript managers (like
+Tampermonkey, Violentmonkey, or Greasemonkey) provide special privilege
+APIs. By declaring <code>@grant GM_xmlhttpRequest</code> and
+<code>@connect localhost</code> (or <code>@connect 127.0.0.1</code>) in
+the script header, the request is executed outside the web page’s
+sandbox, bypassing CORS completely.</li>
+<li><strong>Configuring Server Origins:</strong> You can configure the
+local server to accept cross-origin requests directly. For example,
+setting the environment variable <code>OLLAMA_ORIGINS="*"</code> allows
+standard web <code>fetch()</code> calls from any web page to reach the
+Ollama service.</li>
+</ol>
+<h2 id="step-by-step-integration-flow">Step-by-Step Integration
+Flow</h2>
+<ol type="1">
+<li><strong>Extract DOM Data:</strong> The userscript reads selected
+text, input fields, or webpage content using standard JavaScript DOM
+methods.</li>
+<li><strong>Construct Request Payload:</strong> The script formats the
+prompt and parameters into a JSON object matching the provider's API
+structure.</li>
+<li><strong>Execute Network Call:</strong> The userscript sends a
+<code>POST</code> request to the local port hosting Ollama or LM
+Studio.</li>
+<li><strong>Render AI Response:</strong> Once the local model returns
+the generated text, the userscript parses the JSON payload and
+dynamically updates the DOM to display the results to the user.</li>
+</ol>
+<h2 id="primary-practical-applications">Primary Practical
+Applications</h2>
+<ul>
+<li><strong>Contextual Web Summarization:</strong> Automatically
+summarizing lengthy documentation, news articles, or message boards with
+a single keyboard shortcut.</li>
+<li><strong>Privacy-First Data Processing:</strong> Translating or
+editing sensitive web forms offline without sending personal data to
+external cloud providers.</li>
+<li><strong>Automated Content Generation:</strong> Injecting intelligent
+drafting buttons next to text inputs on platforms like email clients or
+social media networks.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is Greasemonkey and How Does It Use Userscripts? - userscript</title>
+    <meta name="description" content="Greasemonkey is a popular web browser extension designed for Mozilla Firefox that allows users to customize how web pages look and function by executing small client-side JavaScript programs known as userscripts. By acting as an engine that runs these sc">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-greasemonkey-and-how-does-it-use-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is Greasemonkey and How Does It Use Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-greasemonkey-and-how-does-it-use-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Greasemonkey is a popular web browser extension designed for Mozilla Firefox that allows users to customize how web pages look and function by executing small client-side JavaScript programs known as userscripts. By acting as an engine that runs these sc" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-greasemonkey-and-how-does-it-use-userscripts">What Is
+Greasemonkey and How Does It Use Userscripts?</h1>
+<p>Greasemonkey is a popular web browser extension designed for Mozilla
+Firefox that allows users to customize how web pages look and function
+by executing small client-side JavaScript programs known as userscripts.
+By acting as an engine that runs these scripts, Greasemonkey empowers
+individuals to modify websites in real time—whether that means stripping
+away unwanted advertisements, tweaking user interfaces, automating
+repetitive actions, or adding entirely new functionality to existing
+online platforms.</p>
+<h3 id="understanding-greasemonkey">Understanding Greasemonkey</h3>
+<p>First introduced in 2005, Greasemonkey revolutionized web browsing by
+giving users direct control over their online experience. Traditionally,
+when you visit a website, your browser displays the code provided by the
+site's developer. Greasemonkey sits between the website and your screen,
+allowing you to inject custom JavaScript into the page after it loads.
+This process happens entirely on the user's local machine, meaning
+modifications only affect the individual's local view and do not alter
+the target website's actual servers.</p>
+<h3 id="the-role-of-userscripts">The Role of Userscripts</h3>
+<p>Userscripts are the lightweight scripts that drive Greasemonkey's
+capabilities. Written in JavaScript, these files usually contain
+metadata at the top that tells the browser extension which websites the
+script should run on. While Greasemonkey provides the framework and API
+permissions necessary to execute these modifications safely, userscripts
+contain the specific instructions for the changes being made. Users can
+write their own custom scripts or download pre-made scripts created by
+an active global community of developers.</p>
+<h3 id="how-greasemonkey-and-userscripts-work-together">How Greasemonkey
+and Userscripts Work Together</h3>
+<p>The relationship between Greasemonkey and userscripts is best
+understood as a platform and its software.</p>
+<ul>
+<li><strong>The Engine (Greasemonkey):</strong> Provides the
+environment, security checks, and interface needed to manage and trigger
+scripts.</li>
+<li><strong>The Code (Userscripts):</strong> Defines the exact
+modifications, such as changing CSS styles, scraping data, or adding
+shortcut keys to a web page.</li>
+</ul>
+<p>Without Greasemonkey (or a similar script manager), browsers would
+not automatically execute these custom scripts on target sites.
+Conversely, without userscripts, Greasemonkey serves no independent
+function.</p>
+<h3 id="modern-alternatives-and-legacy">Modern Alternatives and
+Legacy</h3>
+<p>Although Greasemonkey was the pioneer for browser script management
+on Firefox, the concept of userscripts expanded far beyond a single
+browser. Today, userscript managers inspired by Greasemonkey exist
+across all major platforms, including Tampermonkey and Violentmonkey,
+which support Chrome, Edge, Safari, and Opera. Despite these
+alternatives, the foundational principle remains identical to the
+original Greasemonkey architecture: using localized scripts to give
+users ultimate authority over their web browsing environment.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

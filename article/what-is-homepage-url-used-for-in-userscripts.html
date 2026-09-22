@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Is @homepageURL Used for in Userscripts? - userscript</title>
+    <meta name="description" content="The @homepageURL directive is a metadata tag used in userscript development to specify the official web page or source repository of a script. When included in the ==UserScript== header block, it tells userscript managers like Tampermonkey, Violentmonkey">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/what-is-homepage-url-used-for-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="What Is @homepageURL Used for in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/what-is-homepage-url-used-for-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @homepageURL directive is a metadata tag used in userscript development to specify the official web page or source repository of a script. When included in the ==UserScript== header block, it tells userscript managers like Tampermonkey, Violentmonkey" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="what-is-homepageurl-used-for-in-userscripts">What Is
+@homepageURL Used for in Userscripts?</h1>
+<p>The <code>@homepageURL</code> directive is a metadata tag used in
+userscript development to specify the official web page or source
+repository of a script. When included in the <code>==UserScript==</code>
+header block, it tells userscript managers like Tampermonkey,
+Violentmonkey, and Greasemonkey where the script is hosted or
+documented. This provides users with a direct link to the script's home
+page, facilitates user support, and helps managers link back to the
+primary source code location.</p>
+<h2 id="primary-uses-of-homepageurl">Primary Uses of @homepageURL</h2>
+<h3 id="1-dashboard-navigation">1. Dashboard Navigation</h3>
+<p>Userscript managers present installed scripts in a dashboard
+interface. When you define <code>@homepageURL</code>, the manager turns
+the script name or a dedicated home button into a clickable link. This
+allows users to quickly navigate to the script's web page directly from
+their browser extension settings.</p>
+<h3 id="2-source-code-and-repository-linking">2. Source Code and
+Repository Linking</h3>
+<p>Developers frequently set <code>@homepageURL</code> to point to a
+public repository host, such as GitHub or GitLab. This makes it easy for
+other developers and tech-savvy users to inspect the full codebase,
+review commit histories, or fork the project.</p>
+<h3 id="3-centralized-documentation-and-support">3. Centralized
+Documentation and Support</h3>
+<p>Rather than embedding long tutorials or change logs directly inside
+the code, developers use <code>@homepageURL</code> to send users to
+external documentation, installation guides, or release notes.</p>
+<h2 id="syntax-and-example">Syntax and Example</h2>
+<p>To use the directive, add <code>@homepageURL</code> followed by the
+full web address inside the script's metadata block at the top of the
+file:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Website Customizer</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://example.com/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Modifies the layout of targeted websites.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @author       John Doe</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @homepageURL  https://github.com/johndoe/my-website-customizer</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*.example.com/*</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="related-metadata-directives">Related Metadata Directives</h2>
+<ul>
+<li><strong><code>@homepage</code></strong>: Functionally identical to
+<code>@homepageURL</code> in most modern userscript managers and serves
+as a direct alias.</li>
+<li><strong><code>@supportURL</code></strong>: Points specifically to a
+page where users can submit bug reports or support requests (e.g., a
+GitHub Issues page).</li>
+<li><strong><code>@updateURL</code></strong>: Points to the raw script
+file used by the extension to check for code updates, distinct from the
+human-readable homepage.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Document Userscripts Effectively - userscript</title>
+    <meta name="description" content="Documenting userscripts effectively requires a combination of standardized metadata headers, clear inline code comments, a detailed README file, and version tracking. Because userscripts interact directly with third-party websites and run in the browser">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-document-userscripts-effectively">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Document Userscripts Effectively - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-document-userscripts-effectively" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Documenting userscripts effectively requires a combination of standardized metadata headers, clear inline code comments, a detailed README file, and version tracking. Because userscripts interact directly with third-party websites and run in the browser" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-document-userscripts-effectively">How to Document
+Userscripts Effectively</h1>
+<p>Documenting userscripts effectively requires a combination of
+standardized metadata headers, clear inline code comments, a detailed
+README file, and version tracking. Because userscripts interact directly
+with third-party websites and run in the browser via extensions like
+Tampermonkey or Violentmonkey, clean documentation ensures that users
+understand how to safely install and use your script, while other
+developers can review, contribute to, or audit your code.</p>
+<h2 id="1-optimize-the-metadata-block">1. Optimize the Metadata
+Block</h2>
+<p>The Userscript Header is the primary form of documentation parsed
+directly by script managers. Ensure your header contains complete and
+accurate directives:</p>
+<ul>
+<li><strong>@name and @namespace:</strong> Provide a clear, recognizable
+name and a unique identifier (typically a GitHub repository or personal
+site URL).</li>
+<li><strong>@description:</strong> Summarize the core function in one or
+two clear sentences.</li>
+<li><strong>@match / @include:</strong> Document exact domain matches so
+users know precisely where the script operates.</li>
+<li><strong>@version:</strong> Follow Semantic Versioning
+(<code>MAJOR.MINOR.PATCH</code>) to communicate update scopes
+clearly.</li>
+<li><strong>@grant:</strong> Explicitly document any GM APIs requested
+(<code>GM_getValue</code>, <code>GM_xmlhttpRequest</code>, etc.) so
+security-conscious users know what privileges the script requires.</li>
+</ul>
+<h2 id="2-write-a-practical-readme-file">2. Write a Practical README
+File</h2>
+<p>When sharing your userscript on platforms like GitHub, Greasy Fork,
+or OpenUserJS, the <code>README.md</code> serves as the primary user
+manual. Include the following core sections:</p>
+<ul>
+<li><strong>Features:</strong> A bulleted list of what the script
+changes, adds, or automates on the target website.</li>
+<li><strong>Installation:</strong> Step-by-step instructions specifying
+supported extensions (Tampermonkey, Violentmonkey) and direct
+installation links.</li>
+<li><strong>Configuration:</strong> Clear instructions on how users can
+modify user-configurable variables, toggles, or custom styles inside the
+script.</li>
+<li><strong>Troubleshooting &amp; Limitations:</strong> Known site
+compatibility issues, conflicts with other extensions, or site updates
+that might temporarily break functionality.</li>
+</ul>
+<h2 id="3-document-inline-code-and-dom-logic">3. Document Inline Code
+and DOM Logic</h2>
+<p>Userscript code frequently relies on complex DOM manipulation and
+dynamic page handling. Keep inline comments focused on context:</p>
+<ul>
+<li><strong>Target Elements:</strong> Comment on key CSS selectors or
+XPath expressions, noting if specific attributes belong to dynamic or
+obfuscated site layouts.</li>
+<li><strong>Asynchronous Logic:</strong> Explain
+<code>MutationObserver</code> callbacks, API fetches, and delay timings
+designed to handle dynamic page loads (SPA navigation).</li>
+<li><strong>Custom Functions:</strong> Use lightweight JSDoc comments
+(<code>/** ... */</code>) above key functions to describe parameters,
+expected input formats, and return values.</li>
+</ul>
+<h2 id="4-maintain-a-release-changelog">4. Maintain a Release
+Changelog</h2>
+<p>Document structural changes, fix notes, and site compatibility
+updates across versions. Maintain a <code>CHANGELOG.md</code> file or
+summarize major updates in the release notes on hosting platforms. This
+allows users to track fixes when target websites update their frontend
+layouts and cause script breakage.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

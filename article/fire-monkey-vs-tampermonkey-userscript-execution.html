@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireMonkey vs Tampermonkey Userscript Execution - userscript</title>
+    <meta name="description" content="While both FireMonkey and Tampermonkey allow users to execute custom JavaScript on web pages, they differ fundamentally in execution performance, underlying API integration, sandboxing models, and feature compatibility. FireMonkey leverages modern native">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/fire-monkey-vs-tampermonkey-userscript-execution">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FireMonkey vs Tampermonkey Userscript Execution - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/fire-monkey-vs-tampermonkey-userscript-execution" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="While both FireMonkey and Tampermonkey allow users to execute custom JavaScript on web pages, they differ fundamentally in execution performance, underlying API integration, sandboxing models, and feature compatibility. FireMonkey leverages modern native" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="firemonkey-vs-tampermonkey-userscript-execution">FireMonkey vs
+Tampermonkey Userscript Execution</h1>
+<p>While both FireMonkey and Tampermonkey allow users to execute custom
+JavaScript on web pages, they differ fundamentally in execution
+performance, underlying API integration, sandboxing models, and feature
+compatibility. FireMonkey leverages modern native browser user script
+APIs for high-performance execution, primarily in Firefox, whereas
+Tampermonkey uses a custom injection framework designed for broad,
+cross-browser compatibility and legacy API support.</p>
+<h3 id="architecture-and-execution-speed">Architecture and Execution
+Speed</h3>
+<p>FireMonkey relies directly on Firefox's native
+<code>browser.userScripts</code> API. Because the browser itself manages
+script registration and execution at a low level, FireMonkey achieves
+faster page-load injection speeds, lower memory usage, and minimal
+overhead.</p>
+<p>Tampermonkey uses a custom implementation built on standard
+WebExtension <code>content_scripts</code>. It manually injects scripts
+into page contexts or sandboxed scopes, routing API calls through its
+background script via messaging. While highly versatile across different
+browser engines (Chrome, Firefox, Edge, Safari), this middle layer
+introduces slightly more CPU and memory overhead compared to
+FireMonkey.</p>
+<h3 id="api-support-and-backward-compatibility">API Support and Backward
+Compatibility</h3>
+<p>Tampermonkey offers extensive support for classic Greasemonkey APIs
+(such as <code>GM_setValue</code>, <code>GM_getValue</code>,
+<code>GM_xmlhttpRequest</code>) along with modern promise-based
+<code>GM.*</code> variants. Its primary strength is compatibility;
+almost any legacy or complex userscript will run out-of-the-box in
+Tampermonkey.</p>
+<p>FireMonkey prioritizes standard JavaScript web APIs and modern
+<code>GM.*</code> promise-based functions. It deliberately restricts or
+omits support for certain legacy, synchronous <code>GM_*</code>
+functions due to security concerns and performance limitations of native
+browser sandboxes. Consequently, some older scripts may require minor
+refactoring to run under FireMonkey.</p>
+<h3 id="sandboxing-and-unsafewindow-handling">Sandboxing and
+<code>unsafeWindow</code> Handling</h3>
+<ul>
+<li><strong>FireMonkey:</strong> Executes scripts within native Firefox
+user script sandboxes. Access to the target page's window object via
+<code>unsafeWindow</code> is handled strictly through Firefox's Xray
+vision wrappers, providing high security against DOM-based attacks but
+occasionally requiring specific wrapper handling for complex page
+objects.</li>
+<li><strong>Tampermonkey:</strong> Manages its own sandboxing
+environment across multiple browser engines. It isolates scripts using
+closures and custom DOM manipulation context wrappers, providing a
+unified behavior for <code>unsafeWindow</code> across Firefox, Chrome,
+and Safari.</li>
+</ul>
+<h3 id="resource-usage-and-features">Resource Usage and Features</h3>
+<p>FireMonkey is designed as a lightweight alternative, focusing
+strictly on speed, efficient CSS injection (Userstyles), and minimal UI
+bloat. It processes scripts with strict execution priority to minimize
+layout shifts.</p>
+<p>Tampermonkey provides a feature-rich environment, including a
+built-in web editor, automatic script updates, cloud sync options, and
+detailed script dependency resolution (<code>@require</code>,
+<code>@resource</code>). These extra features make Tampermonkey highly
+versatile, though slightly more resource-heavy during script
+initialization.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

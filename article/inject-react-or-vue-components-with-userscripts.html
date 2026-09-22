@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inject React or Vue Components with Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can successfully inject modern React or Vue components directly into the Document Object Model (DOM) of legacy websites. By creating a dedicated container element within the target site's layout, developers can mount full-fledged modern front">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/inject-react-or-vue-components-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Inject React or Vue Components with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/inject-react-or-vue-components-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can successfully inject modern React or Vue components directly into the Document Object Model (DOM) of legacy websites. By creating a dedicated container element within the target site's layout, developers can mount full-fledged modern front" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="inject-react-or-vue-components-with-userscripts">Inject React or
+Vue Components with Userscripts</h1>
+<p>Userscripts can successfully inject modern React or Vue components
+directly into the Document Object Model (DOM) of legacy websites. By
+creating a dedicated container element within the target site's layout,
+developers can mount full-fledged modern frontend components using
+managers like Tampermonkey or Violentmonkey. This approach allows
+developers to modernize user interfaces, add complex features, or
+streamline workflows on older web applications without altering the
+underlying server-side codebase.</p>
+<h2 id="how-component-injection-works">How Component Injection
+Works</h2>
+<p>Injecting a modern framework component into a legacy page relies on
+standard DOM manipulation combined with the framework's mounting API.
+The basic process follows three core steps:</p>
+<ol type="1">
+<li><strong>Create an Anchor Container:</strong> The userscript creates
+a new HTML element (usually a <code>div</code>) and appends it to a
+specific location in the legacy site's DOM.</li>
+<li><strong>Load Framework Libraries:</strong> React or Vue dependencies
+are included either by bundling them into the userscript or by importing
+them dynamically via userscript metadata headers
+(<code>@require</code>).</li>
+<li><strong>Mount the Application:</strong> The framework’s render
+engine targets the newly created container element to initialize the
+component tree.</li>
+</ol>
+<h3 id="basic-react-example">Basic React Example</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create and insert container</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> container <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>container<span class="op">.</span><span class="at">id</span> <span class="op">=</span> <span class="st">&#39;my-custom-react-root&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(container)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Mount React Component</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> <span class="bu">root</span> <span class="op">=</span> ReactDOM<span class="op">.</span><span class="fu">createRoot</span>(container)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">root</span><span class="op">.</span><span class="fu">render</span>(React<span class="op">.</span><span class="fu">createElement</span>(MyComponent))<span class="op">;</span></span></code></pre></div>
+<h3 id="basic-vue-example">Basic Vue Example</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create and insert container</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> container <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>container<span class="op">.</span><span class="at">id</span> <span class="op">=</span> <span class="st">&#39;my-custom-vue-root&#39;</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(container)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Mount Vue Component</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> Vue<span class="op">.</span><span class="fu">createApp</span>(MyComponent)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>app<span class="op">.</span><span class="fu">mount</span>(<span class="st">&#39;#my-custom-vue-root&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="recommended-architecture-modern-bundlers">Recommended
+Architecture: Modern Bundlers</h2>
+<p>While inline scripts using CDN-hosted packages work, building complex
+components is best handled using a bundler such as Vite, Webpack, or
+Rollup.</p>
+<p>Using modern tooling provides several benefits:</p>
+<ul>
+<li><strong>JSX and Single File Components (SFCs):</strong> Write UI
+using native React JSX or Vue <code>.vue</code> files.</li>
+<li><strong>Single File Output:</strong> Configure the bundler to
+compile all JavaScript, framework runtime code, and assets into a single
+<code>.user.js</code> file.</li>
+<li><strong>Inline CSS:</strong> Transform imported CSS files into style
+strings injected directly into the document head or a Shadow DOM.</li>
+</ul>
+<p>Plugins like <code>vite-plugin-monkey</code> simplify this setup by
+automatically handling userscript headers, hot module replacement (HMR)
+during development, and single-file production builds.</p>
+<h2 id="critical-technical-considerations">Critical Technical
+Considerations</h2>
+<h3 id="1-style-isolation-preventing-css-collisions">1. Style Isolation
+(Preventing CSS Collisions)</h3>
+<p>Legacy websites often use global CSS rules that can leak into and
+break modern components. Conversely, component styles might disrupt the
+host site's formatting.</p>
+<p>To fix this, attach a <strong>Shadow DOM</strong> to the injected
+container and mount the framework root inside it:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> hostContainer <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(hostContainer)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Create a closed or open shadow root</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> shadowRoot <span class="op">=</span> hostContainer<span class="op">.</span><span class="fu">attachShadow</span>({ <span class="dt">mode</span><span class="op">:</span> <span class="st">&#39;open&#39;</span> })<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Create the target mount point inside the shadow root</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mountPoint <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>shadowRoot<span class="op">.</span><span class="fu">appendChild</span>(mountPoint)<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">// Mount component inside the shadow root</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> <span class="bu">root</span> <span class="op">=</span> ReactDOM<span class="op">.</span><span class="fu">createRoot</span>(mountPoint)<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">root</span><span class="op">.</span><span class="fu">render</span>(React<span class="op">.</span><span class="fu">createElement</span>(MyComponent))<span class="op">;</span></span></code></pre></div>
+<h3 id="2-handling-asynchronous-dom-loading">2. Handling Asynchronous
+DOM Loading</h3>
+<p>Legacy sites frequently render elements dynamically via old AJAX
+patterns or jQuery. If the target insertion point is not present when
+the userscript runs, the injection will fail.</p>
+<p>Use a <code>MutationObserver</code> or utility functions to wait for
+the target host element to appear in the DOM before appending the
+component container.</p>
+<h3 id="3-execution-context-and-permissions">3. Execution Context and
+Permissions</h3>
+<p>Userscripts run in an isolated sandbox. If the component needs to
+interact directly with variables in the legacy page's window object,
+adjust the <code>@grant</code> directives in the userscript header or
+access page globals via <code>unsafeWindow</code>.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

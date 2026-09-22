@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Which Browser First Supported Userscripts Natively? - userscript</title>
+    <meta name="description" content="Opera was the first major web browser to offer native support for userscripts, introducing a feature known as User JavaScript in Opera 8 in April 2005. While Firefox popularized userscript customization around the same timeframe through third-party exten">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/which-browser-first-supported-userscripts-natively">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Which Browser First Supported Userscripts Natively? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/which-browser-first-supported-userscripts-natively" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Opera was the first major web browser to offer native support for userscripts, introducing a feature known as User JavaScript in Opera 8 in April 2005. While Firefox popularized userscript customization around the same timeframe through third-party exten" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="which-browser-first-supported-userscripts-natively">Which
+Browser First Supported Userscripts Natively?</h1>
+<p>Opera was the first major web browser to offer native support for
+userscripts, introducing a feature known as <strong>User
+JavaScript</strong> in Opera 8 in April 2005. While Firefox popularized
+userscript customization around the same timeframe through third-party
+extensions like Greasemonkey, Opera built client-side JavaScript
+execution capabilities directly into its browser settings without
+requiring any external plugins or extensions.</p>
+<h3 id="the-rise-of-operas-user-javascript">The Rise of Opera's User
+JavaScript</h3>
+<p>During the mid-2000s, web browsers relied heavily on add-ons to alter
+web pages dynamically. Opera Software bypassed the need for add-ons by
+embedding native script execution into the Presto rendering engine.</p>
+<p>By defining a dedicated local folder within the browser settings,
+users could drop <code>.js</code> files into a directory, and Opera
+would automatically run those scripts on matching websites upon
+loading.</p>
+<h3 id="opera-native-scripts-vs-extension-based-solutions">Opera Native
+Scripts vs. Extension-Based Solutions</h3>
+<p>While Firefox became famous for userscripts, its functionality relied
+entirely on third-party tools. Comparing the early approaches highlights
+key differences in early custom browser scripting:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Opera (User JavaScript)</th>
+<th>Firefox (Greasemonkey)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Support Type</strong></td>
+<td>Native (Built directly into the OS/browser core)</td>
+<td>Extension-based (Requires add-on installation)</td>
+</tr>
+<tr>
+<td><strong>Launch Era</strong></td>
+<td>Early 2005 (Opera 8)</td>
+<td>Late 2004 / Early 2005 (Extension framework)</td>
+</tr>
+<tr>
+<td><strong>Script Execution</strong></td>
+<td>Local directory scanning</td>
+<td>Visual script manager UI</td>
+</tr>
+<tr>
+<td><strong>Configuration</strong></td>
+<td>Native preference menu (<code>opera:config</code>)</td>
+<td>Third-party extension manager</td>
+</tr>
+</tbody>
+</table>
+<h3 id="later-native-implementations-in-other-browsers">Later Native
+Implementations in Other Browsers</h3>
+<p>Following Opera's lead, other browser vendors eventually integrated
+native or near-native capabilities to manage custom JavaScript:</p>
+<ul>
+<li><strong>Google Chrome:</strong> Introduced built-in support for
+installing <code>.user.js</code> files as extensions natively starting
+in Chrome 4 (released in 2010).</li>
+<li><strong>Modern Browsers:</strong> Modern Chromium and WebKit
+browsers have largely shifted away from pure native file-system script
+directories, opting instead for standardized extension APIs (like
+Manifest V3 <code>userScripts</code> APIs) managed through extension
+frameworks like Tampermonkey or Violentmonkey.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

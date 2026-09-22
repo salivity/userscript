@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How GM_saveTab Maintains State in Userscripts - userscript</title>
+    <meta name="description" content="The GMsaveTab function is a specialized userscript API provided by browser extensions like Tampermonkey and Violentmonkey that allows developers to persist custom data bound specifically to an individual browser tab. Unlike global storage methods, GMsave">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-gm-save-tab-maintains-state-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How GM_saveTab Maintains State in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-gm-save-tab-maintains-state-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMsaveTab function is a specialized userscript API provided by browser extensions like Tampermonkey and Violentmonkey that allows developers to persist custom data bound specifically to an individual browser tab. Unlike global storage methods, GMsave" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-gm_savetab-maintains-state-in-userscripts">How GM_saveTab
+Maintains State in Userscripts</h1>
+<p>The <code>GM_saveTab</code> function is a specialized userscript API
+provided by browser extensions like Tampermonkey and Violentmonkey that
+allows developers to persist custom data bound specifically to an
+individual browser tab. Unlike global storage methods,
+<code>GM_saveTab</code> preserves an object's state across page reloads
+and navigations within that single tab, clearing the data automatically
+once the tab is closed. This article explains what
+<code>GM_saveTab</code> is, how it functions under the hood, how it
+compares to alternative storage options, and how to implement it
+effectively in your code.</p>
+<h2 id="what-is-gm_savetab">What is GM_saveTab?</h2>
+<p><code>GM_saveTab</code> is an asynchronous API function used to store
+a JavaScript object containing key-value pairs tied directly to the
+browser tab executing the script.</p>
+<p>To use it alongside its counterpart <code>GM_getTab</code>, you must
+request permissions in your userscript's metadata block:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Tab State Manager</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_saveTab</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_getTab</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="how-gm_savetab-maintains-state-across-reloads">How GM_saveTab
+Maintains State Across Reloads</h2>
+<p>Userscript managers assign an internal unique identifier to every
+open browser tab. When you call <code>GM_saveTab</code>, the manager
+attaches the data object you pass to that specific tab's internal
+ID.</p>
+<p>Here is the mechanics of how state is maintained:</p>
+<ol type="1">
+<li><strong>Tab ID Mapping</strong>: The data is stored in the
+extension's background memory space, mapped to the browser tab ID rather
+than the web page origin.</li>
+<li><strong>Page Navigation &amp; Reloads</strong>: When the page
+reloads or navigates to a new URL where the script is active, the tab ID
+remains identical.</li>
+<li><strong>State Retrieval</strong>: The script executes
+<code>GM_getTab()</code> upon loading, fetching the previously saved
+data object associated with that tab ID.</li>
+<li><strong>Lifecycle Termination</strong>: Once the user closes the
+tab, the extension releases the saved object from memory.</li>
+</ol>
+<h2 id="comparing-gm_savetab-to-other-storage-options">Comparing
+GM_saveTab to Other Storage Options</h2>
+<p>Understanding when to use <code>GM_saveTab</code> depends on how it
+compares to alternative client-side storage mechanisms:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;"><code>GM_saveTab</code></th>
+<th style="text-align: left;"><code>GM_setValue</code></th>
+<th style="text-align: left;"><code>sessionStorage</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Scope</strong></td>
+<td style="text-align: left;">Single tab instance</td>
+<td style="text-align: left;">All tabs globally</td>
+<td style="text-align: left;">Single tab instance</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Persistence</strong></td>
+<td style="text-align: left;">Lives until tab closes</td>
+<td style="text-align: left;">Permanent until deleted</td>
+<td style="text-align: left;">Lives until tab closes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cross-Domain Support</strong></td>
+<td style="text-align: left;">Yes (moves across sites in same tab)</td>
+<td style="text-align: left;">Yes</td>
+<td style="text-align: left;">No (tied to same-origin policy)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Data Clean-up</strong></td>
+<td style="text-align: left;">Automatic on tab close</td>
+<td style="text-align: left;">Manual required</td>
+<td style="text-align: left;">Automatic on tab close</td>
+</tr>
+</tbody>
+</table>
+<p><code>GM_saveTab</code> excels when you need cross-domain tracking
+within one tab without polluting global storage or leaking data to other
+open tabs running the same script.</p>
+<h2 id="practical-implementation-example">Practical Implementation
+Example</h2>
+<p>To save and retrieve data across reloads, combine
+<code>GM_saveTab</code> with <code>GM_getTab</code>:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Retrieve existing state or initialize defaults</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_getTab</span>((tab) <span class="kw">=&gt;</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// If state doesn&#39;t exist, create it</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>tab<span class="op">.</span><span class="at">reloadCount</span>) {</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        tab<span class="op">.</span><span class="at">reloadCount</span> <span class="op">=</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Increment counter</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    tab<span class="op">.</span><span class="at">reloadCount</span> <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`This tab has been reloaded </span><span class="sc">${</span>tab<span class="op">.</span><span class="at">reloadCount</span><span class="sc">}</span><span class="vs"> times.`</span>)<span class="op">;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Save updated state back to the tab</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">GM_saveTab</span>(tab)<span class="op">;</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<ul>
+<li><strong>Multi-Step Automation</strong>: Preserving step counters or
+form data when an automated script navigates through a multi-page
+sequence in one tab.</li>
+<li><strong>Tab-Isolated Configurations</strong>: Applying custom
+display toggles or filters that apply only to the active tab without
+overriding user settings in other tabs.</li>
+<li><strong>Cross-Origin Workflows</strong>: Carrying temporary
+variables across redirects between different domains (e.g., passing
+authorization tokens during a multi-site workflow).</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

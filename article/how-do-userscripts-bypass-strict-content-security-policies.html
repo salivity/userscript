@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do Userscripts Bypass Strict Content Security Policies? - userscript</title>
+    <meta name="description" content="Userscripts, typically executed via browser extensions like Tampermonkey or Violentmonkey, can bypass strict Content Security Policies (CSPs) because they operate in a privileged execution environment outside the standard Web APIs. While a website’s CS">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-userscripts-bypass-strict-content-security-policies">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do Userscripts Bypass Strict Content Security Policies? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-userscripts-bypass-strict-content-security-policies" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts, typically executed via browser extensions like Tampermonkey or Violentmonkey, can bypass strict Content Security Policies (CSPs) because they operate in a privileged execution environment outside the standard Web APIs. While a website’s CS" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-userscripts-bypass-strict-content-security-policies">How
+Do Userscripts Bypass Strict Content Security Policies?</h1>
+<p>Userscripts, typically executed via browser extensions like
+Tampermonkey or Violentmonkey, can bypass strict Content Security
+Policies (CSPs) because they operate in a privileged execution
+environment outside the standard Web APIs. While a website’s CSP
+restricts what scripts can execute, fetch data, or modify resources
+within the page's isolated context, userscript managers leverage
+powerful browser extension APIs (such as <code>chrome.userScripts</code>
+or background script proxies) to run code with elevated permissions.
+This article explains the technical mechanics of CSPs, how userscripts
+run independently of them, and the specific APIs used to circumvent
+standard browser security restrictions.</p>
+<hr />
+<h2 id="understanding-content-security-policies-csp">Understanding
+Content Security Policies (CSP)</h2>
+<p>A Content Security Policy (CSP) is an HTTP header or meta tag sent by
+a web server that instructs the browser on which resources are safe to
+load and execute. It acts as a primary defense against Cross-Site
+Scripting (XSS) and data injection attacks.</p>
+<p>A typical strict CSP might include directives like:</p>
+<ul>
+<li><code>script-src 'self' https://trusted.cdn.com</code>: Restricts
+inline JavaScript execution and limits script origin to trusted
+domains.</li>
+<li><code>connect-src 'self'</code>: Prevents the browser from sending
+<code>fetch</code> or <code>XMLHttpRequest</code> requests to
+third-party domains.</li>
+<li><code>object-src 'none'</code>: Disallows legacy plugins like Flash
+or Java applets.</li>
+</ul>
+<p>When a standard web page attempts to execute an inline script or
+fetch data from an unauthorized domain, the browser enforces the CSP
+rules and blocks the request.</p>
+<hr />
+<h2 id="the-privileged-execution-model-of-userscript-managers">The
+Privileged Execution Model of Userscript Managers</h2>
+<p>The key reason userscripts are not restricted by a page’s CSP lies in
+<strong>context isolation</strong>. Browsers separate script execution
+into different security zones:</p>
+<h3 id="1-web-page-context-page-context">1. Web Page Context (Page
+Context)</h3>
+<p>This is the standard environment where the website's scripts run. It
+is fully subject to the rules defined by the site's CSP.</p>
+<h3 id="2-extension--userscript-context-isolated-world">2. Extension /
+Userscript Context (Isolated World)</h3>
+<p>Userscript managers operate as browser extensions. Modern browsers
+run extension content scripts in an "Isolated World." While these
+scripts share the same DOM (Document Object Model) with the host page,
+they maintain an entirely separate execution context, scope, and global
+<code>window</code> object.</p>
+<p>Because the userscript manager injects code directly into this
+isolated context at the browser engine level, the host page’s CSP
+headers do not automatically apply to the script's execution.</p>
+<hr />
+<h2 id="specific-mechanisms-for-bypassing-csp-directives">Specific
+Mechanisms for Bypassing CSP Directives</h2>
+<p>Userscript managers employ several specific techniques to bypass
+individual CSP constraints:</p>
+<h3 id="bypassing-script-src-code-execution">Bypassing
+<code>script-src</code> (Code Execution)</h3>
+<ul>
+<li><strong>Direct Injection:</strong> Extensions inject script nodes
+directly into the DOM tree or evaluate them within the privileged
+isolated context before the web page's CSP rules are initialized.</li>
+<li><strong>Native <code>userScripts</code> API:</strong> Modern
+browsers (Manifest V3) provide dedicated APIs specifically designed to
+execute user-defined code cleanly without relying on risky
+<code>eval()</code> calls in the web page context.</li>
+</ul>
+<h3 id="bypassing-connect-src-cross-origin-requests">Bypassing
+<code>connect-src</code> (Cross-Origin Requests)</h3>
+<p>Standard JavaScript cannot make cross-origin network requests if
+blocked by <code>connect-src</code>. Userscripts bypass this limitation
+using specialized GM functions:</p>
+<ul>
+<li><strong><code>GM_xmlhttpRequest</code> /
+<code>GM.xmlHttpRequest</code>:</strong> Instead of using the web page's
+native <code>fetch()</code> or <code>XMLHttpRequest</code>, these
+functions pass the request payload across an internal message channel to
+the background script (service worker) of the userscript extension.</li>
+<li><strong>Background Fetching:</strong> The background script executes
+the network request independently of the current tab. Because extension
+background scripts possess elevated broad domain permissions, they
+completely bypass the active tab's CSP restrictions and return the
+fetched data back to the userscript.</li>
+</ul>
+<hr />
+<h2 id="security-implications">Security Implications</h2>
+<p>While this architectural bypass allows users to customize their
+browsing experience, add functionality, and block unwanted elements on
+strict websites, it relies heavily on trust in the extension manager
+itself. Because userscript managers bypass traditional web security
+boundaries:</p>
+<ul>
+<li>Userscripts have access to sensitive DOM data (such as form inputs
+and rendered session tokens).</li>
+<li>Malicious userscripts can exfiltrate sensitive data via privileged
+network APIs (<code>GM_xmlhttpRequest</code>) even on highly secure
+platforms.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

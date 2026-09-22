@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Read and Modify Browser Cookies? - userscript</title>
+    <meta name="description" content="Userscripts have the capability to read, modify, and delete browser cookies, though their access level depends on standard web security rules and the powers granted by your userscript manager. While standard userscripts interacting directly with a webpag">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-read-and-modify-browser-cookies">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Read and Modify Browser Cookies? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-read-and-modify-browser-cookies" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts have the capability to read, modify, and delete browser cookies, though their access level depends on standard web security rules and the powers granted by your userscript manager. While standard userscripts interacting directly with a webpag" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-read-and-modify-browser-cookies">Can Userscripts
+Read and Modify Browser Cookies?</h1>
+<p>Userscripts have the capability to read, modify, and delete browser
+cookies, though their access level depends on standard web security
+rules and the powers granted by your userscript manager. While standard
+userscripts interacting directly with a webpage are restricted by
+traditional browser security features like <code>HttpOnly</code> flags,
+advanced scripts using specialized extension APIs can bypass these
+restrictions to gain full control over cookie management.</p>
+<h2 id="standard-access-via-javascript">Standard Access via
+JavaScript</h2>
+<p>At the basic level, userscripts run within the context of the
+webpage. This means they can interact with the Document Object Model
+(DOM) using standard JavaScript.</p>
+<ul>
+<li><strong>Reading Cookies:</strong> A script can read accessible
+cookies by accessing <code>document.cookie</code>.</li>
+<li><strong>Modifying and Creating Cookies:</strong> A script can set or
+update cookies by assigning new key-value pairs to
+<code>document.cookie</code>.</li>
+<li><strong>Limitations:</strong> Standard scripts cannot access cookies
+protected by the <code>HttpOnly</code> flag. Browsers deliberately block
+client-side JavaScript from reading or altering <code>HttpOnly</code>
+cookies to protect sensitive session data from Cross-Site Scripting
+(XSS) attacks.</li>
+</ul>
+<h2 id="advanced-access-via-userscript-manager-apis">Advanced Access via
+Userscript Manager APIs</h2>
+<p>Popular userscript managers—such as Tampermonkey, Violentmonkey, and
+Greasemonkey—provide extended APIs that give scripts elevated privileges
+beyond standard webpage limitations.</p>
+<ul>
+<li><strong>The <code>GM_cookie</code> API:</strong> By requesting the
+<code>@grant GM_cookie</code> (or <code>GM.cookie</code>) directive in
+the script's metadata block, a userscript gains access to the browser
+extension's cookie management engine.</li>
+<li><strong>Bypassing <code>HttpOnly</code> Restrictions:</strong> The
+<code>GM_cookie</code> API operates at the browser extension level
+rather than the web page level. This allows the script to read, modify,
+create, and delete even <code>HttpOnly</code> cookies.</li>
+<li><strong>Cross-Domain Access:</strong> With appropriate URL
+permissions in the script header, scripts can manage cookies for domains
+other than the currently active tab.</li>
+</ul>
+<h2 id="security-and-privacy-implications">Security and Privacy
+Implications</h2>
+<p>Because userscripts can access powerful APIs like
+<code>GM_cookie</code>, installing untrusted scripts poses a significant
+security risk. A malicious userscript with cookie permissions can steal
+session tokens, hijack accounts, or alter site preferences without your
+knowledge. Always review the source code and requested
+<code>@grant</code> permissions of a userscript before installing
+it.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

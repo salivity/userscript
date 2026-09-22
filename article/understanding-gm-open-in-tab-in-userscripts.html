@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding GM_openInTab in Userscripts - userscript</title>
+    <meta name="description" content="The GMopenInTab function is a specialized API provided by browser extension script managers such as Tampermonkey, Violentmonkey, and Greasemonkey that enables a userscript to open a specified URL in a new browser tab. Unlike standard web JavaScript tab-o">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/understanding-gm-open-in-tab-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Understanding GM_openInTab in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/understanding-gm-open-in-tab-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMopenInTab function is a specialized API provided by browser extension script managers such as Tampermonkey, Violentmonkey, and Greasemonkey that enables a userscript to open a specified URL in a new browser tab. Unlike standard web JavaScript tab-o" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="understanding-gm_openintab-in-userscripts">Understanding
+GM_openInTab in Userscripts</h1>
+<p>The <code>GM_openInTab</code> function is a specialized API provided
+by browser extension script managers such as Tampermonkey,
+Violentmonkey, and Greasemonkey that enables a userscript to open a
+specified URL in a new browser tab. Unlike standard web JavaScript
+tab-opening methods, <code>GM_openInTab</code> operates with elevated
+permissions, allowing developers to bypass native browser popup blockers
+and precisely control tab behavior, such as opening links silently in
+the background or setting tab order.</p>
+<h2 id="core-features-of-gm_openintab">Core Features of
+GM_openInTab</h2>
+<p>Standard web scripts rely on <code>window.open()</code> to open new
+windows or tabs. However, modern browsers heavily restrict
+<code>window.open()</code> to prevent unsolicited popups, often blocking
+it unless it is directly triggered by an explicit user click.</p>
+<p><code>GM_openInTab</code> solves this problem by leveraging the
+extension host's privileges. Key advantages include:</p>
+<ul>
+<li><strong>Bypassing Popup Blockers:</strong> It can reliably open tabs
+programmatically without requiring an immediate, direct user interaction
+event.</li>
+<li><strong>Background Tab Control:</strong> It allows scripts to open
+tabs in the background without stealing focus from the user's current
+page.</li>
+<li><strong>Tab Placement:</strong> Scripts can specify where the new
+tab should appear in the browser's tab strip (e.g., adjacent to the
+current tab).</li>
+</ul>
+<h2 id="function-syntax-and-parameters">Function Syntax and
+Parameters</h2>
+<p>The basic syntax for <code>GM_openInTab</code> accepts a target URL
+and an optional configuration object or boolean flag:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Basic usage</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_openInTab</span>(url<span class="op">,</span> options)<span class="op">;</span></span></code></pre></div>
+<h3 id="options-object-properties">Options Object Properties</h3>
+<ul>
+<li><strong><code>active</code></strong> (boolean): Set to
+<code>true</code> to bring the new tab to the foreground, or
+<code>false</code> to open it in the background.</li>
+<li><strong><code>insert</code></strong> (boolean): Set to
+<code>true</code> to insert the new tab next to the current tab rather
+than at the end of the tab strip.</li>
+<li><strong><code>setParent</code></strong> (boolean): Set to
+<code>true</code> to make the current tab the parent of the new tab,
+ensuring it re-focuses the original tab when closed.</li>
+<li><strong><code>incognito</code></strong> (boolean): Opens the tab in
+an incognito/private window (subject to browser and extension
+settings).</li>
+</ul>
+<h3 id="example-code">Example Code</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Opens a link in a background tab right next to the current tab</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_openInTab</span>(<span class="st">&#39;https://example.com&#39;</span><span class="op">,</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">active</span><span class="op">:</span> <span class="kw">false</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dt">insert</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">setParent</span><span class="op">:</span> <span class="kw">true</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="typical-use-cases-in-userscripts">Typical Use Cases in
+Userscripts</h2>
+<p>Developers commonly implement <code>GM_openInTab</code> in several
+scenario types:</p>
+<ol type="1">
+<li><strong>Batch Link Opening:</strong> Automation scripts designed to
+open multiple search results, articles, or product pages simultaneously
+for quick viewing.</li>
+<li><strong>External Reference Buttons:</strong> Adding custom UI
+buttons to web pages that launch related external documentation, tools,
+or mirror links.</li>
+<li><strong>Background Task Processing:</strong> Loading a specific page
+in a non-focused tab to trigger page-bound actions or scripts without
+interrupting the user's reading experience.</li>
+<li><strong>Script Settings &amp; Dashboard Links:</strong> Redirecting
+users to external script management pages, documentation, or feedback
+forms from custom user interface menus.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

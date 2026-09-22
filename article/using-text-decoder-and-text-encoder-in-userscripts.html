@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using TextDecoder and TextEncoder in Userscripts - userscript</title>
+    <meta name="description" content="Userscripts often need to interact with raw binary streams when intercepting network traffic, modifying files, or decoding custom data formats on web pages. By leveraging JavaScript's native TextDecoder and TextEncoder APIs, userscripts can seamlessly co">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/using-text-decoder-and-text-encoder-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Using TextDecoder and TextEncoder in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/using-text-decoder-and-text-encoder-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts often need to interact with raw binary streams when intercepting network traffic, modifying files, or decoding custom data formats on web pages. By leveraging JavaScript's native TextDecoder and TextEncoder APIs, userscripts can seamlessly co" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="using-textdecoder-and-textencoder-in-userscripts">Using
+TextDecoder and TextEncoder in Userscripts</h1>
+<p>Userscripts often need to interact with raw binary streams when
+intercepting network traffic, modifying files, or decoding custom data
+formats on web pages. By leveraging JavaScript's native
+<code>TextDecoder</code> and <code>TextEncoder</code> APIs, userscripts
+can seamlessly convert binary data buffers, such as
+<code>ArrayBuffer</code> and <code>Uint8Array</code>, into
+human-readable strings and re-encode modified text back into raw byte
+arrays without relying on heavy external libraries.</p>
+<h2 id="understanding-the-encoding-apis">Understanding the Encoding
+APIs</h2>
+<p>The Web APIs provide two core interfaces for handling text encoding
+and decoding:</p>
+<ul>
+<li><strong><code>TextEncoder</code></strong>: Converts a JavaScript
+string into a <code>Uint8Array</code> containing UTF-8 encoded
+bytes.</li>
+<li><strong><code>TextDecoder</code></strong>: Takes a binary buffer
+(such as an <code>ArrayBuffer</code> or a <code>TypedArray</code>) and
+converts it back into a JavaScript string based on a specified character
+encoding (e.g., UTF-8, ISO-8859-1, or Shift-JIS).</li>
+</ul>
+<p>Together, these APIs bridge the gap between human-readable text
+strings and raw binary byte structures.</p>
+<h2 id="reading-binary-data-with-textdecoder">Reading Binary Data with
+TextDecoder</h2>
+<p>Userscripts frequently intercept network requests using API wrappers
+like <code>GM_xmlhttpRequest</code> or by monkey-patching native
+<code>fetch</code> and <code>XMLHttpRequest</code> methods. When a
+server returns binary data—such as a file stream, compressed payload, or
+custom binary protocol—the response is often received as an
+<code>ArrayBuffer</code>.</p>
+<p>To extract and read text from this binary format, a userscript
+initializes a <code>TextDecoder</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example: Intercepting a binary network response in a userscript</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> rawBuffer <span class="op">=</span> response<span class="op">.</span><span class="at">responseBuffer</span><span class="op">;</span> <span class="co">// ArrayBuffer from GM_xmlhttpRequest</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> decoder <span class="op">=</span> <span class="kw">new</span> <span class="fu">TextDecoder</span>(<span class="st">&#39;utf-8&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> decodedString <span class="op">=</span> decoder<span class="op">.</span><span class="fu">decode</span>(rawBuffer)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Decoded content:&#39;</span><span class="op">,</span> decodedString)<span class="op">;</span></span></code></pre></div>
+<p>If the web page uses legacy or non-UTF-8 character sets,
+<code>TextDecoder</code> accepts an encoding parameter (such as
+<code>new TextDecoder('windows-1252')</code>), allowing userscripts to
+correctly parse localized text that native browser methods might
+otherwise corrupt.</p>
+<h2 id="modifying-and-re-encoding-data-with-textencoder">Modifying and
+Re-encoding Data with TextEncoder</h2>
+<p>Once a userscript has converted binary data into a standard
+JavaScript string, it can perform string manipulation, such as replacing
+text, injecting custom scripts, or extracting specific metadata.</p>
+<p>After making modifications, the script often needs to convert the
+string back into binary form so it can be passed back to the web
+application or transmitted over a network socket.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Modify the decoded string</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> modifiedString <span class="op">=</span> decodedString<span class="op">.</span><span class="fu">replace</span>(<span class="st">&#39;original text&#39;</span><span class="op">,</span> <span class="st">&#39;modified text&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// Re-encode the string back into binary byte array</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> encoder <span class="op">=</span> <span class="kw">new</span> <span class="fu">TextEncoder</span>()<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> modifiedBinaryData <span class="op">=</span> encoder<span class="op">.</span><span class="fu">encode</span>(modifiedString)<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">// modifiedBinaryData is a Uint8Array ready for transmission</span></span></code></pre></div>
+<h2 id="common-use-cases-in-userscript-development">Common Use Cases in
+Userscript Development</h2>
+<h3 id="intercepting-websockets">Intercepting WebSockets</h3>
+<p>WebSockets frequently communicate using raw binary frames to save
+bandwidth. A userscript can intercept the <code>onmessage</code> event,
+pass the binary <code>MessageEvent.data</code> to a
+<code>TextDecoder</code> to inspect or alter the payload, and use
+<code>TextEncoder</code> to forward the modified payload.</p>
+<h3 id="direct-file-payload-manipulation">Direct File Payload
+Manipulation</h3>
+<p>When a userscript automates file uploads or processes user-dragged
+files, it can read a <code>File</code> object as an
+<code>ArrayBuffer</code> using the <code>FileReader</code> API. Using
+<code>TextDecoder</code>, the script can inspect headers or text content
+within the binary file, alter specific sections, and reassemble the file
+using <code>TextEncoder</code> before submission.</p>
+<h3 id="fixing-character-encoding-bugs">Fixing Character Encoding
+Bugs</h3>
+<p>Some legacy web applications fail to specify the correct character
+encoding in HTTP headers, resulting in mangled text. Userscripts can
+fetch the raw byte array of a page or resource and explicitly decode it
+using the correct text encoding (such as <code>ISO-8859-1</code> or
+<code>EUC-JP</code>), correcting display errors dynamically.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

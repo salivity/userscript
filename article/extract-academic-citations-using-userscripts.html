@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Academic Citations Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts offer an efficient, automated method for extracting and compiling academic citations directly from research portals like Google Scholar, PubMed, IEEE Xplore, and JSTOR. By executing custom JavaScript within the browser via managers like Tampe">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/extract-academic-citations-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Extract Academic Citations Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/extract-academic-citations-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts offer an efficient, automated method for extracting and compiling academic citations directly from research portals like Google Scholar, PubMed, IEEE Xplore, and JSTOR. By executing custom JavaScript within the browser via managers like Tampe" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="extract-academic-citations-using-userscripts">Extract Academic
+Citations Using Userscripts</h1>
+<p>Userscripts offer an efficient, automated method for extracting and
+compiling academic citations directly from research portals like Google
+Scholar, PubMed, IEEE Xplore, and JSTOR. By executing custom JavaScript
+within the browser via managers like Tampermonkey or Violentmonkey,
+these scripts can parse web page metadata, extract bibliographic
+details, format them into standard citation styles (such as BibTeX, RIS,
+or APA), and export the compiled references. This capability drastically
+reduces manual data entry during literature reviews and research
+gathering.</p>
+<h2 id="how-userscripts-extract-citation-data">How Userscripts Extract
+Citation Data</h2>
+<p>Academic websites structure their content using HTML and embedded
+metadata tags to help indexing services understand their publications.
+Userscripts leverage this structure to collect bibliographic information
+in several ways:</p>
+<ol type="1">
+<li><strong>Meta Tag Scraping:</strong> Most academic repositories
+include standardized Highwire Press, Dublin Core, or Open Graph meta
+tags in their page HTML (e.g.,
+<code>&lt;meta name="citation_title" content="..."&gt;</code>). A
+userscript reads these tags directly to pull accurate titles, authors,
+publication dates, DOIs, and journal names.</li>
+<li><strong>DOM Parsing:</strong> If metadata tags are missing or
+incomplete, the script parses specific HTML elements (classes, IDs, or
+data attributes) on the page to extract text.</li>
+<li><strong>API and Data Fetching:</strong> Some portals expose hidden
+internal APIs or provide direct export endpoints (such as fetching a
+BibTeX string via a DOI query). Userscripts can send background HTTP
+requests to these endpoints to retrieve complete citation datasets
+automatically.</li>
+</ol>
+<h2 id="common-citation-formats-and-export-methods">Common Citation
+Formats and Export Methods</h2>
+<p>Once a userscript parses the citation metadata from a page, it
+formats the data for easy integration with reference managers like
+Zotero, Mendeley, or EndNote.</p>
+<ul>
+<li><strong>BibTeX (.bib):</strong> Popular among LaTeX users, storing
+entries in structured plain-text blocks.</li>
+<li><strong>RIS (.ris):</strong> Standardized format supported by almost
+all reference management software.</li>
+<li><strong>Formatted Text (APA, MLA, Chicago):</strong> Generates
+copy-paste ready text strings directly to the browser clipboard.</li>
+<li><strong>JSON / CSV:</strong> Useful for custom data analysis,
+systematic reviews, or database imports.</li>
+</ul>
+<p>Userscripts typically add a visible button or overlay interface onto
+the web page, allowing researchers to copy the formatted reference to
+their clipboard or download a compiled <code>.bib</code> or
+<code>.ris</code> file with a single click.</p>
+<h2 id="compiling-citations-across-multiple-pages">Compiling Citations
+Across Multiple Pages</h2>
+<p>Advanced citation userscripts extend beyond single-page extraction to
+aggregate references across search results or browser tabs:</p>
+<ul>
+<li><strong>Batch Search Extraction:</strong> On search result pages
+(such as Google Scholar or PubMed lists), a script can iterate through
+all visible results, pull the citation data for each article
+simultaneously, and combine them into a single downloadable master
+file.</li>
+<li><strong>Cross-Tab Session Storage:</strong> Scripts can use browser
+storage (<code>GM_setValue</code> / <code>localStorage</code>) to
+collect citations as a user browses through different papers across
+multiple tabs, compiling a master bibliography that can be exported at
+the end of a research session.</li>
+</ul>
+<h2 id="key-advantages-of-using-userscripts">Key Advantages of Using
+Userscripts</h2>
+<ul>
+<li><strong>Lightweight and Fast:</strong> Unlike heavy browser
+extensions, userscripts execute minimal code specific to target
+URLs.</li>
+<li><strong>Customizability:</strong> Researchers can easily tweak
+existing scripts to modify formatting, add support for niche
+repositories, or customize hotkeys.</li>
+<li><strong>Platform Independence:</strong> Userscripts work across
+almost all major web browsers (Chrome, Firefox, Edge, Safari) that
+support userscript manager extensions.</li>
+</ul>
+<h2 id="limitations-to-consider">Limitations to Consider</h2>
+<ul>
+<li><strong>Site Layout Changes:</strong> If a web portal updates its
+frontend structure or HTML class names, DOM-based scripts may fail until
+updated.</li>
+<li><strong>Rate-Limiting and Anti-Bot Protections:</strong> Fetching
+dozens of citation pages simultaneously via background requests can
+trigger IP blocks or CAPTCHA challenges on certain research
+databases.</li>
+<li><strong>Dynamic Content Loading:</strong> Pages built with modern
+JavaScript frameworks (like React or Angular) may require userscripts to
+use <code>MutationObserver</code> interfaces to detect when citation
+elements finish loading into the DOM.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

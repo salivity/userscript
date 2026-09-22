@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Work on Obfuscated Websites - userscript</title>
+    <meta name="description" content="Heavy JavaScript obfuscation transforms readable code into complex, randomized, and unreadable logic to prevent reverse engineering and tampering. While this makes direct code modification difficult, userscripts circumvent obfuscation by focusing on stan">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-work-on-obfuscated-websites">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Work on Obfuscated Websites - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-work-on-obfuscated-websites" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Heavy JavaScript obfuscation transforms readable code into complex, randomized, and unreadable logic to prevent reverse engineering and tampering. While this makes direct code modification difficult, userscripts circumvent obfuscation by focusing on stan" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-work-on-obfuscated-websites">How Userscripts
+Work on Obfuscated Websites</h1>
+<p>Heavy JavaScript obfuscation transforms readable code into complex,
+randomized, and unreadable logic to prevent reverse engineering and
+tampering. While this makes direct code modification difficult,
+userscripts circumvent obfuscation by focusing on standard browser APIs,
+runtime behavior, and DOM manipulation rather than analyzing the
+underlying source code. By leveraging techniques like API hooking,
+pattern matching, dynamic execution timing, and prototype overriding,
+userscripts can reliably modify heavily obfuscated web applications.</p>
+<h2 id="intercepting-runtime-apis-api-hooking">Intercepting Runtime APIs
+(API Hooking)</h2>
+<p>Instead of deciphering obfuscated functions, userscripts target
+standard web APIs that the obfuscated code must eventually interact
+with. Obfuscated scripts cannot easily hide their calls to built-in
+browser methods like <code>fetch()</code>, <code>XMLHttpRequest</code>,
+or <code>document.createElement()</code>.</p>
+<p>Userscripts intercept these interactions by replacing standard
+browser functions with custom wrappers (a technique known as monkey
+patching). For example, by overriding <code>window.fetch</code>, a
+userscript can inspect, modify, or block data sent to and from the
+server, completely ignoring how the site's obfuscated script generated
+that data internally.</p>
+<h2 id="exploiting-global-objects-and-prototypes">Exploiting Global
+Objects and Prototypes</h2>
+<p>Even when internal variables are randomized (e.g., changed to
+<code>a</code>, <code>b</code>, or <code>c_0x4f2</code>), obfuscated
+scripts still need to interact with global objects, global libraries, or
+the DOM. Userscripts scan the runtime <code>window</code> scope for
+unique object structures, distinct properties, or functional
+signatures.</p>
+<p>Additionally, userscripts can modify native JavaScript prototypes
+(such as <code>Array.prototype.push</code> or <code>JSON.parse</code>)
+to capture data when the obfuscated script processes it. Because
+prototype modification affects all JavaScript execution on the page, the
+user script can capture sensitive data structures at the exact moment
+the obfuscated script utilizes them.</p>
+<h2 id="precise-execution-timing">Precise Execution Timing</h2>
+<p>Obfuscated code often sets up anti-tampering mechanisms or locks down
+scope variables during initialization. Userscript managers (like
+Tampermonkey or Violentmonkey) allow scripts to run at specific
+execution phases using metadata headers:</p>
+<ul>
+<li><strong><code>@run-at document-start</code></strong>: Executes the
+userscript before any of the website's scripts load. This allows the
+userscript to hook APIs and setup traps before the obfuscated code runs
+or attempts to protect itself.</li>
+<li><strong><code>@run-at document-idle</code></strong>: Waits until the
+DOM and page scripts have finished loading, allowing the userscript to
+manipulate the finalized user interface directly, bypassing complex
+initialization routines.</li>
+</ul>
+<h2 id="structural-and-behavioral-pattern-matching">Structural and
+Behavioral Pattern Matching</h2>
+<p>Because obfuscated variable and function names change every time the
+target website builds or updates its code, hardcoded function names
+quickly break. Effective userscripts rely on behavioral signatures
+rather than specific names.</p>
+<p>A userscript might iterate through all global objects and identify a
+target module by checking for specific combinations of methods or
+constant values. Once identified, the script dynamically assigns a
+reference to that target module, rendering the script resilient against
+continuous code re-obfuscation.</p>
+<h2 id="dom-mutation-monitoring">DOM Mutation Monitoring</h2>
+<p>When JavaScript is too heavily obfuscated to intercept at the logic
+level, userscripts rely on observing the final output. Web applications
+must ultimately render HTML elements or apply inline styles to interact
+with the user.</p>
+<p>Using the <code>MutationObserver</code> API, a userscript monitors
+the DOM tree for specific structural changes, newly injected elements,
+or modified classes. The userscript can then dynamically alter, hide, or
+remove these elements in real time, neutralizing the site's obfuscated
+display logic.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

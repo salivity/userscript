@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Modify HTML5 History pushState? - userscript</title>
+    <meta name="description" content="Yes, userscripts can modify the default behavior of the HTML5 history.pushState method. By using a technique known as monkey patching, a userscript can intercept calls to pushState, modify the arguments passed to it, block the history update entirely, or">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-modify-html-5-history-push-state">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Modify HTML5 History pushState? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-modify-html-5-history-push-state" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can modify the default behavior of the HTML5 history.pushState method. By using a technique known as monkey patching, a userscript can intercept calls to pushState, modify the arguments passed to it, block the history update entirely, or" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-modify-html5-history-pushstate">Can Userscripts
+Modify HTML5 History pushState?</h1>
+<p>Yes, userscripts can modify the default behavior of the HTML5
+<code>history.pushState</code> method. By using a technique known as
+monkey patching, a userscript can intercept calls to
+<code>pushState</code>, modify the arguments passed to it, block the
+history update entirely, or trigger custom event listeners whenever a
+single-page application (SPA) changes the URL without reloading the
+page.</p>
+<h2 id="how-userscripts-intercept-pushstate">How Userscripts Intercept
+pushState</h2>
+<p>The browser's <code>history.pushState</code> method is a standard
+JavaScript function attached to the global <code>window.history</code>
+object. Because standard JavaScript allows functions on native objects
+to be overwritten, userscripts can substitute the original
+<code>pushState</code> with a custom function wrapper.</p>
+<p>To effectively override <code>pushState</code>, a userscript usually
+performs the following steps:</p>
+<ol type="1">
+<li><strong>Store the Original Method</strong>: Save a reference to
+<code>window.history.pushState</code> so the original functionality can
+still be invoked when needed.</li>
+<li><strong>Overwrite the Function</strong>: Assign a new function to
+<code>window.history.pushState</code>.</li>
+<li><strong>Add Custom Logic</strong>: Execute custom code inside the
+new function (such as logging parameters, altering the target URL, or
+dispatching a custom event).</li>
+<li><strong>Call the Original Method</strong>: Invoke the saved original
+method using <code>apply</code> or <code>call</code> to ensure standard
+browser history navigation still occurs (unless intentionally
+suppressed).</li>
+</ol>
+<h2 id="handling-context-and-execution-timing">Handling Context and
+Execution Timing</h2>
+<p>For a userscript to successfully intercept <code>pushState</code>,
+two crucial factors must be addressed: script context and execution
+timing.</p>
+<h3 id="accessing-the-page-context">Accessing the Page Context</h3>
+<p>Browser extension managers (such as Tampermonkey or Violentmonkey)
+execute userscripts inside an isolated sandbox by default. If a
+userscript modifies <code>window.history.pushState</code> inside this
+isolated context, web page scripts running in the main context will not
+see the modification.</p>
+<p>To target the page context:</p>
+<ul>
+<li><strong>Set <code>@grant none</code></strong>: This runs the
+userscript directly in the main page's execution context, granting
+direct access to <code>window.history.pushState</code>.</li>
+<li><strong>Use <code>unsafeWindow</code></strong>: If sandbox grants
+are required (such as <code>GM_xmlhttpRequest</code>), the script must
+target <code>unsafeWindow.history.pushState</code> to alter the method
+for the underlying web page.</li>
+</ul>
+<h3 id="setting-execution-timing-run-at">Setting Execution Timing
+(<code>@run-at</code>)</h3>
+<p>Single-page applications execute their routing scripts early during
+page load. If the userscript runs after the page scripts initialize, the
+application may store a direct reference to the original
+<code>pushState</code> method before it can be modified. Setting
+<code>@run-at document-start</code> in the userscript header ensures the
+script patches <code>pushState</code> before the website's scripts
+run.</p>
+<h2 id="common-implementation-pattern">Common Implementation
+Pattern</h2>
+<p>Below is a standard pattern used in userscripts to intercept and
+extend <code>pushState</code>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Intercept History pushState</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    https://example.com</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        *://*/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-start</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">&#39;use strict&#39;</span><span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> originalPushState <span class="op">=</span> history<span class="op">.</span><span class="at">pushState</span><span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    history<span class="op">.</span><span class="at">pushState</span> <span class="op">=</span> <span class="kw">function</span>(state<span class="op">,</span> title<span class="op">,</span> url) {</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Custom logic: inspect or modify arguments here</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;pushState intercepted:&#39;</span><span class="op">,</span> { state<span class="op">,</span> title<span class="op">,</span> url })<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Execute original behavior</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> result <span class="op">=</span> originalPushState<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> <span class="kw">arguments</span>)<span class="op">;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Custom logic: dispatch an event to notify other scripts of a URL change</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="bu">window</span><span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">Event</span>(<span class="st">&#39;locationchange&#39;</span>))<span class="op">;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> result<span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h2 id="primary-use-cases">Primary Use Cases</h2>
+<p>Modifying <code>pushState</code> with userscripts is useful for
+several tasks:</p>
+<ul>
+<li><strong>Detecting SPA Route Changes</strong>: Native HTML5 history
+methods do not trigger the <code>popstate</code> event when
+<code>pushState</code> is invoked programmatically. Intercepting
+<code>pushState</code> allows userscripts to create custom route change
+listeners.</li>
+<li><strong>Cleaning Tracking Parameters</strong>: Removing unwanted
+query parameters (such as <code>utm_*</code> tags or tracking IDs) from
+the URL before the browser updates the address bar.</li>
+<li><strong>Preventing History Hijacking</strong>: Selectively blocking
+unnecessary <code>pushState</code> calls that prevent the browser's back
+button from functioning properly.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

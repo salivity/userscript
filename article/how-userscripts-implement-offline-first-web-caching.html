@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Implement Offline-First Web Caching - userscript</title>
+    <meta name="description" content="Offline-first caching in userscripts allows browser extensions like Tampermonkey or Violentmonkey to store web-scraped data locally, enabling immediate data availability even without an active internet connection. By leveraging browser storage APIs and s">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-implement-offline-first-web-caching">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Implement Offline-First Web Caching - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-implement-offline-first-web-caching" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Offline-first caching in userscripts allows browser extensions like Tampermonkey or Violentmonkey to store web-scraped data locally, enabling immediate data availability even without an active internet connection. By leveraging browser storage APIs and s" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-implement-offline-first-web-caching">How
+Userscripts Implement Offline-First Web Caching</h1>
+<p>Offline-first caching in userscripts allows browser extensions like
+Tampermonkey or Violentmonkey to store web-scraped data locally,
+enabling immediate data availability even without an active internet
+connection. By leveraging browser storage APIs and script manager
+functions, userscripts check local caches before making external network
+requests, drastically improving load speeds, bypassing rate-limiting
+issues, and enabling seamless offline functionality.</p>
+<h2 id="core-storage-mechanisms">Core Storage Mechanisms</h2>
+<p>To store scraped web data locally, userscripts rely on three primary
+storage interfaces depending on data volume, security, and persistence
+requirements.</p>
+<h3 id="1-script-manager-storage-gm_setvalue--gmsetvalue">1. Script
+Manager Storage (<code>GM_setValue</code> /
+<code>GM.setValue</code>)</h3>
+<p>The standard approach for userscripts is using the script manager's
+dedicated API (<code>GM_setValue</code> for synchronous legacy scripts
+or <code>GM.setValue</code> for modern promise-based scripts).</p>
+<ul>
+<li><strong>Cross-Domain Persistence:</strong> Unlike standard Web
+Storage APIs, <code>GM_setValue</code> can share cached data across
+different websites if the script runs on multiple domains.</li>
+<li><strong>Isolation:</strong> Data is stored inside the extension's
+environment, preventing the host website from accessing, modifying, or
+clearing the cached scrapings.</li>
+</ul>
+<h3 id="2-browser-localstorage-api">2. Browser LocalStorage API</h3>
+<p>For basic key-value data where scraping occurs and stays on a single
+domain, the native <code>window.localStorage</code> API offers a simple
+solution.</p>
+<ul>
+<li><strong>Pros:</strong> Built directly into JavaScript, easy to
+implement with zero dependency on script manager permissions.</li>
+<li><strong>Cons:</strong> Limited storage cap (typically 5MB per
+origin) and accessible to the web page's native scripts.</li>
+</ul>
+<h3 id="3-indexeddb">3. IndexedDB</h3>
+<p>For high-volume scraping tasks—such as caching thousands of records,
+large JSON objects, or media blobs—userscripts utilize IndexedDB.</p>
+<ul>
+<li><strong>Pros:</strong> Capable of storing hundreds of megabytes of
+structured data asynchronously with indexed search capabilities.</li>
+<li><strong>Cons:</strong> Requires asynchronous database connections
+and more complex code to query compared to key-value stores.</li>
+</ul>
+<h2 id="the-offline-first-execution-workflow">The Offline-First
+Execution Workflow</h2>
+<p>An offline-first userscript uses a structured execution order to
+prioritize locally stored data over live web requests:</p>
+<ol type="1">
+<li><strong>Cache Read Request:</strong> When a target page loads, the
+script generates a cache key based on the page URL, item ID, or DOM
+selector.</li>
+<li><strong>Availability &amp; Validity Check:</strong> The script reads
+the cached entry and inspects metadata (such as an embedded timestamp)
+to verify if the data exists and is fresh.</li>
+<li><strong>Immediate Local Render:</strong> If valid cached data
+exists, the userscript immediately injects it into the DOM without
+touching the network.</li>
+<li><strong>Network Fallback:</strong> If the cache is empty, corrupted,
+or expired, the script performs a fetch request or scrapes the active
+DOM.</li>
+<li><strong>Cache Refresh:</strong> The newly scraped content is stored
+locally alongside a fresh timestamp for future offline requests.</li>
+</ol>
+<h2 id="cache-expiration-and-invalidation-strategies">Cache Expiration
+and Invalidation Strategies</h2>
+<p>To prevent serving obsolete information and to keep storage within
+browser limits, userscripts implement explicit cache maintenance
+routines:</p>
+<ul>
+<li><strong>Time-To-Live (TTL) Wrappers:</strong> Scraped data is saved
+inside a wrapper object containing the payload and the creation
+timestamp:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timestamp&quot;</span><span class="fu">:</span> <span class="dv">1710000000000</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;payload&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;Example&quot;</span><span class="fu">,</span> <span class="dt">&quot;price&quot;</span><span class="fu">:</span> <span class="st">&quot;$19.99&quot;</span> <span class="fu">}</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div></li>
+<li><strong>Stale-While-Revalidate:</strong> The script renders the old
+cached data instantly so the user sees content immediately, then
+silently scrapes fresh data in the background to update the cache for
+the next page load.</li>
+<li><strong>LRU (Least Recently Used) Eviction:</strong> When local
+storage fills up, the userscript deletes the oldest or least-accessed
+records to make space for new web scrapes.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

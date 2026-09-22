@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Impact Laptop and Mobile Battery Life - userscript</title>
+    <meta name="description" content="Userscripts can noticeably reduce the battery life of laptops and mobile devices by forcing browser engines to consume extra CPU, GPU, and memory resources. While lightweight scripts have a negligible impact, poorly optimized userscripts—especially tho">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-impact-laptop-and-mobile-battery-life">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Impact Laptop and Mobile Battery Life - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-impact-laptop-and-mobile-battery-life" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can noticeably reduce the battery life of laptops and mobile devices by forcing browser engines to consume extra CPU, GPU, and memory resources. While lightweight scripts have a negligible impact, poorly optimized userscripts—especially tho" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-impact-laptop-and-mobile-battery-life">How
+Userscripts Impact Laptop and Mobile Battery Life</h1>
+<p>Userscripts can noticeably reduce the battery life of laptops and
+mobile devices by forcing browser engines to consume extra CPU, GPU, and
+memory resources. While lightweight scripts have a negligible impact,
+poorly optimized userscripts—especially those that run continuous
+background tasks, manipulate the DOM frequently, or execute on every
+webpage—cause hardware to draw more power. This article explains the
+technical reasons behind userscript power drain, compares their impact
+on mobile versus desktop hardware, and provides practical ways to
+minimize battery consumption.</p>
+<h2 id="key-causes-of-battery-drain-from-userscripts">Key Causes of
+Battery Drain from Userscripts</h2>
+<p>Userscripts run custom JavaScript inside your web browser via
+extensions such as Tampermonkey, Violentmonkey, or Greasemonkey. Their
+power consumption depends entirely on how they are written and
+executed.</p>
+<h3 id="1-frequent-polling-and-timers">1. Frequent Polling and
+Timers</h3>
+<p>Scripts that rely on continuous loops, <code>setInterval()</code>, or
+frequent <code>setTimeout()</code> calls keep the device's CPU active.
+Instead of allowing the processor to enter low-power idle states, these
+scripts force the CPU to constantly execute instructions, resulting in
+steady battery depletion.</p>
+<h3 id="2-excessive-dom-manipulation">2. Excessive DOM Manipulation</h3>
+<p>Modifying a webpage's Document Object Model (DOM)—such as dynamically
+injecting content, altering text, or re-styling elements—forces the
+browser's rendering engine to recalculate layouts and repaint the
+screen. On high-refresh-rate displays, these reflows and repaints cause
+both the CPU and GPU to draw significant power.</p>
+<h3 id="3-overly-broad-matching-rules">3. Overly Broad Matching
+Rules</h3>
+<p>If a userscript is configured to run on all websites
+(<code>// @match *://*/*</code>), the script manager extension must
+inject and evaluate that script every time a page loads. Running dozens
+of scripts globally adds cumulative processing overhead to every tab,
+degrading battery performance across a browsing session.</p>
+<h3 id="4-background-network-requests">4. Background Network
+Requests</h3>
+<p>Scripts that frequently fetch data in the background using
+<code>GM_xmlhttpRequest</code> or <code>fetch()</code> calls keep the
+device's wireless radio active. Mobile cellular radios and Wi-Fi
+adapters consume a substantial amount of power when constantly
+transitioning out of sleep modes to transfer small packets of data.</p>
+<h2 id="impact-laptops-vs-mobile-devices">Impact: Laptops vs. Mobile
+Devices</h2>
+<p>Battery drain affects laptops and mobile devices differently due to
+hardware limits and operating system power management:</p>
+<ul>
+<li><strong>Mobile Devices:</strong> Mobile processors rely on
+aggressive power management to extend battery life. Userscripts running
+in mobile browsers (such as Firefox Mobile, Orion, or Kiwi) can bypass
+these optimizations by keeping the browser engine continuously active.
+Because mobile devices have smaller battery capacities, background
+script processing leads to fast discharge and thermal throttling.</li>
+<li><strong>Laptops:</strong> Laptops generally have larger batteries
+and higher power limits. While simple userscripts cause negligible
+drain, poorly written scripts can cause sustained high CPU usage,
+triggering internal fans and significantly reducing battery
+runtime.</li>
+</ul>
+<h2 id="how-to-reduce-userscript-battery-consumption">How to Reduce
+Userscript Battery Consumption</h2>
+<p>You can maintain good battery life without disabling your script
+manager by applying these practices:</p>
+<ul>
+<li><strong>Use Event-Driven Logic:</strong> Prefer
+<code>MutationObserver</code> over <code>setInterval()</code> to detect
+changes on a webpage. This allows the CPU to remain idle until an actual
+DOM change occurs.</li>
+<li><strong>Restrict Script Execution:</strong> Modify script headers so
+<code>@match</code> or <code>@include</code> rules target only the
+specific URLs where the script is needed, rather than running
+globally.</li>
+<li><strong>Set Efficient Injection Timing:</strong> Use
+<code>// @run-at document-idle</code> instead of
+<code>document-start</code> so the script runs only after the main page
+resources have finished loading and rendering.</li>
+<li><strong>Audit Active Scripts:</strong> Use your browser's internal
+Task Manager to identify tabs or extension processes consuming high CPU
+power, and disable unused or poorly performing scripts.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

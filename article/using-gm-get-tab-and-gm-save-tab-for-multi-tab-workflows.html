@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using GM_getTab and GM_saveTab for Multi-Tab Workflows - userscript</title>
+    <meta name="description" content="The GMgetTab and GMsaveTab APIs in userscript managers like Tampermonkey allow developers to persist state data local to an individual browser tab across page navigations. Unlike global storage methods, these APIs maintain isolated tab-level data stores,">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/using-gm-get-tab-and-gm-save-tab-for-multi-tab-workflows">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Using GM_getTab and GM_saveTab for Multi-Tab Workflows - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/using-gm-get-tab-and-gm-save-tab-for-multi-tab-workflows" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The GMgetTab and GMsaveTab APIs in userscript managers like Tampermonkey allow developers to persist state data local to an individual browser tab across page navigations. Unlike global storage methods, these APIs maintain isolated tab-level data stores," />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="using-gm_gettab-and-gm_savetab-for-multi-tab-workflows">Using
+GM_getTab and GM_saveTab for Multi-Tab Workflows</h1>
+<p>The <code>GM_getTab</code> and <code>GM_saveTab</code> APIs in
+userscript managers like Tampermonkey allow developers to persist state
+data local to an individual browser tab across page navigations. Unlike
+global storage methods, these APIs maintain isolated tab-level data
+stores, enabling complex multi-tab workflows such as batch automation,
+multi-step web scraping, and sequential task processing without
+cross-tab interference. This article explains how these APIs function,
+why they are essential for isolated tab state management, and how to
+implement them effectively.</p>
+<h2 id="understanding-gm_gettab-and-gm_savetab">Understanding GM_getTab
+and GM_saveTab</h2>
+<p>Standard storage APIs like <code>GM_setValue</code> share data
+globally across all open tabs running the same userscript. When
+executing parallel tasks across multiple tabs, global state management
+can easily cause race conditions and data corruption.</p>
+<p>The <code>GM_getTab</code> and <code>GM_saveTab</code> functions
+solve this issue by tying a dedicated JavaScript object directly to a
+specific browser tab's lifecycle:</p>
+<ul>
+<li><strong><code>GM_getTab(callback)</code></strong>: Asynchronously
+retrieves an object tied exclusively to the current tab.</li>
+<li><strong><code>GM_saveTab(tabObject)</code></strong>: Saves updates
+made to the tab object back into persistent tab memory.</li>
+</ul>
+<p>This state persists when the tab navigates to new domain URLs,
+refreshes, or handles redirects. The data automatically clears when the
+browser tab is closed.</p>
+<h2 id="core-mechanism-and-workflow-structure">Core Mechanism and
+Workflow Structure</h2>
+<p>A typical multi-tab workflow follows a structured
+retrieve-modify-save pattern across page loads:</p>
+<ol type="1">
+<li><strong>Initialization</strong>: Call <code>GM_getTab</code> when
+the script executes on a page load.</li>
+<li><strong>State Modification</strong>: Read and mutate properties on
+the returned object to track step counters, flags, or collected payload
+data.</li>
+<li><strong>Persist State</strong>: Call <code>GM_saveTab</code> with
+the updated object.</li>
+<li><strong>Navigation</strong>: Trigger navigation or interaction. The
+stored object remains accessible on the destination page.</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Metadata Header Requirements</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant GM_getTab</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant GM_saveTab</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_getTab</span>(<span class="kw">function</span>(tab) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Initialize tab state if empty</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    tab<span class="op">.</span><span class="at">step</span> <span class="op">=</span> tab<span class="op">.</span><span class="at">step</span> <span class="op">||</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    tab<span class="op">.</span><span class="at">scrapedData</span> <span class="op">=</span> tab<span class="op">.</span><span class="at">scrapedData</span> <span class="op">||</span> []<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (tab<span class="op">.</span><span class="at">step</span> <span class="op">===</span> <span class="dv">1</span>) {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        tab<span class="op">.</span><span class="at">scrapedData</span><span class="op">.</span><span class="fu">push</span>(<span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.item-title&#39;</span>)<span class="op">?.</span><span class="at">innerText</span>)<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        tab<span class="op">.</span><span class="at">step</span> <span class="op">=</span> <span class="dv">2</span><span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Save state before redirecting</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">GM_saveTab</span>(tab)<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">window</span><span class="op">.</span><span class="at">location</span><span class="op">.</span><span class="at">href</span> <span class="op">=</span> <span class="st">&quot;https://example.com/step-two&quot;</span><span class="op">;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> <span class="cf">if</span> (tab<span class="op">.</span><span class="at">step</span> <span class="op">===</span> <span class="dv">2</span>) {</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        tab<span class="op">.</span><span class="at">scrapedData</span><span class="op">.</span><span class="fu">push</span>(<span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;.item-details&#39;</span>)<span class="op">?.</span><span class="at">innerText</span>)<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        tab<span class="op">.</span><span class="at">step</span> <span class="op">=</span> <span class="dv">3</span><span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">GM_saveTab</span>(tab)<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Workflow Complete. Final Payload:&quot;</span><span class="op">,</span> tab<span class="op">.</span><span class="at">scrapedData</span>)<span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="primary-use-cases-in-complex-workflows">Primary Use Cases in
+Complex Workflows</h2>
+<h3 id="1-parallel-task-execution">1. Parallel Task Execution</h3>
+<p>When a master script launches multiple worker tabs to process
+different queue items simultaneously, each tab requires an independent
+state machine. Using <code>GM_saveTab</code> ensures that task retries,
+current step indexes, and item IDs in Tab A do not overwrite or corrupt
+the state of Tab B.</p>
+<h3 id="2-multi-page-data-extraction">2. Multi-Page Data Extraction</h3>
+<p>When scraping multi-step checkouts, paginated records, or multi-page
+forms, <code>GM_saveTab</code> acts as an in-memory buffer local to that
+single navigation path. This avoids cluttering global storage
+(<code>GM_setValue</code>) with temporary work-in-progress data that
+needs manual cleanup.</p>
+<h3 id="3-cross-tab-monitoring-via-gm_gettabs">3. Cross-Tab Monitoring
+via GM_getTabs</h3>
+<p>For advanced orchestration, <code>GM_getTab</code> pairs directly
+with <code>GM_getTabs</code>. While <code>GM_getTab</code> manages the
+current tab's private object, <code>GM_getTabs</code> allows a central
+dashboard tab to read the stored tab objects of <em>all</em> open
+browser tabs. This enables a master tab to track overall progress,
+aggregate partial results, or detect stalled worker tabs.</p>
+<h2 id="implementation-best-practices">Implementation Best
+Practices</h2>
+<ul>
+<li><strong>Declare Grants</strong>: Ensure both
+<code>// @grant GM_getTab</code> and <code>// @grant GM_saveTab</code>
+are defined in the user script header block.</li>
+<li><strong>Mutate Existing Objects</strong>: Update properties on the
+object returned inside the <code>GM_getTab</code> callback rather than
+reassigning the variable to a new object before calling
+<code>GM_saveTab</code>.</li>
+<li><strong>State Cleanup</strong>: Clear large data structures or reset
+flags in the tab object once a workflow completes to keep memory usage
+minimal during prolonged browser sessions.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

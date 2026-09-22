@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Detect Incognito Mode in Browsers - userscript</title>
+    <meta name="description" content="Userscripts can detect whether a user's browser is operating in private or incognito mode by probing client-side JavaScript APIs for specific feature restrictions, storage limitations, and distinct error behaviors. Because private browsing modes restrict">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-detect-incognito-mode-in-browsers">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Detect Incognito Mode in Browsers - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-detect-incognito-mode-in-browsers" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can detect whether a user's browser is operating in private or incognito mode by probing client-side JavaScript APIs for specific feature restrictions, storage limitations, and distinct error behaviors. Because private browsing modes restrict" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-detect-incognito-mode-in-browsers">How
+Userscripts Detect Incognito Mode in Browsers</h1>
+<p>Userscripts can detect whether a user's browser is operating in
+private or incognito mode by probing client-side JavaScript APIs for
+specific feature restrictions, storage limitations, and distinct error
+behaviors. Because private browsing modes restrict persistent data
+storage to protect privacy, userscripts leverage techniques such as
+testing storage quotas, attempting to write to IndexedDB, checking for
+disabled APIs like Service Workers, or inspecting execution contexts to
+accurately infer the browser's privacy state.</p>
+<h2 id="1-estimating-storage-quota">1. Estimating Storage Quota</h2>
+<p>Modern Chromium-based browsers (Chrome, Edge, Brave) handle disk
+space allocation differently in Incognito mode. Standard browsing
+allocates a dynamic percentage of the available physical disk space,
+whereas Incognito mode caps storage based on available system RAM.</p>
+<p>Userscripts measure the storage quota using the
+<code>StorageManager</code> API:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&#39;storage&#39;</span> <span class="kw">in</span> <span class="bu">navigator</span> <span class="op">&amp;&amp;</span> <span class="st">&#39;estimate&#39;</span> <span class="kw">in</span> <span class="bu">navigator</span><span class="op">.</span><span class="at">storage</span>) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">navigator</span><span class="op">.</span><span class="at">storage</span><span class="op">.</span><span class="fu">estimate</span>()<span class="op">.</span><span class="fu">then</span>(({ quota }) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// In Chromium, Incognito quotas are typically under 120MB - 2GB,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// whereas normal mode usually yields much larger quotas based on disk size.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (quota <span class="op">&lt;</span> <span class="dv">1200000000</span>) {</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Likely in Incognito Mode&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="2-testing-filesystem-api-availability">2. Testing FileSystem API
+Availability</h2>
+<p>Legacy Chromium implementation relied on the temporary
+<code>webkitRequestFileSystem</code> API. In standard browsing mode,
+requesting temporary file storage succeeds. In Incognito mode, calling
+this function throws an error or fails silently because persistent or
+temporary local file storage is disabled.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&#39;webkitRequestFileSystem&#39;</span> <span class="kw">in</span> <span class="bu">window</span>) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">window</span><span class="op">.</span><span class="fu">webkitRequestFileSystem</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">window</span><span class="op">.</span><span class="at">TEMPORARY</span><span class="op">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="dv">100</span><span class="op">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    () <span class="kw">=&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Normal Mode&#39;</span>)<span class="op">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    () <span class="kw">=&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Incognito Mode&#39;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="3-detecting-indexeddb-restrictions">3. Detecting IndexedDB
+Restrictions</h2>
+<p>Browsers enforce strict policies on IndexedDB when operating in
+private modes:</p>
+<ul>
+<li><strong>Firefox:</strong> Historically blocked IndexedDB inside
+private windows completely or restricted access when executed inside
+specific frames (<code>about:blank</code>).</li>
+<li><strong>Safari:</strong> Disables or restricts persistent database
+writes depending on the iOS/macOS version.</li>
+</ul>
+<p>A userscript can attempt to open a temporary IndexedDB database
+inside a <code>try...catch</code> block. If the browser rejects the open
+request or throws a <code>SecurityError</code> /
+<code>DOMException</code>, the script flags private mode.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> db <span class="op">=</span> indexedDB<span class="op">.</span><span class="fu">open</span>(<span class="st">&#39;test_incognito&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  db<span class="op">.</span><span class="at">onerror</span> <span class="op">=</span> () <span class="kw">=&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Incognito Mode&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  db<span class="op">.</span><span class="at">onsuccess</span> <span class="op">=</span> () <span class="kw">=&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Normal Mode&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">catch</span> (e) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Incognito Mode&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="4-checking-service-worker-availability">4. Checking Service
+Worker Availability</h2>
+<p>Service Workers require a persistent environment to handle background
+tasks and offline caching. Many browsers disable access to
+<code>navigator.serviceWorker</code> or prevent register calls when
+operating in private mode to prevent background data tracking.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>(<span class="st">&#39;serviceWorker&#39;</span> <span class="kw">in</span> <span class="bu">navigator</span>)) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Service Workers disabled (Possible Incognito Mode)&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="5-extension-environment-context">5. Extension Environment
+Context</h2>
+<p>If the userscript runs within a manager (like Tampermonkey or
+Violentmonkey) that exposes access to extension-level APIs, it can query
+the browser extension context directly via
+<code>chrome.extension.inIncognitoContext</code> or
+<code>browser.extension.inIncognitoContext</code>.</p>
+<p>When evaluated, this property returns <code>true</code> if the
+userscript is executing within an incognito frame or page context,
+providing a direct confirmation without requiring heuristics.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debugging Minified Userscripts with Source Maps - userscript</title>
+    <meta name="description" content="Source maps play a critical role in userscript development by bridging the gap between optimized, minified JavaScript and its original source code. Minification compresses code to improve execution performance and reduce script size, but it transforms re">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/debugging-minified-userscripts-with-source-maps">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Debugging Minified Userscripts with Source Maps - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/debugging-minified-userscripts-with-source-maps" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Source maps play a critical role in userscript development by bridging the gap between optimized, minified JavaScript and its original source code. Minification compresses code to improve execution performance and reduce script size, but it transforms re" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="debugging-minified-userscripts-with-source-maps">Debugging
+Minified Userscripts with Source Maps</h1>
+<p>Source maps play a critical role in userscript development by
+bridging the gap between optimized, minified JavaScript and its original
+source code. Minification compresses code to improve execution
+performance and reduce script size, but it transforms readable variable
+names and formatting into unmanageable single-line code. Source maps act
+as a lookup table that allows browser developer tools to map execution
+errors, breakpoints, and log statements directly back to the unminified
+source file, dramatically simplifying the debugging process.</p>
+<h2 id="the-problem-with-debugging-minified-userscripts">The Problem
+with Debugging Minified Userscripts</h2>
+<p>When a userscript author uses build tools like Rollup, Webpack, or
+esbuild, or transpilers like TypeScript, the output code sent to
+managers like Tampermonkey or Violentmonkey is heavily transformed.
+Whitespace is removed, variables are renamed to single letters, and
+multiple files are combined into one.</p>
+<p>Without source maps, debugging presents several challenges:</p>
+<ul>
+<li><strong>Unhelpful Error Stack Traces:</strong> Standard error logs
+point to line numbers and columns in the minified file (e.g.,
+<code>script.user.js:1:4502</code>), making it almost impossible to
+locate the exact function or file where the failure occurred.</li>
+<li><strong>Difficult Breakpoints:</strong> Pausing execution in browser
+DevTools requires navigating obfuscated variable names and complex,
+single-line logic.</li>
+<li><strong>Obfuscated Scope Variables:</strong> Inspecting local
+variables in the console yields transformed names (like <code>a</code>,
+<code>b</code>, or <code>t</code>) instead of meaningful
+identifiers.</li>
+</ul>
+<h2 id="how-source-maps-solve-the-debugging-challenge">How Source Maps
+Solve the Debugging Challenge</h2>
+<p>A source map (typically a <code>.map</code> file or a base64-encoded
+string) contains structured JSON data mapping every position in the
+minified code to its corresponding location in the original source
+code.</p>
+<p>When you open browser developer tools while a userscript is running,
+the browser reads the source mapping instructions and reconstructs your
+original workspace.</p>
+<h3 id="key-benefits-during-debugging">Key Benefits During
+Debugging</h3>
+<ol type="1">
+<li><strong>Original Source Reconstruction:</strong> DevTools displays
+the original, unminified source files in the sources panel. You can read
+code exactly as it was written, including comments, formatting, and
+module structures.</li>
+<li><strong>Accurate Error Mapping:</strong> When an unhandled exception
+occurs, the browser console resolves stack traces to show the exact line
+number and file in your original, raw code.</li>
+<li><strong>Interactive Breakpoints:</strong> Developers can set
+breakpoints directly inside the original source file. When execution
+pauses, variable names retain their original, human-readable identifiers
+in the scope panel.</li>
+<li><strong>Support for Modern Languages:</strong> If a userscript is
+written in TypeScript, JSX, or modern ESNext JavaScript, source maps
+allow debugging in that original syntax rather than the compiled
+fallback code.</li>
+</ol>
+<h2 id="using-source-maps-in-userscript-environments">Using Source Maps
+in Userscript Environments</h2>
+<p>Because userscripts run inside extensions with isolated execution
+contexts, external source map files hosted on remote servers can
+sometimes fail to load due to Content Security Policy (CSP) restrictions
+or CORS issues.</p>
+<p>To overcome this, source maps for userscripts are most effectively
+embedded directly into the script using <strong>inline source
+maps</strong>.</p>
+<p>Build tools can be configured to encode the source map as a data URI
+at the bottom of the script:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlcyI6...</span></span></code></pre></div>
+<p>By embedding the map inline, userscript managers pass the complete
+source layout directly to browser developer tools without requesting
+external resources. This ensures seamless, immediate access to
+human-readable debugging capabilities whenever you inspect page elements
+or open the browser console.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

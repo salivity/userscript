@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extract Tabular Data to CSV Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts automate the extraction of web-based tabular data by injecting custom JavaScript into a browser page to target specific elements, parse row and cell contents, format the plain text into a Comma-Separated Values (CSV) structure, and automatica">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/extract-tabular-data-to-csv-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Extract Tabular Data to CSV Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/extract-tabular-data-to-csv-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts automate the extraction of web-based tabular data by injecting custom JavaScript into a browser page to target specific elements, parse row and cell contents, format the plain text into a Comma-Separated Values (CSV) structure, and automatica" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="extract-tabular-data-to-csv-using-userscripts">Extract Tabular
+Data to CSV Using Userscripts</h1>
+<p>Userscripts automate the extraction of web-based tabular data by
+injecting custom JavaScript into a browser page to target specific
+elements, parse row and cell contents, format the plain text into a
+Comma-Separated Values (CSV) structure, and automatically trigger a file
+download compatible with Microsoft Excel.</p>
+<h2 id="1-locating-and-accessing-tabular-data">1. Locating and Accessing
+Tabular Data</h2>
+<p>Userscripts use Document Object Model (DOM) queries to target tables
+on a webpage.</p>
+<ul>
+<li>Standard HTML tables are selected using methods like
+<code>document.querySelectorAll('table')</code> or specific class/ID
+selectors.</li>
+<li>Dynamic or non-standard tables (such as
+<code>&lt;div&gt;</code>-based grids) are targeted by selecting
+repeating parent and child structural elements.</li>
+</ul>
+<h2 id="2-extracting-and-cleaning-cell-values">2. Extracting and
+Cleaning Cell Values</h2>
+<p>Once targeted, the script iterates through each row
+(<code>&lt;tr&gt;</code>) and individual cell (<code>&lt;td&gt;</code>
+or <code>&lt;th&gt;</code>).</p>
+<ul>
+<li><strong>Text Extraction:</strong> The script reads the raw text
+content using properties like <code>innerText</code> or
+<code>textContent</code>.</li>
+<li><strong>Data Sanitization:</strong> Line breaks, extra spaces, and
+HTML tags are stripped out to clean up the data.</li>
+<li><strong>CSV Escaping:</strong> If a cell contains a comma, double
+quote, or newline character, the script wraps the text in double quotes
+(<code>"..."</code>) and doubles any existing quote marks
+(<code>""</code>) to prevent breaking the CSV structure.</li>
+</ul>
+<h2 id="3-formatting-data-as-csv">3. Formatting Data as CSV</h2>
+<p>The script builds a structured text string line by line:</p>
+<ul>
+<li>Cell contents within the same row are joined using commas (or
+semicolons for standard European regional settings).</li>
+<li>Rows are joined using newline characters (<code>\n</code> or
+<code>\r\n</code>).</li>
+<li>A Byte Order Mark (BOM) code (<code>\uFEFF</code>) is often added to
+the beginning of the string to force Excel to correctly interpret UTF-8
+encoded characters.</li>
+</ul>
+<h2 id="4-triggering-the-file-download">4. Triggering the File
+Download</h2>
+<p>To send the CSV file directly to the user's computer without server
+interaction, the script uses browser APIs:</p>
+<ol type="1">
+<li><strong>Blob Creation:</strong> Converts the formatted CSV string
+into a binary <code>Blob</code> object with the MIME type
+<code>text/csv;charset=utf-8;</code>.</li>
+<li><strong>URL Generation:</strong> Uses
+<code>URL.createObjectURL(blob)</code> to create a temporary download
+link in the browser memory.</li>
+<li><strong>Automated Click:</strong> Programmatically creates a hidden
+<code>&lt;a&gt;</code> element, sets the <code>href</code> attribute to
+the blob URL, assigns a <code>.csv</code> file name to the
+<code>download</code> attribute, attaches it to the DOM, clicks it, and
+immediately removes it.</li>
+</ol>
+<p>Excel automatically detects the downloaded <code>.csv</code> file and
+arranges the comma-delimited data directly into columns and rows upon
+opening.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

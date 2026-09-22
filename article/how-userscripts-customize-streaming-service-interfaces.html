@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Customize Streaming Service Interfaces - userscript</title>
+    <meta name="description" content="Userscripts are lightweight code snippets that modify the appearance and functionality of websites by directly altering their underlying HTML, CSS, and JavaScript within a user's browser. When applied to popular video platforms like Netflix and Twitch, t">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-customize-streaming-service-interfaces">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Customize Streaming Service Interfaces - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-customize-streaming-service-interfaces" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts are lightweight code snippets that modify the appearance and functionality of websites by directly altering their underlying HTML, CSS, and JavaScript within a user's browser. When applied to popular video platforms like Netflix and Twitch, t" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-customize-streaming-service-interfaces">How
+Userscripts Customize Streaming Service Interfaces</h1>
+<p>Userscripts are lightweight code snippets that modify the appearance
+and functionality of websites by directly altering their underlying
+HTML, CSS, and JavaScript within a user's browser. When applied to
+popular video platforms like Netflix and Twitch, these scripts allow
+viewers to bypass interface limitations, remove intrusive bloat,
+automate repetitive actions, and create personalized layouts tailored to
+their specific watching preferences.</p>
+<h2 id="how-userscripts-work-on-web-browsers">How Userscripts Work on
+Web Browsers</h2>
+<p>Userscripts run locally in your web browser through extension
+managers like Tampermonkey, Violentmonkey, or Greasemonkey. When you
+load a streaming site like Netflix or Twitch, the extension injects the
+script into the page after the site's code loads.</p>
+<p>This process alters the user interface (UI) through three main
+mechanisms:</p>
+<ul>
+<li><strong>CSS Injection:</strong> Overrides existing site styles to
+hide visual elements, change colors, adjust fonts, or resize video
+player windows.</li>
+<li><strong>DOM Manipulation:</strong> Alters or removes structural
+elements on the page, such as deleting recommended video carousels or
+rearranging sidebar layouts.</li>
+<li><strong>JavaScript Interception:</strong> Adds new features, creates
+custom keyboard shortcuts, or automates user interactions with the
+site's media players and buttons.</li>
+</ul>
+<h2 id="ways-userscripts-customize-netflix">Ways Userscripts Customize
+Netflix</h2>
+<p>While Netflix offers a standardized interface, userscripts give
+viewers fine-grained control over how content is displayed and
+navigated.</p>
+<h3 id="removing-distractions-and-auto-previews">Removing Distractions
+and Auto-Previews</h3>
+<p>One common visual complaint on Netflix is the auto-playing video and
+audio previews while browsing the catalog. Userscripts can target the
+preview containers in the Document Object Model (DOM) and disable their
+auto-play scripts or completely hide the preview elements from view.</p>
+<h3 id="automating-video-playback-controls">Automating Video Playback
+Controls</h3>
+<p>Userscripts can automatically click the "Skip Intro" and "Next
+Episode" buttons as soon as they appear in the DOM. They can also hide
+the "Are you still watching?" prompt, allowing for uninterrupted
+binge-watching.</p>
+<h3 id="unlocking-playback-and-rating-options">Unlocking Playback and
+Rating Options</h3>
+<p>Standard Netflix controls limit custom playback speeds and display
+vague match percentages. Userscripts can inject fine-tuned speed
+controls (e.g., 1.1x or 1.3x) into the native video player bar and pull
+external ratings from IMDb or Rotten Tomatoes directly onto the title
+cards.</p>
+<h2 id="ways-userscripts-customize-twitch">Ways Userscripts Customize
+Twitch</h2>
+<p>Twitch features a complex UI with live streams, dynamic chat boxes,
+channel points, and sidebar recommendations. Userscripts help streamline
+this interface to improve performance and focus on the content.</p>
+<h3 id="automating-channel-point-claims-and-rewards">Automating Channel
+Point Claims and Rewards</h3>
+<p>Twitch rewards active viewers with channel points, requiring users to
+manually click a green button in the chat panel every few minutes.
+Userscripts monitor the DOM for the appearance of this claim button and
+trigger a click event automatically in the background.</p>
+<h3 id="cleaning-up-chat-and-stream-buffers">Cleaning Up Chat and Stream
+Buffers</h3>
+<p>On high-traffic channels, chat moves rapidly and consumes substantial
+system resources. Userscripts can filter out spam, hide specific emotes,
+suppress system notifications, or completely detach the chat component
+from the page layout to save CPU and RAM usage.</p>
+<h3 id="enhancing-video-player-modes">Enhancing Video Player Modes</h3>
+<p>Scripts can force Twitch’s video player into a "True Theater Mode,"
+hiding top navigation bars, sidebars, and system menus to maximize the
+stream area across the browser window without requiring full-screen
+mode.</p>
+<h2 id="how-to-install-and-run-userscripts">How to Install and Run
+Userscripts</h2>
+<ol type="1">
+<li><strong>Install a Script Manager:</strong> Add a browser extension
+such as Tampermonkey or Violentmonkey from your browser's official web
+store.</li>
+<li><strong>Find a Script:</strong> Browse trusted open-source
+repositories like Greasy Fork or OpenUserJS for Netflix or Twitch UI
+customization scripts.</li>
+<li><strong>Install the Script:</strong> Click the installation link;
+the extension manager will display the source code and ask for
+permission to install.</li>
+<li><strong>Manage and Run:</strong> The script will execute
+automatically whenever you visit the target site. You can toggle
+specific scripts on or off directly through the extension's toolbar
+menu.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

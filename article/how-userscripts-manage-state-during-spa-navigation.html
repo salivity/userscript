@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Manage State During SPA Navigation - userscript</title>
+    <meta name="description" content="Single Page Applications (SPAs) navigate between pages by dynamically updating the DOM via client-side routing rather than triggering full browser reloads. Because the page never unloads, userscripts remain active in memory throughout the browsing sessio">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-manage-state-during-spa-navigation">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Manage State During SPA Navigation - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-manage-state-during-spa-navigation" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Single Page Applications (SPAs) navigate between pages by dynamically updating the DOM via client-side routing rather than triggering full browser reloads. Because the page never unloads, userscripts remain active in memory throughout the browsing sessio" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-manage-state-during-spa-navigation">How
+Userscripts Manage State During SPA Navigation</h1>
+<p>Single Page Applications (SPAs) navigate between pages by dynamically
+updating the DOM via client-side routing rather than triggering full
+browser reloads. Because the page never unloads, userscripts remain
+active in memory throughout the browsing session. To manage state
+effectively during SPA transitions, userscripts must detect client-side
+route changes, maintain in-memory or persistent data models, and clean
+up or re-initialize DOM modifications when the active view shifts.</p>
+<h2 id="why-spa-navigation-retains-userscript-state">Why SPA Navigation
+Retains Userscript State</h2>
+<p>In traditional Multi-Page Applications (MPAs), every link click
+unloads the document, wiping the JavaScript execution environment and
+resetting all userscript variables. In an SPA, client-side routers (such
+as React Router, Vue Router, or Next.js) intercept click events and
+update the URL using the HTML5 History API (<code>pushState</code> and
+<code>replaceState</code>) without reloading the document.</p>
+<p>Because the underlying <code>window</code> context persists:</p>
+<ul>
+<li>Global variables, closures, and data structures inside the
+userscript remain intact across route changes.</li>
+<li>Event listeners attached to persistent elements remain active.</li>
+<li>Injected styles and persistent DOM nodes stay rendered unless
+manually removed.</li>
+</ul>
+<h2 id="detecting-client-side-route-changes">Detecting Client-Side Route
+Changes</h2>
+<p>Standard userscript entry triggers like
+<code>@run-at document-end</code> or native
+<code>DOMContentLoaded</code> events only fire on the initial page load.
+To react to subsequent SPA route changes, userscripts must implement
+dynamic URL and DOM tracking mechanisms.</p>
+<h3 id="1-intercepting-the-history-api">1. Intercepting the History
+API</h3>
+<p>Standard browsers do not fire a native event when
+<code>history.pushState()</code> or <code>history.replaceState()</code>
+is called programmatically by a router. Userscripts bypass this
+limitation by monkey-patching these methods to dispatch custom
+events:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> fireRouteChange <span class="op">=</span> () <span class="kw">=&gt;</span> <span class="bu">window</span><span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">Event</span>(<span class="st">&#39;locationchange&#39;</span>))<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalPushState <span class="op">=</span> history<span class="op">.</span><span class="at">pushState</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>history<span class="op">.</span><span class="at">pushState</span> <span class="op">=</span> <span class="kw">function</span> (<span class="op">...</span>args) {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  originalPushState<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> args)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fireRouteChange</span>()<span class="op">;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> originalReplaceState <span class="op">=</span> history<span class="op">.</span><span class="at">replaceState</span><span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>history<span class="op">.</span><span class="at">replaceState</span> <span class="op">=</span> <span class="kw">function</span> (<span class="op">...</span>args) {</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  originalReplaceState<span class="op">.</span><span class="fu">apply</span>(<span class="kw">this</span><span class="op">,</span> args)<span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fireRouteChange</span>()<span class="op">;</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;popstate&#39;</span><span class="op">,</span> fireRouteChange)<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;locationchange&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Route changed to:&#39;</span><span class="op">,</span> location<span class="op">.</span><span class="at">href</span>)<span class="op">;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="co">// Re-run state management and UI injection logic</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="2-using-mutationobserver-for-target-containers">2. Using
+MutationObserver for Target Containers</h3>
+<p>If a framework bypasses standard history calls or uses heavy dynamic
+rendering, userscripts observe changes in the primary application
+container (e.g., <code>#app</code> or <code>&lt;main&gt;</code>) or
+watch for changes to the <code>&lt;title&gt;</code> tag:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">lastPath</span> <span class="op">!==</span> location<span class="op">.</span><span class="at">pathname</span>) {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">lastPath</span> <span class="op">=</span> location<span class="op">.</span><span class="at">pathname</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">onUrlChange</span>()<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;head title&#39;</span>)<span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span></code></pre></div>
+<h2 id="strategies-for-managing-state">Strategies for Managing
+State</h2>
+<p>Userscript developers use a combination of short-term in-memory state
+and long-term persistent storage to keep data accurate as the user
+navigates an SPA.</p>
+<h3 id="in-memory-state-caching">In-Memory State Caching</h3>
+<p>Because the global scope persists, userscripts can store application
+state in simple JavaScript objects or maps. This is ideal for caching
+API responses, tracking UI states, or holding component reference counts
+while navigating between tabs within the same session.</p>
+<h3 id="persistent-storage-apis">Persistent Storage APIs</h3>
+<p>For state that must survive hard refreshes, tab closures, or
+cross-origin transitions, userscripts leverage userscript manager
+storage functions rather than standard <code>localStorage</code>:</p>
+<ul>
+<li><strong><code>GM_setValue(key, value)</code> /
+<code>GM_getValue(key)</code></strong>: Stores data asynchronously (or
+synchronously depending on the manager) in an isolated storage space
+unattached to the site’s client-side storage, preventing site scripts
+from altering or detecting userscript data.</li>
+<li><strong><code>IndexedDB</code></strong>: Used for storing large
+amounts of structured state or local databases that must persist across
+sessions.</li>
+</ul>
+<h2 id="resetting-and-re-synchronizing-ui-state">Resetting and
+Re-synchronizing UI State</h2>
+<p>When navigating an SPA, injecting duplicate elements or attaching
+duplicate listeners to dynamic routes is a common issue. Effective state
+management requires a clear tear-down and setup lifecycle:</p>
+<ol type="1">
+<li><strong>Cleanup Phase:</strong> Upon detecting a route change, the
+script removes obsolete DOM elements, detaches dangling event listeners,
+and cancels active <code>fetch</code> requests or timers.</li>
+<li><strong>State Re-evaluation:</strong> The script reads the new URL
+parameters or path, pulls relevant data from the local state cache or
+persistent storage, and determines if modification is required for the
+new view.</li>
+<li><strong>DOM Re-injection:</strong> The script waits for the SPA
+framework to mount the new route's target elements (often via
+<code>window.requestAnimationFrame</code> or
+<code>MutationObserver</code>) before rendering updated UI elements
+using the recalculated state.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

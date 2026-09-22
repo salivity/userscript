@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Detect Tab Switching and Minimizing? - userscript</title>
+    <meta name="description" content="Yes, userscripts can easily detect when a user switches tabs or minimizes their browser window by leveraging standard JavaScript Web APIs. Because userscripts run within the context of the webpage, they have full access to browser events like the Page Vi">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-detect-tab-switching-and-minimizing">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Detect Tab Switching and Minimizing? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-detect-tab-switching-and-minimizing" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can easily detect when a user switches tabs or minimizes their browser window by leveraging standard JavaScript Web APIs. Because userscripts run within the context of the webpage, they have full access to browser events like the Page Vi" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-detect-tab-switching-and-minimizing">Can
+Userscripts Detect Tab Switching and Minimizing?</h1>
+<p>Yes, userscripts can easily detect when a user switches tabs or
+minimizes their browser window by leveraging standard JavaScript Web
+APIs. Because userscripts run within the context of the webpage, they
+have full access to browser events like the Page Visibility API and
+window focus listeners. This allows a script to execute specific code,
+pause activities, or log events the moment a page becomes hidden or
+inactive.</p>
+<h2 id="how-userscripts-detect-tab-and-window-changes">How Userscripts
+Detect Tab and Window Changes</h2>
+<p>There are two primary methods that userscripts use to monitor whether
+a tab or window is active: the Page Visibility API and Window Focus/Blur
+events.</p>
+<h3 id="1-the-page-visibility-api">1. The Page Visibility API</h3>
+<p>The Page Visibility API is the most reliable method for detecting
+when a tab is hidden or minimized. It fires an event whenever the
+document's visibility state changes.</p>
+<ul>
+<li><strong><code>visibilitychange</code> Event:</strong> Listens for
+changes in the tab's visibility.</li>
+<li><strong><code>document.hidden</code>:</strong> A boolean property
+that returns <code>true</code> if the page is hidden (e.g., user
+switched tabs or minimized the window) and <code>false</code> if it is
+visible.</li>
+<li><strong><code>document.visibilityState</code>:</strong> Returns
+strings such as <code>"visible"</code> or <code>"hidden"</code>.</li>
+</ul>
+<p><strong>Example Implementation:</strong></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;visibilitychange&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="bu">document</span><span class="op">.</span><span class="at">hidden</span>) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;User switched tabs or minimized the browser.&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;User returned to the tab.&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="2-window-blur-and-focus-events">2. Window Blur and Focus
+Events</h3>
+<p>An alternative or complementary approach involves listening to the
+<code>blur</code> and <code>focus</code> events on the
+<code>window</code> object.</p>
+<ul>
+<li><strong><code>blur</code>:</strong> Fires when the browser window or
+current tab loses focus (e.g., the user clicks outside the browser,
+opens Developer Tools, switches tabs, or minimizes the window).</li>
+<li><strong><code>focus</code>:</strong> Fires when the user brings the
+window or tab back into focus.</li>
+</ul>
+<p><strong>Example Implementation:</strong></p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;blur&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Tab or window lost focus.&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;focus&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;Tab or window gained focus.&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="scope-and-limitations">Scope and Limitations</h2>
+<p>While userscripts can detect when you leave or return to a page, they
+operate under strict browser security boundaries:</p>
+<ul>
+<li><strong>No Cross-Tab Tracking:</strong> A userscript on Site A can
+detect that you left Site A, but it <strong>cannot</strong> see what
+other tabs you have open, which tab you switched to, or what you are
+doing in another application.</li>
+<li><strong>Background Execution:</strong> Depending on browser
+throttling, JavaScript timers (like <code>setInterval</code>) inside the
+userscript may run slower or pause completely while the tab is hidden to
+save CPU and battery resources.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

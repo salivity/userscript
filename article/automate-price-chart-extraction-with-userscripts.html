@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automate Price Chart Extraction with Userscripts - userscript</title>
+    <meta name="description" content="Userscripts offer a powerful, lightweight solution for automatically extracting historical price charts and underlying financial data directly from web portals. By running custom JavaScript inside browser extensions like Tampermonkey or Violentmonkey, th">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/automate-price-chart-extraction-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Automate Price Chart Extraction with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/automate-price-chart-extraction-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts offer a powerful, lightweight solution for automatically extracting historical price charts and underlying financial data directly from web portals. By running custom JavaScript inside browser extensions like Tampermonkey or Violentmonkey, th" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="automate-price-chart-extraction-with-userscripts">Automate Price
+Chart Extraction with Userscripts</h1>
+<p>Userscripts offer a powerful, lightweight solution for automatically
+extracting historical price charts and underlying financial data
+directly from web portals. By running custom JavaScript inside browser
+extensions like Tampermonkey or Violentmonkey, these scripts can bypass
+tedious manual data entry by capturing raw visual or network data. This
+article explains how userscripts execute this automation through DOM
+manipulation, network request interception, data parsing, and automated
+file downloads.</p>
+<h2 id="1-browser-level-script-injection">1. Browser-Level Script
+Injection</h2>
+<p>Userscripts operate by injecting custom JavaScript into specified web
+domains when a page loads. Unlike standard browser developer tools that
+require manual execution, a userscript extension automatically triggers
+the code based on <code>@match</code> URL rules. Once injected, the
+script runs within the context of the active webpage, granting it full
+access to the page's Document Object Model (DOM), local storage, and
+global JavaScript window objects.</p>
+<h2 id="2-network-request-interception-api-capture">2. Network Request
+Interception (API Capture)</h2>
+<p>Modern financial portals rarely render historical price charts purely
+in static HTML. Instead, the page loads a framework, which then issues
+asynchronous <code>fetch</code> or <code>XMLHttpRequest</code> (XHR)
+calls to back-end APIs to retrieve JSON or CSV time-series data (Open,
+High, Low, Close, Volume).</p>
+<p>Userscripts automate extraction most efficiently by intercepting
+these network calls before the data is even rendered:</p>
+<ul>
+<li><strong>Monkey-Patching:</strong> The script overrides the native
+<code>window.fetch</code> or <code>XMLHttpRequest.prototype.open</code>
+methods on page load.</li>
+<li><strong>Payload Capture:</strong> When the financial portal requests
+chart data, the intercepted function reads the raw response payload in
+the background.</li>
+<li><strong>Data Extraction:</strong> The script extracts the exact
+time-series arrays without relying on visible web elements, ensuring
+100% data accuracy.</li>
+</ul>
+<h2 id="3-dom-scraping-and-canvas-data-extraction">3. DOM Scraping and
+Canvas Data Extraction</h2>
+<p>If network interception is blocked or obfuscated, userscripts fall
+back on direct DOM scraping or visual element parsing:</p>
+<ul>
+<li><strong>SVG and HTML Tables:</strong> For charts rendered as
+Scalable Vector Graphics (SVG) or rendered tables, the script queries
+DOM elements (e.g.,
+<code>document.querySelectorAll('g.chart-node')</code>) to extract
+coordinate values and date markers, mapping them back to price
+scales.</li>
+<li><strong>Canvas Element State:</strong> HTML5
+<code>&lt;canvas&gt;</code> charts do not expose structural HTML child
+nodes. In these cases, userscripts simulate mouse move events across the
+canvas element to trigger interactive tooltips, reading price and date
+values directly from the dynamic tooltip DOM nodes as they pop up.</li>
+</ul>
+<h2 id="4-data-processing-and-automated-export">4. Data Processing and
+Automated Export</h2>
+<p>Once the historical data points are captured—either via intercepted
+API payloads or DOM scraping—the userscript converts the raw arrays into
+structured formats like CSV or JSON.</p>
+<p>To complete the automation loop, the script creates an in-memory data
+URL using <code>URL.createObjectURL(new Blob([data]))</code> and
+dynamically attaches a hidden HTML <code>&lt;a&gt;</code> element to the
+page. It then programmatically triggers a <code>.click()</code> event on
+the link, forcing the browser to instantly download the historical chart
+data directly to the user's local device without any manual
+intervention.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

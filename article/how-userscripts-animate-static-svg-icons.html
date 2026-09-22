@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Animate Static SVG Icons - userscript</title>
+    <meta name="description" content="Userscripts dynamically animate static SVG icons on web pages by using JavaScript to select vector elements in the Document Object Model (DOM) and continuously update their attributes, CSS properties, or path definitions over time. By executing custom co">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-animate-static-svg-icons">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Animate Static SVG Icons - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-animate-static-svg-icons" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts dynamically animate static SVG icons on web pages by using JavaScript to select vector elements in the Document Object Model (DOM) and continuously update their attributes, CSS properties, or path definitions over time. By executing custom co" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-animate-static-svg-icons">How Userscripts
+Animate Static SVG Icons</h1>
+<p>Userscripts dynamically animate static SVG icons on web pages by
+using JavaScript to select vector elements in the Document Object Model
+(DOM) and continuously update their attributes, CSS properties, or path
+definitions over time. By executing custom code directly within the
+browser context, these scripts transform rigid vector graphics into
+fluid animations through techniques like path morphing, stroke dash
+offset manipulation, and frame-by-frame coordinate recalculations driven
+by timing loops or user interactions.</p>
+<h2 id="locating-and-accessing-svg-elements">Locating and Accessing SVG
+Elements</h2>
+<p>Userscripts begin by identifying static SVG icons within the page
+hierarchy using standard DOM selection methods such as
+<code>document.querySelector()</code> or
+<code>querySelectorAll()</code>. Once the script locates the target
+<code>&lt;svg&gt;</code> container or individual
+<code>&lt;path&gt;</code> tags, it gains direct access to manipulate the
+internal attributes and styling of those vector elements.</p>
+<h2 id="modifying-path-geometry-via-the-d-attribute">Modifying Path
+Geometry via the <code>d</code> Attribute</h2>
+<p>The underlying shape of an SVG path is defined by its <code>d</code>
+attribute, which contains path commands (<code>M</code> for move to,
+<code>L</code> for line to, <code>C</code> for cubic Bézier curves,
+etc.) and numerical coordinates. Userscripts alter the icon's geometry
+by dynamically altering these coordinates:</p>
+<ol type="1">
+<li><strong>Path Parsing:</strong> The script reads the initial string
+of path commands.</li>
+<li><strong>Coordinate Interpolation:</strong> Using mathematical
+algorithms or interpolation utilities, the script calculates new
+coordinate values for each step of the animation sequence.</li>
+<li><strong>Attribute Updating:</strong> The modified path string is
+reassigned to the path's <code>d</code> attribute, causing the browser
+engine to render the updated shape on the next frame.</li>
+</ol>
+<p>This approach enables complex shape morphing, such as smoothly
+transforming a static menu icon (hamburger) into a close icon (X).</p>
+<h2 id="animating-lines-with-stroke-dash-properties">Animating Lines
+with Stroke Dash Properties</h2>
+<p>To create path-drawing or outline-tracing effects, userscripts
+manipulate the stroke presentation attributes of SVG path elements:</p>
+<ul>
+<li><strong><code>getTotalLength()</code></strong>: The script calls
+this native SVG method to calculate the total path distance in
+pixels.</li>
+<li><strong><code>strokeDasharray</code></strong>: The script sets this
+property to match the path's total length, splitting the stroke into
+visible and invisible segments of equal size.</li>
+<li><strong><code>strokeDashoffset</code></strong>: The script
+continually shifts this offset value. Decreasing the offset from the
+total path length down to zero moves the stroke into view, creating the
+visual appearance of the line drawing itself across the screen.</li>
+</ul>
+<h2 id="frame-synchronization-with-requestanimationframe">Frame
+Synchronization with <code>requestAnimationFrame</code></h2>
+<p>To maintain efficient performance and avoid visual stutter,
+userscripts sync path mutations with the browser’s refresh rate using
+<code>window.requestAnimationFrame()</code>. Rather than using fixed
+timers like <code>setInterval()</code>, the animation function executes
+right before the browser performs the next repaint. This ensures low CPU
+overhead and fluid movement when updating path coordinates or CSS
+matrices.</p>
+<h2 id="injecting-custom-css-transitions-and-keyframes">Injecting Custom
+CSS Transitions and Keyframes</h2>
+<p>When direct attribute manipulation is unnecessary, userscripts can
+animate static vectors by injecting dynamic <code>&lt;style&gt;</code>
+blocks into the page's <code>&lt;head&gt;</code>. The script appends
+standard CSS <code>@keyframes</code> rules targeting specific SVG path
+IDs or classes, applying hardware-accelerated transforms such as:</p>
+<ul>
+<li><code>transform: rotate()</code> for spinning indicators.</li>
+<li><code>transform: scale()</code> for pulsing button icons.</li>
+<li><code>fill</code> and <code>stroke</code> color transitions for
+real-time status changes.</li>
+</ul>
+<h2 id="triggering-animations-on-page-events">Triggering Animations on
+Page Events</h2>
+<p>Userscripts can bind DOM event listeners directly to static SVG
+elements or their parent containers. Events like
+<code>mouseenter</code>, <code>click</code>, or custom network requests
+trigger the execution of path animation loops. This allows static
+elements supplied by the host website to respond interactively to modern
+user inputs without altering the core server-side source code.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

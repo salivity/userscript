@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Twitter and Reddit Feeds Using Userscripts - userscript</title>
+    <meta name="description" content="Userscripts offer a powerful, lightweight way to customize your Twitter (X) and Reddit feeds by filtering out unwanted content or highlighting essential keywords in real time. By utilizing browser extensions like Tampermonkey or Violentmonkey, userscript">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/filter-twitter-and-reddit-feeds-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Filter Twitter and Reddit Feeds Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/filter-twitter-and-reddit-feeds-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts offer a powerful, lightweight way to customize your Twitter (X) and Reddit feeds by filtering out unwanted content or highlighting essential keywords in real time. By utilizing browser extensions like Tampermonkey or Violentmonkey, userscript" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="filter-twitter-and-reddit-feeds-using-userscripts">Filter
+Twitter and Reddit Feeds Using Userscripts</h1>
+<p>Userscripts offer a powerful, lightweight way to customize your
+Twitter (X) and Reddit feeds by filtering out unwanted content or
+highlighting essential keywords in real time. By utilizing browser
+extensions like Tampermonkey or Violentmonkey, userscripts run custom
+JavaScript directly in your browser to inspect post text, hide elements
+containing muted words, or alter the styling of posts that mention
+specific topics. This article explains how userscripts work for feed
+moderation, why they are effective for dynamic sites like Reddit and
+Twitter, and how you can start using or writing them.</p>
+<h2 id="how-userscripts-interact-with-social-feeds">How Userscripts
+Interact with Social Feeds</h2>
+<p>Social media platforms rely heavily on dynamic content loading, often
+called infinite scrolling. As you scroll through Twitter or Reddit, new
+posts are constantly added to the Document Object Model (DOM) of the
+webpage.</p>
+<p>Userscripts handle this dynamic behavior using a Web API called
+<code>MutationObserver</code>. Instead of running just once when the
+page loads, a script continuously listens for changes in the DOM. When
+new posts appear, the script scans their text content for your target
+keywords and applies your desired actions instantly.</p>
+<h2 id="filtering-unwanted-keywords">Filtering Unwanted Keywords</h2>
+<p>Filtering allows you to hide posts containing specific words,
+phrases, or hashtags that built-in platform settings might miss.</p>
+<ul>
+<li><strong>Hiding Elements:</strong> When a keyword match is found
+within a post container (such as an <code>&lt;article&gt;</code> tag on
+Twitter or a post <code>div</code> on Reddit), the userscript sets the
+CSS <code>display</code> property of that element to
+<code>none</code>.</li>
+<li><strong>Bypassing Native Limits:</strong> Built-in mute lists often
+have character limits, keyword caps, or limited filtering parameters.
+Userscripts allow for advanced regular expressions (Regex), enabling
+partial matches, case-insensitive searches, and complex logical
+combinations (e.g., hide a post only if it contains Keyword A
+<em>and</em> Keyword B).</li>
+</ul>
+<h2 id="highlighting-important-keywords">Highlighting Important
+Keywords</h2>
+<p>Highlighting helps draw your attention to specific subjects,
+usernames, or trends while browsing dense feeds.</p>
+<ul>
+<li><strong>Visual Modifications:</strong> Instead of hiding matching
+posts, the script modifies the CSS styling. It can change the background
+color of the post, add a colored border, or wrap the target keyword in a
+styled HTML element to make it stand out visually.</li>
+<li><strong>Categorized Styling:</strong> You can assign different
+colors to different keyword groups—for instance, highlighting breaking
+news keywords in yellow, specific user mentions in blue, and monitored
+topics in green.</li>
+</ul>
+<h2 id="setting-up-a-keyword-userscript">Setting Up a Keyword
+Userscript</h2>
+<p>To start filtering or highlighting keywords on Twitter or Reddit,
+follow these core steps:</p>
+<ol type="1">
+<li><strong>Install a Script Manager:</strong> Install a browser
+extension such as Tampermonkey, Violentmonkey, or Greasemonkey.</li>
+<li><strong>Locate or Write a Script:</strong> Search script
+repositories like Greasy Fork or OpenUserJS for pre-made Twitter/Reddit
+keyword filters, or create a custom JavaScript file targeted at
+<code>x.com</code> or <code>reddit.com</code>.</li>
+<li><strong>Configure Target Selectors:</strong> Ensure the script
+targets the correct CSS selectors used by the platform to identify
+individual post wrappers.</li>
+<li><strong>Define Keywords:</strong> Input your array of words,
+phrases, or Regex patterns directly into the script's configuration
+section.</li>
+<li><strong>Save and Run:</strong> Save the script and refresh the
+target page. The script will automatically process existing posts and
+monitor the feed for new incoming content.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

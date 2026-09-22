@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do Userscripts Handle Cross-Origin Requests? - userscript</title>
+    <meta name="description" content="Userscripts bypass the web browser's standard Same-Origin Policy (SOP) by leveraging special APIs provided by userscript managers like Tampermonkey, Violentmonkey, or Greasemonkey. While normal client-side JavaScript running in a web page is restricted f">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-userscripts-handle-cross-origin-requests">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do Userscripts Handle Cross-Origin Requests? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-userscripts-handle-cross-origin-requests" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts bypass the web browser's standard Same-Origin Policy (SOP) by leveraging special APIs provided by userscript managers like Tampermonkey, Violentmonkey, or Greasemonkey. While normal client-side JavaScript running in a web page is restricted f" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-userscripts-handle-cross-origin-requests">How Do
+Userscripts Handle Cross-Origin Requests?</h1>
+<p>Userscripts bypass the web browser's standard Same-Origin Policy
+(SOP) by leveraging special APIs provided by userscript managers like
+Tampermonkey, Violentmonkey, or Greasemonkey. While normal client-side
+JavaScript running in a web page is restricted from making
+XMLHttpRequests or fetch requests to different domains, userscripts
+execute with elevated permissions. By using dedicated API functions—most
+notably <code>GM_xmlhttpRequest</code> or
+<code>GM.xmlHttpRequest</code>—userscripts delegate cross-origin network
+calls to the browser extension background context, bypassing traditional
+CORS restrictions while managing security risks through specific header
+declarations.</p>
+<h2 id="the-same-origin-policy-barrier">The Same-Origin Policy
+Barrier</h2>
+<p>In standard web development, the Same-Origin Policy is a critical
+security mechanism that restricts how a document or script loaded from
+one origin can interact with a resource from another origin. An origin
+is defined by the scheme (protocol), host (domain), and port.</p>
+<p>When a standard web page script attempts to fetch data from another
+domain, the browser checks for Cross-Origin Resource Sharing (CORS)
+headers. If the destination server does not explicitly allow the
+requesting origin via the <code>Access-Control-Allow-Origin</code>
+header, the browser blocks the response.</p>
+<pre><code>Standard Web Page:
+[ Script on Domain A ] ---&gt; (Standard fetch/XHR) ---&gt; [ Domain B ] (Blocked by SOP/CORS)
+</code></pre>
+<h2 id="how-userscript-managers-bypass-cors">How Userscript Managers
+Bypass CORS</h2>
+<p>Userscript managers operate as browser extensions, giving them access
+to extension-level capabilities that regular web pages do not possess.
+Extension background scripts are not bound by the Same-Origin Policy in
+the same way content scripts or page scripts are.</p>
+<pre><code>Userscript Architecture:
+[ Userscript (Domain A) ] 
+       |
+       v  (Calls GM_xmlhttpRequest)
+[ Userscript Manager Extension ] 
+       |
+       v  (Executes Privileged Network Request)
+[ Server (Domain B) ]
+</code></pre>
+<p>When a userscript invokes a manager-provided network function, the
+following process occurs:</p>
+<ul>
+<li><strong>API Interception:</strong> The userscript calls a
+specialized manager function instead of the native
+<code>window.fetch</code> or <code>XMLHttpRequest</code>.</li>
+<li><strong>Context Escalation:</strong> The request details are passed
+from the page context to the extension's background script context via
+inter-process communication.</li>
+<li><strong>Execution:</strong> The extension's background script
+executes the HTTP request directly. Because it runs in an extension
+context, the browser permits cross-origin communication without
+enforcing standard CORS checks against the active web page's
+origin.</li>
+<li><strong>Data Return:</strong> The response data is passed back down
+to the userscript executing on the page.</li>
+</ul>
+<h2 id="the-gm_xmlhttprequest-api">The GM_xmlhttpRequest API</h2>
+<p>The primary mechanism for cross-origin requests in userscripts is
+<code>GM_xmlhttpRequest</code> (or its modern Promise-based equivalent,
+<code>GM.xmlHttpRequest</code>). This function shares a similar
+interface with the standard <code>XMLHttpRequest</code> object but
+includes extended parameters.</p>
+<h3 id="request-syntax-example">Request Syntax Example</h3>
+<p>To use cross-origin capabilities, userscripts must explicitly grant
+themselves permission using the <code>@grant</code> directive in the
+metadata block:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Cross-Origin Data Fetcher</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://example.com/</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_xmlhttpRequest</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">// me ==/UserScript==</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_xmlhttpRequest</span>({</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&quot;GET&quot;</span><span class="op">,</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="dt">url</span><span class="op">:</span> <span class="st">&quot;https://api.thirdparty.com/data&quot;</span><span class="op">,</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> {</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Accept&quot;</span><span class="op">:</span> <span class="st">&quot;application/json&quot;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="dt">onload</span><span class="op">:</span> <span class="kw">function</span>(response) {</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Status:&quot;</span><span class="op">,</span> response<span class="op">.</span><span class="at">status</span>)<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Data:&quot;</span><span class="op">,</span> response<span class="op">.</span><span class="at">responseText</span>)<span class="op">;</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="dt">onerror</span><span class="op">:</span> <span class="kw">function</span>(error) {</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Request failed:&quot;</span><span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="modern-asyncawait-usage">Modern Async/Await Usage</h3>
+<p>Modern userscript managers support <code>GM.xmlHttpRequest</code>
+(using dot notation), which returns a Promise and can be used seamlessly
+with <code>async</code> and <code>await</code>:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Async Fetcher</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM.xmlHttpRequest</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">function</span> <span class="fu">fetchData</span>() {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span> {</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> response <span class="op">=</span> <span class="cf">await</span> GM<span class="op">.</span><span class="fu">xmlHttpRequest</span>({</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>            <span class="dt">method</span><span class="op">:</span> <span class="st">&quot;GET&quot;</span><span class="op">,</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>            <span class="dt">url</span><span class="op">:</span> <span class="st">&quot;https://api.thirdparty.com/data&quot;</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        })<span class="op">;</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> data <span class="op">=</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(response<span class="op">.</span><span class="at">responseText</span>)<span class="op">;</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(data)<span class="op">;</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">catch</span> (error) {</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Error fetching data:&quot;</span><span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="security-considerations-and-the-connect-directive">Security
+Considerations and the <code>@connect</code> Directive</h2>
+<p>Allowing arbitrary cross-origin requests poses significant security
+risks, such as silent data exfiltration or unauthorized actions on
+third-party sites where the user is authenticated. To mitigate these
+risks, modern managers enforce domain restriction policies.</p>
+<h3 id="domain-whitelisting-with-connect">Domain Whitelisting with
+<code>@connect</code></h3>
+<p>Managers like Tampermonkey and Violentmonkey require scripts to
+declare intended cross-origin targets using the <code>@connect</code>
+directive in the metadata header.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Secure Request Script</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_xmlhttpRequest</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @connect      api.thirdparty.com</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @connect      cdn.anotherdomain.org</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<h3 id="permission-enforcement-rules">Permission Enforcement Rules</h3>
+<ul>
+<li><strong>Declared Domains:</strong> If a domain is explicitly listed
+in <code>@connect</code>, the manager allows the request without
+prompting the user.</li>
+<li><strong>Subdomains and Wildcards:</strong> Developers can use
+wildcards (e.g., <code>@connect *.example.com</code>) or specify
+<code>*</code> to request access to all domains.</li>
+<li><strong>User Prompts:</strong> If a userscript attempts to make a
+cross-origin request to a domain not listed in <code>@connect</code> (or
+if <code>@connect *</code> is used), the userscript manager displays a
+dynamic prompt to the user, asking whether to allow or block the request
+to that specific origin.</li>
+</ul>
+<h2 id="comparison-native-fetch-vs-gm_xmlhttprequest">Comparison: Native
+Fetch vs. GM_xmlhttpRequest</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Native <code>fetch</code> / <code>XHR</code></th>
+<th><code>GM_xmlhttpRequest</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Same-Origin Policy</strong></td>
+<td>Strictly enforced by browser</td>
+<td>Bypassed via extension privileges</td>
+</tr>
+<tr>
+<td><strong>CORS Header Requirement</strong></td>
+<td>Required on target server</td>
+<td>Not required</td>
+</tr>
+<tr>
+<td><strong>Cookie Handling</strong></td>
+<td>Subject to <code>credentials</code> mode and SameSite rules</td>
+<td>Can send cookies associated with target domain</td>
+</tr>
+<tr>
+<td><strong>User Permission</strong></td>
+<td>None (constrained by browser sandbox)</td>
+<td>Controlled via <code>@grant</code> and <code>@connect</code></td>
+</tr>
+<tr>
+<td><strong>Custom Headers</strong></td>
+<td>Restricted (e.g., forbidden headers like
+<code>User-Agent</code>)</td>
+<td>Less restricted (can override restricted headers)</td>
+</tr>
+</tbody>
+</table></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

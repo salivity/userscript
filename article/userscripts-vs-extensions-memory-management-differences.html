@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscripts vs Extensions: Memory Management Differences - userscript</title>
+    <meta name="description" content="While both userscripts and native browser extensions allow developers to modify web page behavior and extend browser functionality, they manage memory in fundamentally different ways. Native browser extensions operate with dedicated background service wo">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscripts-vs-extensions-memory-management-differences">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscripts vs Extensions: Memory Management Differences - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscripts-vs-extensions-memory-management-differences" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="While both userscripts and native browser extensions allow developers to modify web page behavior and extend browser functionality, they manage memory in fundamentally different ways. Native browser extensions operate with dedicated background service wo" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="userscripts-vs-extensions-memory-management-differences">Userscripts
+vs Extensions: Memory Management Differences</h1>
+<p>While both userscripts and native browser extensions allow developers
+to modify web page behavior and extend browser functionality, they
+manage memory in fundamentally different ways. Native browser extensions
+operate with dedicated background service workers, isolated execution
+environments, and direct access to low-level browser APIs, allowing the
+engine to aggressively reclaim memory when tasks complete. In contrast,
+userscripts rely on host extension managers (such as Tampermonkey or
+Violentmonkey) to execute, binding their lifecycle and memory footprint
+directly to the host web page's DOM, tab lifecycle, and script manager
+overhead.</p>
+<h2 id="execution-contexts-and-process-isolation">Execution Contexts and
+Process Isolation</h2>
+<p>Native browser extensions run across distinct architectural
+boundaries. In modern extension platforms (like Manifest V3), background
+tasks execute within ephemeral Service Workers that live in independent
+browser processes. Content scripts injected into web pages run within
+"Isolated Worlds"—sharing the DOM with the host page, but maintaining a
+separate JavaScript heap. This prevents memory leaks in the script from
+contaminating the host page’s JS context.</p>
+<p>Userscripts do not have native, independent process structures.
+Instead, they are loaded and executed by a userscript manager extension.
+The manager handles the insertion of the user code into the page context
+or an isolated world. Because the userscript manager sits between the
+browser and the custom code, memory allocated by a userscript adds to
+both the web tab's memory footprint and the wrapper manager's internal
+tracking context.</p>
+<h2 id="script-lifecycles-and-automatic-memory-reclamation">Script
+Lifecycles and Automatic Memory Reclamation</h2>
+<p>Memory persistence differs significantly between the two formats due
+to their underlying lifecycles:</p>
+<ul>
+<li><strong>Native Extensions (Manifest V3):</strong> Background service
+workers are event-driven and temporary. The browser automatically
+terminates a service worker after short periods of inactivity (typically
+around 30 seconds), completely purging its memory heap from RAM.</li>
+<li><strong>Userscripts:</strong> A userscript's lifecycle is bound
+strictly to the tab in which it executes. As long as the user keeps the
+target web page open, any global variables, event listeners, or DOM
+references retained by the userscript remain active in memory.
+Reclaiming this memory generally requires navigating away from or
+closing the tab.</li>
+</ul>
+<h2 id="storage-and-bridge-overhead">Storage and Bridge Overhead</h2>
+<p>When saving data or interacting with privileged browser features,
+memory management patterns diverge:</p>
+<ol type="1">
+<li><strong>Extension APIs:</strong> Native extensions use native
+methods like <code>chrome.storage.local</code> or
+<code>browser.storage.session</code>. Data is passed directly to the
+browser's native C++ storage subsystem, leaving minimal
+garbage-collection overhead within the JavaScript thread.</li>
+<li><em><em>Userscripts (GM_</em> APIs):</em>* Userscripts rely on
+bridge functions such as <code>GM_setValue</code> or
+<code>GM_xmlhttpRequest</code>. Calling these APIs requires serializing
+data across a messaging bridge from the page context to the userscript
+manager's background process. This double-handling creates temporary
+objects in both contexts, increasing garbage collection (GC) pressure on
+memory-intensive tasks.</li>
+</ol>
+<h2 id="garbage-collection-and-memory-leak-risks">Garbage Collection and
+Memory Leak Risks</h2>
+<p>Because userscripts interact heavily with host page DOM nodes, they
+carry a higher risk of accidental memory leaks. If a userscript attaches
+event listeners to host DOM elements or stores references to host page
+objects in closure variables, the browser's garbage collector cannot
+free those elements, even if the host page's own scripts remove them
+from the DOM tree.</p>
+<p>Native extensions face similar challenges inside their content
+scripts, but their modular architecture encourages offloading heavy
+processing, data manipulation, and state storage to background scripts,
+keeping content script memory footprints minimal.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

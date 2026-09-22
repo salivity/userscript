@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Work on iOS Browsers - userscript</title>
+    <meta name="description" content="This article explains how userscripts run on iOS devices despite Apple’s strict operating system and browser engine restrictions. It details the mechanisms behind userscript managers, how Safari Web Extensions enable JavaScript injection, the state of">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-work-on-i-os-browsers">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Work on iOS Browsers - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-work-on-i-os-browsers" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="This article explains how userscripts run on iOS devices despite Apple’s strict operating system and browser engine restrictions. It details the mechanisms behind userscript managers, how Safari Web Extensions enable JavaScript injection, the state of" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-work-on-ios-browsers">How Userscripts Work on
+iOS Browsers</h1>
+<p>This article explains how userscripts run on iOS devices despite
+Apple’s strict operating system and browser engine restrictions. It
+details the mechanisms behind userscript managers, how Safari Web
+Extensions enable JavaScript injection, the state of third-party browser
+support on iOS, and the inherent limitations users face compared to
+desktop environments.</p>
+<h3 id="the-ios-sandbox-and-browser-engine-restrictions">The iOS Sandbox
+and Browser Engine Restrictions</h3>
+<p>To understand how userscripts function on iOS, one must first
+understand Apple's platform limitations. Historically, Apple has
+required all iOS web browsers to use its proprietary WebKit rendering
+engine. Even popular browsers like Google Chrome, Mozilla Firefox, and
+Microsoft Edge on iOS have essentially been customized wrappers around
+iOS WebKit, rather than using their own desktop engines (like Blink or
+Gecko).</p>
+<p>Because of this restriction, traditional desktop browser extensions
+cannot be installed directly. Furthermore, Apple's strict app sandboxing
+prevents apps from modifying the data or behavior of other apps, meaning
+a standalone userscript manager app cannot inject code directly into a
+separate browser app.</p>
+<h3 id="the-safari-web-extensions-solution">The Safari Web Extensions
+Solution</h3>
+<p>In iOS 15, Apple introduced support for Safari Web Extensions. This
+API allowed developers to build extensions for Safari using standard web
+technologies (HTML, CSS, and JavaScript) similar to those used in
+desktop browsers.</p>
+<p>Userscript managers on iOS (such as the popular open-source extension
+"Userscripts" or "Tampermonkey") leverage this Web Extension API to
+function. They operate through a two-step process:</p>
+<ol type="1">
+<li><strong>The Native Host App:</strong> The userscript manager is
+downloaded from the App Store as a native iOS app. This app acts as a
+local database where users can import, write, save, and manage their
+<code>.user.js</code> files.</li>
+<li><strong>The Safari Extension:</strong> Inside Safari, the associated
+web extension communicates with the host app to retrieve the saved
+userscripts. When a user visits a webpage, the extension checks if any
+stored userscripts match the current URL. If a match is found, the
+extension injects the custom JavaScript directly into the webpage's
+Document Object Model (DOM) during or after the page load.</li>
+</ol>
+<h3 id="userscripts-on-third-party-ios-browsers">Userscripts on
+Third-Party iOS Browsers</h3>
+<p>Because third-party browsers on iOS are restricted by Apple's
+sandboxing rules, they cannot utilize Safari’s extension ecosystem.
+Consequently, running userscripts on browsers like iOS Chrome or Firefox
+is generally not supported natively.</p>
+<p>However, some alternative browsers have built-in workarounds:</p>
+<ul>
+<li><strong>Orion Browser:</strong> Orion is a WebKit-based iOS browser
+designed with native support for desktop WebExtensions. It allows users
+to install standard Chrome or Firefox userscript managers (like
+Violentmonkey or Tampermonkey) directly from their respective web
+stores. The browser itself handles the API translation layer required to
+run these extensions on iOS.</li>
+<li><strong>Bookmarklets:</strong> On browsers that do not support
+extensions, users can manually execute JavaScript via bookmarklets. A
+bookmarklet is a browser bookmark that contains a
+<code>javascript:</code> URI instead of a traditional URL. When clicked,
+it executes the specified script on the currently active webpage. While
+functional, this method lacks the automation of userscripts, requiring
+manual activation on every page load.</li>
+</ul>
+<h3 id="key-limitations-of-ios-userscripts">Key Limitations of iOS
+Userscripts</h3>
+<p>While userscript managers successfully bypass Apple's restrictions,
+they operate with significant limitations compared to their desktop
+counterparts:</p>
+<ul>
+<li><strong>API Restrictions:</strong> Desktop userscript managers
+utilize powerful APIs (such as <code>GM_xmlhttpRequest</code> for
+cross-origin requests or <code>GM_setValue</code> for persistent
+storage). On iOS, security sandboxing often restricts these APIs,
+limiting what the injected scripts can access.</li>
+<li><strong>Strict Permission Prompts:</strong> iOS security requires
+users to explicitly grant extensions permission to access and modify
+data on specific websites. Users must manually allow the userscript
+manager to run on "All Websites" or configure permissions on a
+site-by-site basis.</li>
+<li><strong>Performance and Resource Constraints:</strong> iOS
+aggressively manages system resources. Heavy scripts or complex
+injections can cause mobile Safari to reload tabs or freeze, as the
+system allocates far less memory to browser extension processes than a
+desktop operating system would.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

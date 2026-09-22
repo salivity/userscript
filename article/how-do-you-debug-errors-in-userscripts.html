@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do You Debug Errors in Userscripts? - userscript</title>
+    <meta name="description" content="Debugging errors in userscripts involves leveraging browser developer tools, utilizing strategic logging, setting breakpoints, and understanding the specific execution contexts of userscript managers like Tampermonkey or Violentmonkey. Because userscript">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-you-debug-errors-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do You Debug Errors in Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-you-debug-errors-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Debugging errors in userscripts involves leveraging browser developer tools, utilizing strategic logging, setting breakpoints, and understanding the specific execution contexts of userscript managers like Tampermonkey or Violentmonkey. Because userscript" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-you-debug-errors-in-userscripts">How Do You Debug Errors
+in Userscripts?</h1>
+<p>Debugging errors in userscripts involves leveraging browser developer
+tools, utilizing strategic logging, setting breakpoints, and
+understanding the specific execution contexts of userscript managers
+like Tampermonkey or Violentmonkey. Because userscripts run directly
+inside the browser on top of existing websites, identifying issues
+requires isolating your code from the host page's scripts, handling
+asynchronous execution, and catching errors specific to
+<code>GM_*</code> API functions.</p>
+<h2 id="1-inspecting-the-browser-console">1. Inspecting the Browser
+Console</h2>
+<p>The browser console is the first line of defense when troubleshooting
+a broken userscript. Uncaught syntax errors, network failures, or
+runtime exceptions will automatically log here with a line number and
+stack trace.</p>
+<ul>
+<li><strong>Filter by Context:</strong> Modern browser developer tools
+allow you to filter logs by execution context. Look for the dropdown
+menu in the console (often labeled "top") and switch it to your
+userscript manager's context (e.g., <code>Tampermonkey</code> or
+<code>Violentmonkey</code>) to see isolated output.</li>
+<li><strong>Use Strategic <code>console.log()</code> Output:</strong>
+Insert informative logs at key execution steps to verify variable state
+and control flow:</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;[MyUserScript] Fetching data for ID:&#39;</span><span class="op">,</span> itemId)<span class="op">;</span></span></code></pre></div>
+<ul>
+<li><strong>Utilize Specialized Console Methods:</strong></li>
+<li><code>console.error()</code> and <code>console.warn()</code>
+highlight severe issues and warnings in red and yellow.</li>
+<li><code>console.table()</code> formats arrays of objects into neat,
+scannable tables.</li>
+<li><code>console.trace()</code> outputs a full call stack to help trace
+where a function was invoked.</li>
+</ul>
+<h2 id="2-using-breakpoints-and-the-debugger-statement">2. Using
+Breakpoints and the <code>debugger</code> Statement</h2>
+<p>Relying solely on <code>console.log()</code> can slow down your
+workflow. Using interactive breakpoints lets you pause script execution
+mid-flight to inspect variables, evaluate expressions, and step through
+code line by line.</p>
+<blockquote>
+<p><strong>Pro Tip:</strong> Insert the <code>debugger;</code> statement
+directly into your userscript source code. When the browser developer
+tools are open and your script hits this statement, execution will
+automatically pause.</p>
+</blockquote>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">processElement</span>(element) {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">debugger</span><span class="op">;</span> <span class="co">// Execution pauses here when DevTools is open</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> text <span class="op">=</span> element<span class="op">.</span><span class="at">innerText</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text<span class="op">.</span><span class="fu">trim</span>()<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="navigating-devtools-sources">Navigating DevTools Sources</h3>
+<ol type="1">
+<li>Open Developer Tools (<code>F12</code> or <code>Ctrl+Shift+I</code>
+/ <code>Cmd+Option+I</code>).</li>
+<li>Navigate to the <strong>Sources</strong> (or
+<strong>Debugger</strong>) tab.</li>
+<li>Locate your script under the extension domain (e.g.,
+<code>chrome-extension://...</code>) or search for your script's
+filename using <code>Ctrl+P</code> / <code>Cmd+P</code>.</li>
+<li>Click on any line number in the source code to set a manual
+breakpoint.</li>
+</ol>
+<h2 id="3-handling-scope-and-gm_-api-issues">3. Handling Scope and
+<code>GM_*</code> API Issues</h2>
+<p>Userscripts often execute in a sandbox (a private scope separate from
+the page's global <code>window</code> object). This separation can lead
+to common pitfalls.</p>
+<h3 id="common-userscript-errors-and-solutions">Common Userscript Errors
+and Solutions</h3>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Potential Cause</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>GM_xmlhttpRequest is not defined</code></strong></td>
+<td>Missing <code>@grant</code> directive in header metadata.</td>
+<td>Add <code>// @grant GM_xmlhttpRequest</code> to your userscript
+header block.</td>
+</tr>
+<tr>
+<td>**Target DOM elements are <code>null**</code></td>
+<td>The script ran before the page loaded the elements.</td>
+<td>Use <code>// @run-at document-idle</code> or implement a
+<code>MutationObserver</code> / <code>waitForKeyElements</code>
+helper.</td>
+</tr>
+<tr>
+<td><strong><code>window.myVariable</code> is undefined</strong></td>
+<td>Sandboxing prevents direct access to the page's global
+<code>window</code>.</td>
+<td>Use <code>unsafeWindow.myVariable</code> (requires
+<code>// @grant unsafeWindow</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-debugging-asynchronous-operations-and-dynamic-content">4.
+Debugging Asynchronous Operations and Dynamic Content</h2>
+<p>Modern web applications load content dynamically using AJAX or Single
+Page Application (SPA) frameworks. If your userscript runs before an
+element exists on the page, DOM queries like
+<code>document.querySelector()</code> will return <code>null</code> and
+throw errors.</p>
+<p>To handle dynamic elements gracefully, wrap your logic inside a
+function that polls or observes DOM changes rather than executing
+immediately:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">waitForElement</span>(selector<span class="op">,</span> callback) {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> element <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(selector)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (element) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">callback</span>(element)<span class="op">;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span><span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> observer <span class="op">=</span> <span class="kw">new</span> <span class="bu">MutationObserver</span>((mutations<span class="op">,</span> obs) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">const</span> el <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(selector)<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (el) {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>            obs<span class="op">.</span><span class="fu">disconnect</span>()<span class="op">;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>            <span class="fu">callback</span>(el)<span class="op">;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    observer<span class="op">.</span><span class="fu">observe</span>(<span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">,</span> { <span class="dt">childList</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> <span class="dt">subtree</span><span class="op">:</span> <span class="kw">true</span> })<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>By inspecting console output, pausing execution with
+<code>debugger</code>, checking <code>@grant</code> headers, and
+accounting for asynchronous DOM loading, you can systematically diagnose
+and resolve issues in any userscript.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

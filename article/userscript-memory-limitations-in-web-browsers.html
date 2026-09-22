@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscript Memory Limitations in Web Browsers - userscript</title>
+    <meta name="description" content="Running resource-intensive userscripts through browser extensions like Tampermonkey or Violentmonkey can push web browsers to their performance limits. Because userscripts run within the context of web pages and rely on the browser's JavaScript engine, t">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscript-memory-limitations-in-web-browsers">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscript Memory Limitations in Web Browsers - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscript-memory-limitations-in-web-browsers" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Running resource-intensive userscripts through browser extensions like Tampermonkey or Violentmonkey can push web browsers to their performance limits. Because userscripts run within the context of web pages and rely on the browser's JavaScript engine, t" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="userscript-memory-limitations-in-web-browsers">Userscript Memory
+Limitations in Web Browsers</h1>
+<p>Running resource-intensive userscripts through browser extensions
+like Tampermonkey or Violentmonkey can push web browsers to their
+performance limits. Because userscripts run within the context of web
+pages and rely on the browser's JavaScript engine, they are subject to
+strict per-tab memory caps, garbage collection constraints, extension
+overhead, and operating system resource limits. Exceeding these
+boundaries leads to performance degradation, unresponsive tabs, or
+complete browser process crashes.</p>
+<h2 id="javascript-engine-heap-limits">JavaScript Engine Heap
+Limits</h2>
+<p>Browsers enforce hard limits on the maximum size of the JavaScript
+heap to prevent a single page or script from consuming all system
+RAM.</p>
+<ul>
+<li><strong>64-bit Engines:</strong> Modern 64-bit browsers (such as
+Chrome and Firefox) typically cap the V8 or SpiderMonkey heap size
+between 2 GB and 4 GB per process.</li>
+<li><strong>32-bit Engines:</strong> Older or constrained environments
+may limit the heap to around 1 GB to 1.5 GB.</li>
+</ul>
+<p>If a userscript allocates large datasets, buffers, or thousands of
+objects that push memory usage past this heap cap, the browser's
+JavaScript engine will throw an "Out of Memory" (OOM) error and
+immediately terminate the script context.</p>
+<h2 id="shared-tab-memory-and-process-isolation">Shared Tab Memory and
+Process Isolation</h2>
+<p>Userscripts do not run in isolated native environments; they share
+resources with the host web page.</p>
+<ul>
+<li><strong>DOM Overhead:</strong> Modifying, querying, or storing
+massive portions of the Document Object Model (DOM) consumes significant
+memory outside the core JavaScript heap.</li>
+<li><strong>Multi-Process Architecture:</strong> Browsers isolate tabs
+into separate OS processes. A heavy userscript shares its allocated
+process memory with the host site's scripts, stylesheets, and media,
+reducing the net memory available to the userscript itself.</li>
+</ul>
+<h2 id="garbage-collection-and-memory-leaks">Garbage Collection and
+Memory Leaks</h2>
+<p>JavaScript relies on automatic garbage collection (GC) to free
+unreferenced memory. Resource-intensive userscripts frequently encounter
+performance bottlenecks caused by GC behavior:</p>
+<ul>
+<li><strong>Retained References:</strong> Storing DOM nodes, event
+listeners, or large objects in global variables or persistent closures
+prevents the garbage collector from freeing memory.</li>
+<li><strong>GC Pauses (Jank):</strong> High memory churn—rapidly
+creating and destroying objects—forces the garbage collector to run
+frequently. This causes noticeable frame drops, UI freezing, and
+temporary memory spikes.</li>
+</ul>
+<h2 id="userscript-manager-extension-overhead">Userscript Manager
+Extension Overhead</h2>
+<p>Userscript managers add an extra layer of abstraction and memory
+consumption:</p>
+<ul>
+<li><strong>Sandboxing and API Overhead:</strong> Custom APIs provided
+by managers (such as <code>GM_setValue</code>,
+<code>GM_xmlhttpRequest</code>, or <code>GM_getResourceText</code>)
+serialize data when passing it between the content script context and
+the extension background script. Large payloads (e.g., base64 images or
+massive JSON responses) double or triple memory usage during
+serialization.</li>
+<li><strong>Storage Limits:</strong> Persistent storage APIs like
+<code>GM_setValue</code> rely on browser extension storage systems,
+which have strict payload size limits and can slow down execution if
+misused for large-scale data persistence.</li>
+</ul>
+<h2 id="browser-tab-discarding-and-os-throttling">Browser Tab Discarding
+and OS Throttling</h2>
+<p>When total system RAM runs low, operating systems and browsers
+actively manage memory:</p>
+<ul>
+<li><strong>Tab Discarding:</strong> Browsers like Chrome will
+automatically suspend or discard inactive background tabs running
+resource-heavy userscripts to reclaim memory for the active tab.</li>
+<li><strong>Background Throttling:</strong> Timers
+(<code>setInterval</code>, <code>setTimeout</code>) and asynchronous
+tasks in background tabs are heavily throttled, which can cause queues
+of pending tasks to build up, inadvertently raising memory usage over
+time.</li>
+</ul>
+<h2 id="mitigating-memory-constraints-in-userscripts">Mitigating Memory
+Constraints in Userscripts</h2>
+<p>To keep resource-heavy userscripts functioning within these
+boundaries, developers must implement efficient memory management
+practices:</p>
+<ol type="1">
+<li><strong>Use Typed Arrays:</strong> Work with
+<code>ArrayBuffer</code> and <code>Uint8Array</code> instead of standard
+JavaScript objects or strings when processing large binary or raw
+data.</li>
+<li><strong>Stream Data:</strong> Avoid loading multi-megabyte payloads
+entirely into memory; process data in chunks using streams where
+possible.</li>
+<li><strong>Clean Up Event Listeners:</strong> Explicitly remove event
+listeners and nullify references to unneeded DOM elements, closures, or
+global variables.</li>
+<li><strong>Offload Work:</strong> Delegate heavy computational tasks to
+Web Workers to run processing off the main UI thread.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Intercept GraphQL Queries and Mutations - userscript</title>
+    <meta name="description" content="Userscripts manipulate web applications directly in the browser, allowing developers to monitor, log, or modify network requests before they reach the server or after responses return. Because GraphQL operations typically rely on standard web transport A">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-intercept-graph-ql-queries-and-mutations">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Intercept GraphQL Queries and Mutations - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-intercept-graph-ql-queries-and-mutations" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts manipulate web applications directly in the browser, allowing developers to monitor, log, or modify network requests before they reach the server or after responses return. Because GraphQL operations typically rely on standard web transport A" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-intercept-graphql-queries-and-mutations">How
+Userscripts Intercept GraphQL Queries and Mutations</h1>
+<p>Userscripts manipulate web applications directly in the browser,
+allowing developers to monitor, log, or modify network requests before
+they reach the server or after responses return. Because GraphQL
+operations typically rely on standard web transport APIs like
+<code>fetch</code> or <code>XMLHttpRequest</code> (XHR), userscripts
+achieve interception by monkey-patching these built-in browser methods.
+This guide breaks down the core mechanisms userscripts use to detect,
+read, and alter GraphQL queries, mutations, and responses.</p>
+<h2 id="target-mechanisms-patching-web-apis">Target Mechanisms: Patching
+Web APIs</h2>
+<p>GraphQL queries and mutations are usually sent via HTTP POST requests
+containing a JSON payload with <code>query</code>,
+<code>variables</code>, and <code>operationName</code> fields. To
+intercept these requests, a userscript must hook into the API the web
+application uses to execute HTTP requests.</p>
+<h3 id="1-intercepting-windowfetch">1. Intercepting
+<code>window.fetch</code></h3>
+<p>Most modern web applications use the <code>fetch</code> API. A
+userscript overrides <code>window.fetch</code> with a custom function
+while preserving a reference to the original implementation.</p>
+<p>When a request is initiated:</p>
+<ol type="1">
+<li>The userscript's wrapper function intercepts the URL and request
+options (such as headers and body).</li>
+<li>The script parses the request body to check if it contains a
+<code>query</code> or <code>mutation</code> string or an
+<code>operationName</code>.</li>
+<li>If it matches a targeted GraphQL operation, the userscript can
+modify the payload (e.g., changing query variables) before passing the
+arguments to the original <code>fetch</code> call.</li>
+</ol>
+<h3 id="2-intercepting-xmlhttprequest-xhr">2. Intercepting
+<code>XMLHttpRequest</code> (XHR)</h3>
+<p>For applications utilizing XHR, userscripts patch
+<code>XMLHttpRequest.prototype.open</code> and
+<code>XMLHttpRequest.prototype.send</code>.</p>
+<ol type="1">
+<li><strong><code>open()</code> Patching:</strong> Stores request
+metadata, such as the HTTP method and target URL.</li>
+<li><strong><code>send()</code> Patching:</strong> Captures the outgoing
+request body. If the body contains a GraphQL JSON payload, the script
+can inspect or alter the payload prior to calling the original
+<code>send</code> method.</li>
+</ol>
+<h2 id="identifying-graphql-traffic">Identifying GraphQL Traffic</h2>
+<p>Because many applications use a single generic endpoint (e.g.,
+<code>/graphql</code>), URLs alone may not distinguish one operation
+from another. Userscripts identify specific queries and mutations by
+inspecting the request body structure:</p>
+<ul>
+<li><strong>Operation Name:</strong> Checked via
+<code>payload.operationName</code> to identify specific operations
+(e.g., <code>GetUserProfile</code>).</li>
+<li><strong>Query Contents:</strong> Evaluated via
+<code>payload.query</code> using regular expressions or string matching
+to detect whether the operation is a <code>query</code> or a
+<code>mutation</code>.</li>
+</ul>
+<h2 id="intercepting-and-modifying-graphql-responses">Intercepting and
+Modifying GraphQL Responses</h2>
+<p>To modify data returned by a GraphQL query or mutation, the
+userscript hooks into the response handling pipeline.</p>
+<ul>
+<li><strong>With <code>fetch</code>:</strong> The wrapped function waits
+for the original <code>fetch</code> promise to resolve. It clones the
+response using <code>response.clone()</code>, extracts the JSON payload,
+alters the <code>data</code> property, and resolves the promise with a
+new <code>Response</code> object constructed from the modified
+payload.</li>
+<li><strong>With XHR:</strong> The script overrides the
+<code>onreadystatechange</code> or <code>onload</code> event listeners
+on the <code>XMLHttpRequest</code> instance, modifying the
+<code>responseText</code> or <code>response</code> property before the
+application's callback functions execute.</li>
+</ul>
+<h2 id="context-execution-and-timing">Context Execution and Timing</h2>
+<p>Browser extensions and userscript managers run scripts in isolated
+execution contexts (sandboxes) for security. If a userscript patches
+<code>window.fetch</code> inside its isolated scope, it will not catch
+network calls made by the main application context.</p>
+<p>To ensure interception works properly:</p>
+<ul>
+<li><strong><code>unsafeWindow</code> Access:</strong> Scripts use
+<code>unsafeWindow.fetch</code> or
+<code>unsafeWindow.XMLHttpRequest</code> to patch the page's native
+global scope directly.</li>
+<li><strong>DOM Script Injection:</strong> The userscript creates a
+<code>&lt;script&gt;</code> element containing the interceptor code and
+appends it to <code>document.head</code> or
+<code>document.documentElement</code>.</li>
+<li><strong>Execution Timing:</strong> Setting the userscript to run at
+<code>@run-at document-start</code> ensures the interception logic runs
+before the web page executes its own scripts and establishes network
+calls.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

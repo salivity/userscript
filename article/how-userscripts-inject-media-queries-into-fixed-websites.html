@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Inject Media Queries into Fixed Websites - userscript</title>
+    <meta name="description" content="Userscripts transform rigid, fixed-width websites into mobile-friendly, responsive layouts by programmatically overriding existing CSS, modifying metadata, and injecting dynamic custom stylesheets directly into the browser's Document Object Model (DOM).">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-inject-media-queries-into-fixed-websites">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Inject Media Queries into Fixed Websites - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-inject-media-queries-into-fixed-websites" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts transform rigid, fixed-width websites into mobile-friendly, responsive layouts by programmatically overriding existing CSS, modifying metadata, and injecting dynamic custom stylesheets directly into the browser's Document Object Model (DOM)." />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-inject-media-queries-into-fixed-websites">How
+Userscripts Inject Media Queries into Fixed Websites</h1>
+<p>Userscripts transform rigid, fixed-width websites into
+mobile-friendly, responsive layouts by programmatically overriding
+existing CSS, modifying metadata, and injecting dynamic custom
+stylesheets directly into the browser's Document Object Model (DOM). By
+utilizing browser extensions like Tampermonkey or Violentmonkey, these
+scripts insert custom <code>@media</code> queries and manipulate
+viewport settings after the page loads. This article explains the exact
+technical process userscripts use to force fixed-width websites to adapt
+seamlessly to modern screen sizes.</p>
+<h2 id="1-injecting-or-modifying-the-viewport-meta-tag">1. Injecting or
+Modifying the Viewport Meta Tag</h2>
+<p>Fixed-width websites often lack a responsive viewport meta tag,
+causing mobile browsers to render the page at a scaled-down desktop
+width. Userscripts fix this fundamental issue by checking the document
+head and programmatically adding or updating the viewport tag before
+applying media queries.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> meta <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">querySelector</span>(<span class="st">&#39;meta[name=&quot;viewport&quot;]&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>meta) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    meta <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;meta&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    meta<span class="op">.</span><span class="at">name</span> <span class="op">=</span> <span class="st">&#39;viewport&#39;</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">document</span><span class="op">.</span><span class="at">head</span><span class="op">.</span><span class="fu">appendChild</span>(meta)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>meta<span class="op">.</span><span class="at">content</span> <span class="op">=</span> <span class="st">&#39;width=device-width, initial-scale=1.0&#39;</span><span class="op">;</span></span></code></pre></div>
+<p>Without this tag, media queries based on screen width
+(<code>max-width</code>) will fail to trigger correctly on mobile
+devices.</p>
+<h2 id="2-overriding-existing-rigid-css-rules">2. Overriding Existing
+Rigid CSS Rules</h2>
+<p>Fixed-width sites rely on hardcoded pixel values (e.g.,
+<code>width: 1200px;</code>). Userscripts bypass these restrictions by
+constructing CSS rules that use fluid units (like <code>%</code>,
+<code>vw</code>, or <code>max-width</code>) combined with the
+<code>!important</code> declaration to override existing stylesheet
+specifications.</p>
+<p>Key targets for overrides include:</p>
+<ul>
+<li>Converting fixed <code>width</code> properties to
+<code>max-width: 100%</code>.</li>
+<li>Setting container elements to <code>width: auto</code>.</li>
+<li>Changing absolute positioning or float layouts to flexible box
+(<code>display: flex</code>) or CSS Grid layouts.</li>
+</ul>
+<h2 id="3-injecting-the-css-with-custom-media-queries">3. Injecting the
+CSS with Custom <code>@media</code> Queries</h2>
+<p>Userscripts inject these new rules into the webpage through direct
+DOM manipulation or script manager helper functions like
+<code>GM_addStyle</code>.</p>
+<h3 id="method-a-native-dom-injection">Method A: Native DOM
+Injection</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> style <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;style&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>style<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="vs">`</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="vs">    @media screen and (max-width: 768px) {</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="vs">        #main-container, .wrapper, #header {</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="vs">            width: 100% !important;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="vs">            min-width: 0 !important;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="vs">            box-sizing: border-box !important;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="vs">        }</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="vs">        .sidebar {</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="vs">            float: none !important;</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="vs">            width: 100% !important;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="vs">        }</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">head</span><span class="op">.</span><span class="fu">appendChild</span>(style)<span class="op">;</span></span></code></pre></div>
+<h3 id="method-b-using-gm_addstyle">Method B: Using
+<code>GM_addStyle</code></h3>
+<p>Script managers provide <code>GM_addStyle</code>, which injects
+styles instantly without manually creating HTML nodes:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_addStyle</span>(<span class="vs">`</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="vs">    @media (max-width: 600px) {</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="vs">        body { padding: 10px !important; }</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="vs">        table { display: block !important; overflow-x: auto !important; }</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="vs">    }</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="vs">`</span>)<span class="op">;</span></span></code></pre></div>
+<h2 id="4-stripping-inline-style-attributes">4. Stripping Inline Style
+Attributes</h2>
+<p>Some older websites define fixed widths directly on HTML elements
+using inline styles (e.g.,
+<code>&lt;div style="width: 960px;"&gt;</code>). CSS media queries alone
+may struggle to override inline styles without high specificity.
+Userscripts run JavaScript loops to strip or modify these attributes
+dynamically:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="fu">querySelectorAll</span>(<span class="st">&#39;[style]&#39;</span>)<span class="op">.</span><span class="fu">forEach</span>(el <span class="kw">=&gt;</span> {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (el<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">width</span>) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        el<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">maxWidth</span> <span class="op">=</span> <span class="st">&#39;100%&#39;</span><span class="op">;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        el<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">width</span> <span class="op">=</span> <span class="st">&#39;auto&#39;</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="5-handling-dynamic-content-with-observers-and-matchmedia">5.
+Handling Dynamic Content with Observers and <code>matchMedia</code></h2>
+<p>For modern single-page applications or sites that render elements
+lazily, userscripts monitor layout changes using
+<code>MutationObserver</code> or execution triggers based on screen
+resizing with <code>window.matchMedia()</code>.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> mediaQuery <span class="op">=</span> <span class="bu">window</span><span class="op">.</span><span class="fu">matchMedia</span>(<span class="st">&#39;(max-width: 768px)&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">handleMobileLayout</span>(e) {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (e<span class="op">.</span><span class="at">matches</span>) {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Run JavaScript logic specific to mobile screens</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">add</span>(<span class="st">&#39;mobile-view&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">classList</span><span class="op">.</span><span class="fu">remove</span>(<span class="st">&#39;mobile-view&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>mediaQuery<span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;change&#39;</span><span class="op">,</span> handleMobileLayout)<span class="op">;</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">handleMobileLayout</span>(mediaQuery)<span class="op">;</span></span></code></pre></div>
+<p>By combining viewport normalization, CSS override injection, inline
+attribute removal, and JavaScript event listeners, userscripts
+effectively rebuild the layout pipeline of legacy fixed-width websites
+to render responsively across all devices.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

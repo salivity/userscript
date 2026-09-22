@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Access IndexedDB Safely? - userscript</title>
+    <meta name="description" content="Userscripts can safely interact with a website's IndexedDB database, provided they respect the browser's security boundaries and database transaction rules. Because userscripts execute within the target website's origin, they inherit full access to its I">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-access-indexed-db-safely">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Access IndexedDB Safely? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-access-indexed-db-safely" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can safely interact with a website's IndexedDB database, provided they respect the browser's security boundaries and database transaction rules. Because userscripts execute within the target website's origin, they inherit full access to its I" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-access-indexeddb-safely">Can Userscripts Access
+IndexedDB Safely?</h1>
+<p>Userscripts can safely interact with a website's IndexedDB database,
+provided they respect the browser's security boundaries and database
+transaction rules. Because userscripts execute within the target
+website's origin, they inherit full access to its IndexedDB instances.
+However, ensuring safety requires proper handling of asynchronous
+operations, schema versions, and execution timing to prevent data
+corruption or conflicts with the native application code.</p>
+<h2 id="how-userscripts-interact-with-indexeddb">How Userscripts
+Interact with IndexedDB</h2>
+<p>When a userscript runs via a browser extension like Tampermonkey or
+Violentmonkey, it operates within the context of the active webpage's
+origin. This means the script has direct access to the global
+<code>window.indexedDB</code> object.</p>
+<p>Because it shares the same origin as the host site, the userscript
+can:</p>
+<ul>
+<li>Open existing databases created by the website.</li>
+<li>Read, insert, update, and delete records within existing object
+stores.</li>
+<li>Listen for database events and transactions.</li>
+</ul>
+<h2 id="potential-risks-and-safety-concerns">Potential Risks and Safety
+Concerns</h2>
+<p>While technical access is seamless, unsafe interaction can break site
+functionality or compromise data. The primary risks include:</p>
+<h3 id="1-schema-conflicts">1. Schema Conflicts</h3>
+<p>Attempting to modify the database schema (such as adding or removing
+object stores) requires bumping the database version number. If a
+userscript triggers an <code>onupgradeneeded</code> event unexpectedly,
+it can disrupt the website's own database logic, leading to broken app
+states or lost data.</p>
+<h3 id="2-race-conditions-and-execution-timing">2. Race Conditions and
+Execution Timing</h3>
+<p>If a userscript attempts to read or write to IndexedDB before the
+host website has finished initializing its own connection, it can cause
+locking issues or unhandled exceptions. Setting the correct
+<code>@run-at</code> directive (such as <code>document-idle</code>)
+helps ensure the site's original scripts have completed primary
+setup.</p>
+<h3 id="3-unhandled-asynchronous-errors">3. Unhandled Asynchronous
+Errors</h3>
+<p>IndexedDB relies heavily on event-based asynchronous requests or
+Promises. Failing to catch transaction aborts or request errors in a
+userscript can trigger global unhandled error events on the host
+page.</p>
+<h3 id="4-data-security-and-privacy">4. Data Security and Privacy</h3>
+<p>Because any script running in the same origin can access IndexedDB,
+installed third-party userscripts have full access to sensitive stored
+data, such as cached tokens or user history. Users should only install
+userscripts from trusted sources.</p>
+<h2 id="best-practices-for-safe-interaction">Best Practices for Safe
+Interaction</h2>
+<p>To safely read or modify a website's IndexedDB data through a
+userscript, follow these guidelines:</p>
+<ul>
+<li><strong>Treat the Schema as Read-Only:</strong> Avoid altering
+database versions or modifying object store structures unless absolutely
+necessary. Interacting strictly with existing stores minimizes the risk
+of breaking site features.</li>
+<li><strong>Respect Existing Transactions:</strong> Perform operations
+in short-lived, explicit transactions (<code>readonly</code> or
+<code>readwrite</code>). Avoid keeping transactions open longer than
+needed to prevent blocking the website's native background
+processes.</li>
+<li><strong>Wait for Page Load:</strong> Use
+<code>@run-at document-idle</code> or wait for the
+<code>DOMContentLoaded</code> event before opening a connection to
+ensure the site's own database initialization has finished.</li>
+<li><strong>Wrap Requests in Promises:</strong> Modernize raw IndexedDB
+event calls by wrapping them in Promises or using light helper
+functions. This makes error handling cleaner and prevents uncaught
+errors from propagating to the host site.</li>
+<li><strong>Intercept or Reuse Existing Connections:</strong> Where
+possible, inspect the site's global scripts to see if an open database
+connection or API wrapper is already exposed on the <code>window</code>
+object, reducing the need to open secondary connections.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do You Specify Which Websites Userscripts Run On? - userscript</title>
+    <meta name="description" content="Userscripts customize your browsing experience by running custom JavaScript on targeted web pages, relying on specific metadata header rules to determine precisely where and when they execute. By using directives like @match, @include, and @exclude insid">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-you-specify-which-websites-userscripts-run-on">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do You Specify Which Websites Userscripts Run On? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-you-specify-which-websites-userscripts-run-on" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts customize your browsing experience by running custom JavaScript on targeted web pages, relying on specific metadata header rules to determine precisely where and when they execute. By using directives like @match, @include, and @exclude insid" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-you-specify-which-websites-userscripts-run-on">How Do You
+Specify Which Websites Userscripts Run On?</h1>
+<p>Userscripts customize your browsing experience by running custom
+JavaScript on targeted web pages, relying on specific metadata header
+rules to determine precisely where and when they execute. By using
+directives like <code>@match</code>, <code>@include</code>, and
+<code>@exclude</code> inside the script's header block, developers can
+control script execution down to exact URLs, domain patterns, or global
+wildcards. Understanding how to properly format these rules ensures your
+userscripts run efficiently on intended sites without inadvertently
+causing issues or security risks on others.</p>
+<hr />
+<h2 id="the-metadata-block">The Metadata Block</h2>
+<p>Every userscript begins with a top metadata block—a collection of
+comments containing key-value pairs that popular browser extensions
+(such as Tampermonkey, Violentmonkey, or Greasemonkey) parse before
+running the script.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Custom Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  A brief description of what the script does</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://www.example.com/*</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<p>Within this block, pattern-matching directives tell the extension
+engine which pages qualify for script injection.</p>
+<hr />
+<h2 id="primary-directives-for-url-matching">Primary Directives for URL
+Matching</h2>
+<h3 id="1-the-match-directive-recommended">1. The <code>@match</code>
+Directive (Recommended)</h3>
+<p>The <code>@match</code> directive is the modern standard for defining
+URL patterns. It uses a strict, standardized syntax consisting of three
+main parts: <code>&lt;scheme&gt;://&lt;host&gt;&lt;path&gt;</code>.</p>
+<ul>
+<li><strong>Scheme:</strong> Defines the protocol, such as
+<code>http</code>, <code>https</code>, or <code>*</code> (matching
+both).</li>
+<li><strong>Host:</strong> Specifies the domain name. You can use an
+asterisk (<code>*</code>) as a wildcard for subdomains (e.g.,
+<code>*.example.com</code>).</li>
+<li><strong>Path:</strong> Dictates the URL path after the domain (e.g.,
+<code>/search*</code> or <code>/*</code>).</li>
+</ul>
+<h4 id="common-match-examples">Common <code>@match</code> Examples</h4>
+<ul>
+<li><code>// @match https://example.com/</code> — Matches
+<strong>only</strong> the exact landing page via HTTPS.</li>
+<li><code>// @match https://example.com/*</code> — Matches <strong>all
+pages</strong> on <code>example.com</code>.</li>
+<li><code>// @match https://*.example.com/*</code> — Matches
+<code>example.com</code> and <strong>all of its subdomains</strong>
+(e.g., <code>blog.example.com</code>).</li>
+<li><code>// @match *://*/*</code> — Matches <strong>every
+website</strong> on both HTTP and HTTPS.</li>
+</ul>
+<hr />
+<h3 id="2-the-include-directive">2. The <code>@include</code>
+Directive</h3>
+<p>The <code>@include</code> directive is an older, more permissive rule
+format. While <code>@match</code> follows strict structure guidelines to
+prevent syntax errors, <code>@include</code> allows flexible wildcards
+anywhere in the string or even full Regular Expressions.</p>
+<ul>
+<li><strong>Wildcard Syntax:</strong>
+<code>// @include https://example.com/user/*/settings</code></li>
+<li><strong>Regular Expression Syntax:</strong>
+<code>// @include /^https:\/\/www\.example\.(com|org)\/.*$/</code></li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> While <code>@include</code> offers high
+flexibility through regular expressions, major user script managers
+recommend <code>@match</code> for better performance and security
+consistency across browsers.</p>
+</blockquote>
+<hr />
+<h3 id="3-the-exclude-directive">3. The <code>@exclude</code>
+Directive</h3>
+<p>The <code>@exclude</code> directive explicitly prevents a script from
+running on specified URLs, overriding any matching <code>@match</code>
+or <code>@include</code> rules. This is useful when you want a script to
+run across an entire domain except for a few specific pages, such as
+checkout or settings screens.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Global Site Enhancer</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @exclude      https://example.com/login</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @exclude      https://example.com/cart/*</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<hr />
+<h2 id="matching-multiple-domains">Matching Multiple Domains</h2>
+<p>If your userscript needs to run on several specific websites, declare
+multiple <code>@match</code> or <code>@include</code> lines inside the
+metadata block. The script manager evaluates all declarations and
+executes the script if any match condition is satisfied.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Multi-Site Utility</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*.github.com/*</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*.gitlab.com/*</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://*.bitbucket.org/*</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Convert a Bookmarklet to a Userscript - userscript</title>
+    <meta name="description" content="Converting a bookmarklet into a userscript transforms a browser-based, manually clicked JavaScript snippet into an automated, full-featured browser extension script. Userscripts run automatically on specified web pages using extension managers like Tampe">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-convert-a-bookmarklet-to-a-userscript">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Convert a Bookmarklet to a Userscript - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-convert-a-bookmarklet-to-a-userscript" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Converting a bookmarklet into a userscript transforms a browser-based, manually clicked JavaScript snippet into an automated, full-featured browser extension script. Userscripts run automatically on specified web pages using extension managers like Tampe" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-convert-a-bookmarklet-to-a-userscript">How to Convert a
+Bookmarklet to a Userscript</h1>
+<p>Converting a bookmarklet into a userscript transforms a
+browser-based, manually clicked JavaScript snippet into an automated,
+full-featured browser extension script. Userscripts run automatically on
+specified web pages using extension managers like Tampermonkey or
+Violentmonkey, unlocking advanced capabilities such as cross-origin HTTP
+requests, persistent storage, and automatic execution. This guide
+outlines the essential steps to extract, format, and enhance your
+bookmarklet code for seamless execution as a userscript.</p>
+<h2 id="1-extract-and-unescape-the-bookmarklet-code">1. Extract and
+Unescape the Bookmarklet Code</h2>
+<p>Bookmarklets are saved as URIs starting with
+<code>javascript:</code>. To turn one into a readable script:</p>
+<ol type="1">
+<li>Copy the bookmarklet link address.</li>
+<li>Remove the leading <code>javascript:</code> prefix.</li>
+<li>Decode the URL encoding (e.g., converting <code>%20</code> back into
+spaces, <code>%22</code> into double quotes, etc.) using a online URL
+decoder or browser console with <code>decodeURIComponent()</code>.</li>
+<li>Format (beautify) the JavaScript code so it is readable, as
+bookmarklets are typically minified into a single line.</li>
+</ol>
+<h2 id="2-create-the-userscript-metadata-block">2. Create the Userscript
+Metadata Block</h2>
+<p>Userscript managers require a specific header block (written in
+standard commented format) at the top of the file to determine when,
+where, and how the script runs.</p>
+<p>Create a new script in your script manager (e.g., Tampermonkey) and
+add a header similar to this:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         My Converted Script</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  Converted from a bookmarklet to run automatically.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @author       Your Name</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        none</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// @run-at       document-end</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<p>Key metadata directives:</p>
+<ul>
+<li><strong><code>@match</code> / <code>@include</code></strong>:
+Defines the URLs where the script should automatically run.</li>
+<li><strong><code>@grant</code></strong>: Specifies special API
+permissions (e.g., <code>GM_xmlhttpRequest</code>). Set to
+<code>none</code> if no special permissions are needed.</li>
+<li><strong><code>@run-at</code></strong>: Controls when the script
+executes (e.g., <code>document-end</code>, <code>document-start</code>,
+or <code>document-idle</code>).</li>
+</ul>
+<h2 id="3-restructure-the-executable-code">3. Restructure the Executable
+Code</h2>
+<p>Bookmarklets are usually wrapped in an Immediately Invoked Function
+Expression (IIFE) to avoid polluting the global variable scope:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">function</span>() {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Bookmarklet logic here</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<p>While IIFEs work inside userscripts, userscripts automatically run
+inside an isolated execution context (a sandbox). You can either keep
+the IIFE or remove it and place your code directly into the script
+file.</p>
+<p>If the original bookmarklet was intended to toggle an action or open
+a custom UI, adapt the code to handle automatic execution or create a
+visual trigger (like floating buttons or hotkeys) on the target
+page.</p>
+<h2 id="4-enhance-functionality-with-userscript-apis">4. Enhance
+Functionality with Userscript APIs</h2>
+<p>Userscripts overcome the security limitations imposed on standard
+bookmarklets. You can replace standard Web APIs with robust script
+manager APIs:</p>
+<ul>
+<li><strong>Cross-Origin Requests</strong>: Replace <code>fetch()</code>
+or <code>XMLHttpRequest</code> with <code>GM_xmlhttpRequest</code>
+(requires <code>@grant GM_xmlhttpRequest</code>) to bypass CORS
+restrictions.</li>
+<li><strong>Persistent Storage</strong>: Replace
+<code>localStorage</code> with <code>GM_setValue</code> and
+<code>GM_getValue</code> to retain data across different subdomains or
+browser sessions without risk of site scripts clearing it.</li>
+<li><strong>Custom Styles</strong>: Inject CSS rules cleanly using
+<code>GM_addStyle</code> instead of manually creating and appending
+<code>&lt;style&gt;</code> tags to the DOM.</li>
+</ul>
+<h2 id="5-install-and-test">5. Install and Test</h2>
+<ol type="1">
+<li>Save the newly created userscript within your script manager.</li>
+<li>Navigate to a web page matching your <code>@match</code>
+pattern.</li>
+<li>Open the browser Developer Tools Console (<code>F12</code>) to check
+for runtime errors.</li>
+<li>Adjust <code>@run-at</code> timing if your script attempts to
+manipulate DOM elements before they have loaded completely.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

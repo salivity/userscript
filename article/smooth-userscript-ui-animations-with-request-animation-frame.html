@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smooth Userscript UI Animations with requestAnimationFrame - userscript</title>
+    <meta name="description" content="Userscripts frequently modify, inject, or enhance web page elements, requiring high-performance animations to ensure custom interfaces feel native and fluid. By leveraging the window.requestAnimationFrame (rAF) API, userscripts can synchronize DOM update">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/smooth-userscript-ui-animations-with-request-animation-frame">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Smooth Userscript UI Animations with requestAnimationFrame - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/smooth-userscript-ui-animations-with-request-animation-frame" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts frequently modify, inject, or enhance web page elements, requiring high-performance animations to ensure custom interfaces feel native and fluid. By leveraging the window.requestAnimationFrame (rAF) API, userscripts can synchronize DOM update" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1
+id="smooth-userscript-ui-animations-with-requestanimationframe">Smooth
+Userscript UI Animations with requestAnimationFrame</h1>
+<p>Userscripts frequently modify, inject, or enhance web page elements,
+requiring high-performance animations to ensure custom interfaces feel
+native and fluid. By leveraging the
+<code>window.requestAnimationFrame</code> (rAF) API, userscripts can
+synchronize DOM updates directly with the browser’s display refresh
+rate. This approach prevents visual stuttering, minimizes CPU usage, and
+avoids layout thrashing compared to legacy timer functions like
+<code>setInterval</code> or <code>setTimeout</code>.</p>
+<h2
+id="understanding-windowrequestanimationframe-in-userscripts">Understanding
+window.requestAnimationFrame in Userscripts</h2>
+<p>The <code>window.requestAnimationFrame</code> API tells the browser
+that a script wants to perform an animation and requests that the
+browser call a specified function to update an animation before the next
+repaint.</p>
+<p>When writing userscripts—which execute in the context of an existing
+webpage—executing heavy JavaScript animations using standard loops or
+<code>setInterval</code> can block the main thread and cause frame
+drops. <code>requestAnimationFrame</code> solves this by pausing when
+the tab is inactive and executing code at optimal times (usually 60Hz or
+144Hz, depending on the user's monitor).</p>
+<h2 id="key-advantages-for-userscript-ui-development">Key Advantages for
+Userscript UI Development</h2>
+<ul>
+<li><strong>Synchronized Rendering:</strong> Code executes right before
+the browser repaints, preventing screen tearing and dropped frames.</li>
+<li><strong>Battery and Resource Efficiency:</strong> If a user switches
+to another browser tab, <code>requestAnimationFrame</code> automatically
+pauses execution, reducing unnecessary resource consumption on
+third-party sites.</li>
+<li><strong>Frame-Rate Independent Motion:</strong> The API passes a
+high-resolution timestamp to the callback function, allowing userscript
+developers to calculate exact time deltas for consistent speeds across
+different hardware.</li>
+</ul>
+<h2 id="practical-implementation-example">Practical Implementation
+Example</h2>
+<p>To animate a custom floating control panel or progress bar injected
+by a userscript, you can establish an animation loop using
+<code>requestAnimationFrame</code>.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Create and inject a custom UI element</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> panel <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>panel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">cssText</span> <span class="op">=</span> <span class="st">&#39;position: fixed; top: 0px; left: -200px; width: 200px; height: 50px; background: #333; color: #fff; z-index: 9999;&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>panel<span class="op">.</span><span class="at">textContent</span> <span class="op">=</span> <span class="st">&#39;Userscript Active&#39;</span><span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(panel)<span class="op">;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Animation variables</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> startTime <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> duration <span class="op">=</span> <span class="dv">500</span><span class="op">;</span> <span class="co">// Animation duration in milliseconds</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> startX <span class="op">=</span> <span class="op">-</span><span class="dv">200</span><span class="op">;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> endX <span class="op">=</span> <span class="dv">20</span><span class="op">;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">animatePanel</span>(timestamp) {</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>startTime) startTime <span class="op">=</span> timestamp<span class="op">;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> elapsed <span class="op">=</span> timestamp <span class="op">-</span> startTime<span class="op">;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Calculate progress as a value between 0 and 1</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> progress <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">min</span>(elapsed <span class="op">/</span> duration<span class="op">,</span> <span class="dv">1</span>)<span class="op">;</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Apply easing (ease-out cubic)</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> easeOut <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">pow</span>(<span class="dv">1</span> <span class="op">-</span> progress<span class="op">,</span> <span class="dv">3</span>)<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> currentX <span class="op">=</span> startX <span class="op">+</span> (endX <span class="op">-</span> startX) <span class="op">*</span> easeOut<span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Update element position</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    panel<span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="at">transform</span> <span class="op">=</span> <span class="vs">`translateX(</span><span class="sc">${</span>currentX <span class="op">-</span> startX<span class="sc">}</span><span class="vs">px)`</span><span class="op">;</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Continue animation if duration is not met</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (progress <span class="op">&lt;</span> <span class="dv">1</span>) {</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="bu">window</span><span class="op">.</span><span class="fu">requestAnimationFrame</span>(animatePanel)<span class="op">;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co">// Trigger the animation</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">requestAnimationFrame</span>(animatePanel)<span class="op">;</span></span></code></pre></div>
+<h2 id="best-practices-for-userscripts-using-raf">Best Practices for
+Userscripts Using rAF</h2>
+<h3 id="1-prefer-css-transforms-over-direct-layout-properties">1. Prefer
+CSS Transforms Over Direct Layout Properties</h3>
+<p>Always modify <code>transform</code> or <code>opacity</code> inside
+your rAF callback instead of layout-triggering properties like
+<code>top</code>, <code>left</code>, <code>width</code>, or
+<code>height</code>. Updating <code>transform</code> allows the GPU to
+process the animation, keeping main-thread tasks free for the underlying
+website.</p>
+<h3 id="2-handle-execution-contexts-properly">2. Handle Execution
+Contexts Properly</h3>
+<p>In userscript managers (such as Tampermonkey or Violentmonkey),
+scripts often run in a sandboxed execution context.
+<code>window.requestAnimationFrame</code> is accessible globally in both
+the page context and the grant context. However, if your userscript
+manipulates elements inside the target site's Shadow DOM, ensure target
+references remain valid across frames.</p>
+<h3 id="3-provide-proper-cleanup-mechanisms">3. Provide Proper Cleanup
+Mechanisms</h3>
+<p>If your userscript removes UI elements dynamically or stops an active
+script process, store the ID returned by
+<code>requestAnimationFrame</code> and call
+<code>window.cancelAnimationFrame(requestId)</code> to halt unnecessary
+function calls.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

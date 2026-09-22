@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purpose of @connect Directive in Userscripts - userscript</title>
+    <meta name="description" content="The @connect directive in userscripts is a security feature used by script managers like Tampermonkey, Violentmonkey, and Greasemonkey to restrict which external domains a script can communicate with using cross-origin request APIs. By requiring develope">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/purpose-of-connect-directive-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Purpose of @connect Directive in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/purpose-of-connect-directive-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @connect directive in userscripts is a security feature used by script managers like Tampermonkey, Violentmonkey, and Greasemonkey to restrict which external domains a script can communicate with using cross-origin request APIs. By requiring develope" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="purpose-of-connect-directive-in-userscripts">Purpose of @connect
+Directive in Userscripts</h1>
+<p>The <code>@connect</code> directive in userscripts is a security
+feature used by script managers like Tampermonkey, Violentmonkey, and
+Greasemonkey to restrict which external domains a script can communicate
+with using cross-origin request APIs. By requiring developers to
+explicitly declare target domains, the directive prevents malicious
+scripts from silently exfiltrating sensitive user data, contacting
+unauthorized servers, or performing unauthorized cross-site
+requests.</p>
+<h2
+id="understanding-the-need-for-security-in-userscripts">Understanding
+the Need for Security in Userscripts</h2>
+<p>Userscripts run directly within the context of your browser and often
+possess elevated privileges compared to normal web pages. Standard
+browser security enforces the Same-Origin Policy (SOP), which prevents
+web pages from freely making requests to different domains.</p>
+<p>To allow useful features—such as fetching price comparisons, pulling
+external API data, or downloading media—userscripts use custom APIs like
+<code>GM_xmlhttpRequest</code> or <code>GM.xmlHttpRequest</code>.
+Because these APIs bypass standard browser CORS restrictions, strict
+control mechanisms are necessary to prevent abuse.</p>
+<h2 id="core-functions-of-the-connect-directive">Core Functions of the
+<code>@connect</code> Directive</h2>
+<p>The <code>@connect</code> directive serves three main security and
+functional purposes:</p>
+<h3 id="1-explicit-domain-whitelisting">1. Explicit Domain
+Whitelisting</h3>
+<p>Developers use <code>@connect</code> in the metadata block to define
+the exact hostnames, domains, subdomains, or IP addresses the script
+intends to contact.</p>
+<p>Common declaration formats include:</p>
+<ul>
+<li><code>// @connect example.com</code> – Allows connections to
+<code>example.com</code> and its subdomains.</li>
+<li><code>// @connect api.example.com</code> – Restricts connections
+specifically to <code>api.example.com</code>.</li>
+<li><code>// @connect self</code> – Restricts connections to the domain
+of the current page the script is running on.</li>
+<li><code>// @connect *</code> – Allows connections to any domain
+(typically discouraged for security reasons).</li>
+</ul>
+<h3 id="2-user-permission-management-and-transparency">2. User
+Permission Management and Transparency</h3>
+<p>When a script attempts to make a network request via
+<code>GM_xmlhttpRequest</code>:</p>
+<ul>
+<li>If the target domain is listed in the <code>@connect</code>
+manifest, the userscript manager validates it against the user's
+settings.</li>
+<li>If the target domain is <strong>not</strong> listed, the manager
+intercepts the request and prompts the user with a security dialog,
+asking whether to allow or block the connection.</li>
+</ul>
+<p>This transparency ensures users are informed before any unexpected
+background traffic occurs.</p>
+<h3 id="3-preventing-data-exfiltration">3. Preventing Data
+Exfiltration</h3>
+<p>Without <code>@connect</code> enforcement, a compromised or malicious
+script could read sensitive information from a logged-in session (such
+as tokens, personal details, or cookies) and send it to a remote
+attacker-controlled server in the background. Restricting destination
+hosts mitigates this risk significantly.</p>
+<h2 id="best-practices-for-using-connect">Best Practices for Using
+<code>@connect</code></h2>
+<ul>
+<li><strong>Be Specific:</strong> Always list exact domains rather than
+broad wildcards (<code>*</code>) to maintain strong security defaults
+for users.</li>
+<li><strong>Declare All Destinations:</strong> Include primary APIs,
+fallbacks, and content delivery networks (CDNs) that the script relies
+on.</li>
+<li><strong>Respect User Choice:</strong> Avoid attempting to bypass
+security prompts if a user denies access to a specific domain.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

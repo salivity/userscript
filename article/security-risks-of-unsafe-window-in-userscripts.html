@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Risks of unsafeWindow in Userscripts - userscript</title>
+    <meta name="description" content="Granting the unsafeWindow permission to unknown userscripts poses severe security risks by breaking the JavaScript sandbox isolation between the extension context and the target webpage. This article explores how unsafeWindow exposes users to cross-site">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/security-risks-of-unsafe-window-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Security Risks of unsafeWindow in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/security-risks-of-unsafe-window-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Granting the unsafeWindow permission to unknown userscripts poses severe security risks by breaking the JavaScript sandbox isolation between the extension context and the target webpage. This article explores how unsafeWindow exposes users to cross-site" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="security-risks-of-unsafewindow-in-userscripts">Security Risks of
+unsafeWindow in Userscripts</h1>
+<p>Granting the <code>unsafeWindow</code> permission to unknown
+userscripts poses severe security risks by breaking the JavaScript
+sandbox isolation between the extension context and the target webpage.
+This article explores how <code>unsafeWindow</code> exposes users to
+cross-site scripting (XSS), privilege escalation, data theft, and
+prototype pollution, while explaining why granting this access to
+unverified scripts can compromise your web browser.</p>
+<h2 id="what-is-unsafewindow">What is <code>unsafeWindow</code>?</h2>
+<p>Browser extensions and userscript managers (like Tampermonkey or
+Violentmonkey) normally run scripts in a restricted, isolated context.
+This isolation prevents the webpage's JavaScript from accessing the
+userscript's privileges and vice versa.</p>
+<p>The <code>unsafeWindow</code> object bypasses this sandbox, giving
+the userscript direct access to the host page's global
+<code>window</code> object. While useful for modifying page variables or
+calling internal page functions, it creates a direct bridge between
+untrusted web content and privileged script execution.</p>
+<h2 id="key-security-risks">Key Security Risks</h2>
+<h3 id="1-privilege-escalation">1. Privilege Escalation</h3>
+<p>Userscripts often have elevated privileges, such as the ability to
+make cross-origin network requests (<code>GM.xmlHttpRequest</code>) or
+access local storage. If a userscript attaches a function or object to
+<code>unsafeWindow</code>, the underlying webpage's JavaScript can
+potentially exploit that object to execute commands with the
+userscript's elevated privileges. This allows malicious sites to perform
+unauthorized actions on other domains on behalf of the user.</p>
+<h3 id="2-cross-site-scripting-xss-exploitation">2. Cross-Site Scripting
+(XSS) Exploitation</h3>
+<p>An unknown or malicious userscript using <code>unsafeWindow</code>
+can easily inject executable code into the page's execution context.
+Alternatively, if a safe userscript handles <code>unsafeWindow</code>
+improperly, it can introduce DOM-based XSS vulnerabilities into an
+otherwise secure website. Attackers controlling the target website can
+manipulate objects on <code>unsafeWindow</code> to hijack the
+userscript's logic.</p>
+<h3 id="3-sensitive-data-theft">3. Sensitive Data Theft</h3>
+<p>By accessing <code>unsafeWindow</code>, a untrusted userscript can
+read global variables, session tokens, authentication state, and private
+data maintained by the host website. If the script is malicious, it can
+quietly exfiltrate this information to a remote server controlled by an
+attacker.</p>
+<h3 id="4-prototype-pollution">4. Prototype Pollution</h3>
+<p>Using <code>unsafeWindow</code> enables scripts to alter native
+JavaScript prototypes (such as <code>Object.prototype</code> or
+<code>Array.prototype</code>) on the target page. An unknown script can
+modify fundamental language behaviors on the page, leading to subtle
+bugs, broken website functionality, or additional execution vectors for
+secondary exploits.</p>
+<h2 id="safe-alternatives-to-unsafewindow">Safe Alternatives to
+<code>unsafeWindow</code></h2>
+<p>If script execution requires interacting with the page context, safer
+alternatives should be used instead of direct <code>unsafeWindow</code>
+access:</p>
+<ul>
+<li><strong><code>window.postMessage</code></strong>: Communicates
+between the userscript context and the page context safely via
+asynchronous messaging.</li>
+<li><strong><code>cloneInto</code> and
+<code>exportFunction</code></strong>: Allows specific functions or
+objects to be safely exposed to the page context without exposing the
+entire scope (available in environments supporting WebExtensions
+APIs).</li>
+<li><strong>DOM Injection</strong>: Injecting standard
+<code>&lt;script&gt;</code> tags directly into the page document runs
+the code entirely within the page context without granting elevated
+userscript privileges.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

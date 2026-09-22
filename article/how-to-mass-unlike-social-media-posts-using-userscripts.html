@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Mass Unlike Social Media Posts Using Userscripts - userscript</title>
+    <meta name="description" content="Over time, social media users accumulate thousands of liked posts, making manual removal extremely time-consuming. Userscripts solve this problem by running custom JavaScript directly inside your web browser to automate the unliking process. This article">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-mass-unlike-social-media-posts-using-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Mass Unlike Social Media Posts Using Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-mass-unlike-social-media-posts-using-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Over time, social media users accumulate thousands of liked posts, making manual removal extremely time-consuming. Userscripts solve this problem by running custom JavaScript directly inside your web browser to automate the unliking process. This article" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-mass-unlike-social-media-posts-using-userscripts">How to
+Mass Unlike Social Media Posts Using Userscripts</h1>
+<p>Over time, social media users accumulate thousands of liked posts,
+making manual removal extremely time-consuming. Userscripts solve this
+problem by running custom JavaScript directly inside your web browser to
+automate the unliking process. This article explains how userscripts
+interact with web pages, simulate user actions, handle dynamic content
+loading, and manage platform rate limits to efficiently clear your
+social media activity history.</p>
+<h2 id="what-is-a-userscript">What is a Userscript?</h2>
+<p>A userscript is a small snippet of JavaScript code executed on
+specific web pages. Users install these scripts through browser
+extensions like Tampermonkey, Violentmonkey, or Greasemonkey. Unlike
+standard browser extensions that alter browser functionality,
+userscripts specifically target and modify the structure and behavior of
+individual websites on the client side.</p>
+<h2 id="locating-and-interacting-with-web-elements">Locating and
+Interacting with Web Elements</h2>
+<p>Social media platforms store your liked content in an activity log or
+"Likes" tab. Every post on these pages contains HTML elements
+representing the "Unlike" or "Heart" button.</p>
+<p>Userscripts automate unliking by leveraging the browser's Document
+Object Model (DOM):</p>
+<ol type="1">
+<li><strong>Querying the DOM:</strong> The script uses methods like
+<code>document.querySelectorAll()</code> to search the page for specific
+buttons. It looks for unique indicators such as CSS classes, ARIA labels
+(e.g., <code>aria-label="Unlike"</code>), or SVG icons associated with
+liked posts.</li>
+<li><strong>Simulating Clicks:</strong> Once identified, the script
+loops through these button elements and executes a programmatic click
+command, such as <code>element.click()</code>. This triggers the same
+web request to the platform's servers as a manual user click.</li>
+</ol>
+<h2 id="handling-infinite-scroll-and-dynamic-content">Handling Infinite
+Scroll and Dynamic Content</h2>
+<p>Most social media feeds do not load all historical likes at once.
+Instead, they use dynamic loading, where new posts appear only when a
+user scrolls down the page.</p>
+<p>To handle this, automated userscripts include auto-scrolling
+logic:</p>
+<ul>
+<li>The script scrolls the browser window down using functions like
+<code>window.scrollTo(0, document.body.scrollHeight)</code>.</li>
+<li>It pauses to wait for the platform's servers to fetch and render the
+next batch of liked posts.</li>
+<li>Once the new elements appear in the DOM, the script queries for the
+new buttons and resumes the unliking loop.</li>
+</ul>
+<h2 id="managing-rate-limits-and-avoiding-bot-detection">Managing Rate
+Limits and Avoiding Bot Detection</h2>
+<p>Social media platforms monitor activity to prevent spam and automated
+bot behavior. Performing hundreds of unlikes in a few seconds can
+trigger anti-bot protections, resulting in temporary account blocks or
+CAPTCHAs.</p>
+<p>Effective userscripts prevent detection through several
+techniques:</p>
+<ul>
+<li><strong>Time Delays:</strong> Scripts introduce randomized delays
+(e.g., waiting 1 to 3 seconds) between each click using
+<code>setTimeout</code> or JavaScript <code>async/await</code>
+functions.</li>
+<li><strong>Batch Processing:</strong> The script may process posts in
+small groups, pausing for several minutes before starting the next
+batch.</li>
+<li><strong>Human Action Simulation:</strong> Some advanced scripts move
+the cursor or simulate slight scrolling variations to make the behavior
+look natural.</li>
+</ul>
+<h2 id="security-and-privacy-advantages">Security and Privacy
+Advantages</h2>
+<p>Using userscripts for account cleanup is generally safer than using
+third-party web apps or providing login credentials to external
+services. Because userscripts run directly within your active browser
+session, they utilize your existing session cookies. You never have to
+share your password, and all automated processing happens locally on
+your computer.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

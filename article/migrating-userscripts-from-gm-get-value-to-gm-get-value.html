@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrating Userscripts from GM_getValue to GM.getValue - userscript</title>
+    <meta name="description" content="Transitioning userscripts from legacy synchronous GMgetValue to modern asynchronous GM.getValue requires shifting from blocking code execution to Promise-based handling using async/await or .then() callbacks. Modern script managers introduced GM.getValue">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/migrating-userscripts-from-gm-get-value-to-gm-get-value">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Migrating Userscripts from GM_getValue to GM.getValue - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/migrating-userscripts-from-gm-get-value-to-gm-get-value" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Transitioning userscripts from legacy synchronous GMgetValue to modern asynchronous GM.getValue requires shifting from blocking code execution to Promise-based handling using async/await or .then() callbacks. Modern script managers introduced GM.getValue" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="migrating-userscripts-from-gm_getvalue-to-gmgetvalue">Migrating
+Userscripts from GM_getValue to GM.getValue</h1>
+<p>Transitioning userscripts from legacy synchronous
+<code>GM_getValue</code> to modern asynchronous <code>GM.getValue</code>
+requires shifting from blocking code execution to Promise-based handling
+using <code>async/await</code> or <code>.then()</code> callbacks. Modern
+script managers introduced <code>GM.getValue</code> to prevent UI thread
+blocking and align with web extension standards, forcing developers to
+refactor how script state is loaded. Developers manage this transition
+through code refactoring, polyfills, and modern JavaScript asynchronous
+patterns.</p>
+<h2
+id="understanding-the-synchronous-vs-asynchronous-model">Understanding
+the Synchronous vs. Asynchronous Model</h2>
+<p>The legacy <code>GM_getValue</code> function executes synchronously,
+returning the stored value immediately on the current execution thread.
+The modern <code>GM.getValue</code> API returns a <code>Promise</code>
+that resolves to the stored value once read operations complete
+asynchronously.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Legacy Synchronous Syntax</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> userTheme <span class="op">=</span> <span class="fu">GM_getValue</span>(<span class="st">&#39;theme&#39;</span><span class="op">,</span> <span class="st">&#39;dark&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(userTheme)<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Modern Asynchronous Syntax</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>GM<span class="op">.</span><span class="fu">getValue</span>(<span class="st">&#39;theme&#39;</span><span class="op">,</span> <span class="st">&#39;dark&#39;</span>)<span class="op">.</span><span class="fu">then</span>(userTheme <span class="kw">=&gt;</span> {</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(userTheme)<span class="op">;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="methods-for-handling-the-transition">Methods for Handling the
+Transition</h2>
+<h3 id="1-refactoring-logic-with-asyncawait">1. Refactoring Logic with
+Async/Await</h3>
+<p>The cleanest approach to transitioning code is converting top-level
+script execution or wrapper functions into <code>async</code> blocks and
+using <code>await</code>.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">async</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Await the asynchronous value retrieval</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> theme <span class="op">=</span> <span class="cf">await</span> GM<span class="op">.</span><span class="fu">getValue</span>(<span class="st">&#39;theme&#39;</span><span class="op">,</span> <span class="st">&#39;dark&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> layout <span class="op">=</span> <span class="cf">await</span> GM<span class="op">.</span><span class="fu">getValue</span>(<span class="st">&#39;layout&#39;</span><span class="op">,</span> <span class="st">&#39;compact&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Run DOM modifications after state is retrieved</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">applyTheme</span>(theme<span class="op">,</span> layout)<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>})()<span class="op">;</span></span></code></pre></div>
+<h3 id="2-batching-value-requests-with-promiseall">2. Batching Value
+Requests with Promise.all</h3>
+<p>Synchronous code often retrieved multiple settings sequentially.
+Doing this sequentially with <code>await</code> can introduce execution
+latency. Userscript developers fix this by resolving multiple
+<code>GM.getValue</code> promises concurrently using
+<code>Promise.all</code>.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">async</span> <span class="kw">function</span> <span class="fu">loadSettings</span>() {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">const</span> [theme<span class="op">,</span> notifications<span class="op">,</span> autoSave] <span class="op">=</span> <span class="cf">await</span> <span class="bu">Promise</span><span class="op">.</span><span class="fu">all</span>([</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        GM<span class="op">.</span><span class="fu">getValue</span>(<span class="st">&#39;theme&#39;</span><span class="op">,</span> <span class="st">&#39;dark&#39;</span>)<span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        GM<span class="op">.</span><span class="fu">getValue</span>(<span class="st">&#39;notifications&#39;</span><span class="op">,</span> <span class="kw">true</span>)<span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        GM<span class="op">.</span><span class="fu">getValue</span>(<span class="st">&#39;autoSave&#39;</span><span class="op">,</span> <span class="kw">false</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    ])<span class="op">;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> { theme<span class="op">,</span> notifications<span class="op">,</span> autoSave }<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h3 id="3-implementing-compatibility-polyfills">3. Implementing
+Compatibility Polyfills</h3>
+<p>To maintain single-codebase compatibility across older script
+managers supporting <code>GM_getValue</code> and modern extensions
+requiring <code>GM.getValue</code>, developers use polyfill scripts
+(such as the GM4 polyfill).</p>
+<p>A standard polyfill bridges the gap by wrapping synchronous legacy
+functions in Promises or exposing promises as fallback objects:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Example fallback check inside polyfills</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="kw">typeof</span> GM <span class="op">!==</span> <span class="st">&#39;undefined&#39;</span> <span class="op">&amp;&amp;</span> GM<span class="op">.</span><span class="at">getValue</span>) {</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Modern asynchronous API is supported natively</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    getValue <span class="op">=</span> GM<span class="op">.</span><span class="at">getValue</span><span class="op">;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (<span class="kw">typeof</span> GM_getValue <span class="op">!==</span> <span class="st">&#39;undefined&#39;</span>) {</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Wrap legacy synchronous API into an asynchronous Promise interface</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    getValue <span class="op">=</span> (name<span class="op">,</span> defaultValue) <span class="kw">=&gt;</span> {</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">Promise</span><span class="op">.</span><span class="fu">resolve</span>(<span class="fu">GM_getValue</span>(name<span class="op">,</span> defaultValue))<span class="op">;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    }<span class="op">;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="managing-application-flow-and-ui-rendering">Managing Application
+Flow and UI Rendering</h2>
+<p>Because <code>GM.getValue</code> is asynchronous, scripts can no
+longer rely on settings being available instantly during initial
+document parse or early execution phases.</p>
+<p>To adapt:</p>
+<ul>
+<li><strong>UI Delay:</strong> DOM elements dependent on stored
+preferences must be initialized inside the resolved Promise block.</li>
+<li><strong>Metadata Header Updates:</strong> Scripts using
+<code>GM.getValue</code> must declare <code>@grant GM.getValue</code>
+instead of <code>@grant GM_getValue</code> in their userscript metadata
+block.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding @contributionURL in Userscripts - userscript</title>
+    <meta name="description" content="The @contributionURL tag is a metadata directive used in userscript development to link users directly to a creator's donation page. By defining this tag within the metadata block of a script, developers provide users with a seamless way to financially s">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/understanding-contribution-url-in-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Understanding @contributionURL in Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/understanding-contribution-url-in-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="The @contributionURL tag is a metadata directive used in userscript development to link users directly to a creator's donation page. By defining this tag within the metadata block of a script, developers provide users with a seamless way to financially s" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="understanding-contributionurl-in-userscripts">Understanding
+@contributionURL in Userscripts</h1>
+<p>The <code>@contributionURL</code> tag is a metadata directive used in
+userscript development to link users directly to a creator's donation
+page. By defining this tag within the metadata block of a script,
+developers provide users with a seamless way to financially support
+their work directly through popular userscript managers like
+Tampermonkey, Violentmonkey, and Greasemonkey.</p>
+<h2 id="what-is-the-contributionurl-tag">What is the @contributionURL
+Tag?</h2>
+<p>In userscript development, the metadata block contains directives
+that tell the browser extension manager how the script should behave,
+where it should run, and who created it. The
+<code>@contributionURL</code> key is a optional header key designed
+specifically for monetization and community support.</p>
+<p>It allows script authors to attach a link pointing to funding
+platforms such as:</p>
+<ul>
+<li>PayPal</li>
+<li>Patreon</li>
+<li>Ko-fi</li>
+<li>GitHub Sponsors</li>
+<li>Custom donation pages</li>
+</ul>
+<h2 id="how-contributionurl-facilitates-donations">How @contributionURL
+Facilitates Donations</h2>
+<p>The <code>@contributionURL</code> tag bridges the gap between script
+creators and users who want to express gratitude for free tools. It
+facilitates donations through several mechanisms:</p>
+<h3 id="1-integrated-ui-support">1. Integrated UI Support</h3>
+<p>When a userscript manager detects the <code>@contributionURL</code>
+tag, it often renders a visible "Donate," "Contribute," or heart icon
+next to the script’s name in the manager's dashboard or popup menu.
+Users do not need to hunt through the source code or visit an external
+script repository to find a way to tip the author.</p>
+<h3 id="2-direct-to-payment-redirection">2. Direct-to-Payment
+Redirection</h3>
+<p>Clicking the contribution link within the extension interface
+immediately redirects the user to the developer's specified payment
+gateway. This reduces friction, making spontaneous donations more
+likely.</p>
+<h3 id="3-standardization-across-platforms">3. Standardization Across
+Platforms</h3>
+<p>Because <code>@contributionURL</code> is a recognized standard across
+main userscript managers, developers only need to define the URL once in
+their code. The user experience remains consistent regardless of whether
+a user runs Tampermonkey on Chrome, Violentmonkey on Firefox, or another
+setup.</p>
+<h2 id="syntax-and-implementation">Syntax and Implementation</h2>
+<p>To implement the tag, place it within the <code>==UserScript==</code>
+metadata block at the top of your JavaScript file:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Example Userscript</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @description  A useful script for browser customization.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @author       Your Name</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @contributionURL https://www.buymeacoffee.com/yourusername</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// ==/UserScript==</span></span></code></pre></div>
+<p>Some script managers also support optional parameters like
+<code>@contributionAmount</code> to suggest a default donation value,
+though <code>@contributionURL</code> is the primary tag required to
+enable the link.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Inject React into Webpages via Userscript - userscript</title>
+    <meta name="description" content="Injecting a React application into an existing webpage using a userscript allows developers to add custom, interactive interfaces to any website. The process involves creating a host container within the webpage's Document Object Model (DOM), loading the">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-to-inject-react-into-webpages-via-userscript">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How to Inject React into Webpages via Userscript - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-to-inject-react-into-webpages-via-userscript" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Injecting a React application into an existing webpage using a userscript allows developers to add custom, interactive interfaces to any website. The process involves creating a host container within the webpage's Document Object Model (DOM), loading the" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-to-inject-react-into-webpages-via-userscript">How to Inject
+React into Webpages via Userscript</h1>
+<p>Injecting a React application into an existing webpage using a
+userscript allows developers to add custom, interactive interfaces to
+any website. The process involves creating a host container within the
+webpage's Document Object Model (DOM), loading the React and ReactDOM
+libraries, and mounting the React component tree into that host
+container. This can be accomplished using plain JavaScript in userscript
+managers like Tampermonkey, or through modern build tools like Vite and
+Webpack.</p>
+<h2 id="step-1-set-up-the-userscript-metadata">Step 1: Set Up the
+Userscript Metadata</h2>
+<p>Userscript managers rely on a metadata block at the top of the script
+file. You need to define the target URLs with <code>@match</code> and
+load the React and ReactDOM libraries using <code>@require</code>
+directives if you are not bundling them directly into your build.</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         React Page Injector</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @require      https://unpkg.com/react@18/umd/react.production.min.js</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @require      https://unpkg.com/react-dom@18/umd/react-dom.production.min.js</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span></code></pre></div>
+<h2 id="step-2-create-a-host-element-in-the-dom">Step 2: Create a Host
+Element in the DOM</h2>
+<p>Before mounting the React app, you must create an HTML element to
+serve as the root container. Append this element to an appropriate
+location in the host webpage, such as <code>document.body</code> or a
+specific container on the page.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> appContainer <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>appContainer<span class="op">.</span><span class="at">id</span> <span class="op">=</span> <span class="st">&#39;my-custom-react-root&#39;</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="fu">appendChild</span>(appContainer)<span class="op">;</span></span></code></pre></div>
+<p>To prevent the target website's CSS from breaking your React app's
+styles (and vice versa), you can attach a Shadow DOM to this host
+element:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> shadowRoot <span class="op">=</span> appContainer<span class="op">.</span><span class="fu">attachShadow</span>({ <span class="dt">mode</span><span class="op">:</span> <span class="st">&#39;open&#39;</span> })<span class="op">;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> reactMountPoint <span class="op">=</span> <span class="bu">document</span><span class="op">.</span><span class="fu">createElement</span>(<span class="st">&#39;div&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>shadowRoot<span class="op">.</span><span class="fu">appendChild</span>(reactMountPoint)<span class="op">;</span></span></code></pre></div>
+<h2 id="step-3-define-the-react-component">Step 3: Define the React
+Component</h2>
+<p>If writing plain JavaScript without a build step, define components
+using <code>React.createElement</code>. If using JSX, compiling through
+a bundler like Babel, Vite, or Webpack is required before the userscript
+executes.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">App</span>() {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> React<span class="op">.</span><span class="fu">createElement</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;div&#39;</span><span class="op">,</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        { <span class="dt">style</span><span class="op">:</span> { <span class="dt">padding</span><span class="op">:</span> <span class="st">&#39;10px&#39;</span><span class="op">,</span> <span class="dt">background</span><span class="op">:</span> <span class="st">&#39;#fff&#39;</span><span class="op">,</span> <span class="dt">border</span><span class="op">:</span> <span class="st">&#39;1px solid #ccc&#39;</span> } }<span class="op">,</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&#39;Hello from injected React application!&#39;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    )<span class="op">;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<h2 id="step-4-mount-the-react-application">Step 4: Mount the React
+Application</h2>
+<p>Use <code>ReactDOM.createRoot</code> (for React 18+) to render the
+application into your created DOM element or shadow root.</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> <span class="bu">root</span> <span class="op">=</span> ReactDOM<span class="op">.</span><span class="fu">createRoot</span>(reactMountPoint <span class="op">||</span> appContainer)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">root</span><span class="op">.</span><span class="fu">render</span>(React<span class="op">.</span><span class="fu">createElement</span>(App))<span class="op">;</span></span></code></pre></div>
+<h2 id="step-5-build-automation-recommended">Step 5: Build Automation
+(Recommended)</h2>
+<p>For complex React applications containing JSX, CSS styles, or
+third-party packages, manually writing <code>React.createElement</code>
+is impractical. Using build plugins like <code>vite-plugin-monkey</code>
+simplifies this workflow by automatically bundling JSX code, CSS styles,
+and dependencies into a single <code>.user.js</code> file ready for
+installation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

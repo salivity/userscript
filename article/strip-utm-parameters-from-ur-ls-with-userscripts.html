@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strip UTM Parameters from URLs with Userscripts - userscript</title>
+    <meta name="description" content="Userscripts can automatically strip UTM tracking parameters from URLs before you navigate to a webpage. By running custom JavaScript through browser extensions like Tampermonkey or Violentmonkey, these scripts scan links on a webpage or intercept navigat">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/strip-utm-parameters-from-ur-ls-with-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Strip UTM Parameters from URLs with Userscripts - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/strip-utm-parameters-from-ur-ls-with-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can automatically strip UTM tracking parameters from URLs before you navigate to a webpage. By running custom JavaScript through browser extensions like Tampermonkey or Violentmonkey, these scripts scan links on a webpage or intercept navigat" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="strip-utm-parameters-from-urls-with-userscripts">Strip UTM
+Parameters from URLs with Userscripts</h1>
+<p>Userscripts can automatically strip UTM tracking parameters from URLs
+before you navigate to a webpage. By running custom JavaScript through
+browser extensions like Tampermonkey or Violentmonkey, these scripts
+scan links on a webpage or intercept navigation events to clean
+destination URLs in real-time. This guide breaks down how userscripts
+process and clean tracking parameters, the mechanisms behind
+pre-navigation URL cleaning, and key technical limitations to keep in
+mind.</p>
+<h2 id="how-userscripts-clean-urls-before-navigation">How Userscripts
+Clean URLs Before Navigation</h2>
+<p>Userscripts sanitize URLs primarily through two methods: proactive
+link rewriting and click event interception.</p>
+<h3 id="1-proactive-dom-link-rewriting">1. Proactive DOM Link
+Rewriting</h3>
+<p>As soon as a webpage loads, a userscript can query all anchor
+elements (<code>&lt;a&gt;</code> tags) present in the Document Object
+Model (DOM). The script inspects the <code>href</code> attribute of each
+link using JavaScript's native <code>URL</code> and
+<code>URLSearchParams</code> objects.</p>
+<p>When parameters such as <code>utm_source</code>,
+<code>utm_medium</code>, <code>utm_campaign</code>,
+<code>utm_term</code>, or <code>utm_content</code> are detected, the
+script deletes them from the URL search query and updates the link's
+<code>href</code> attribute. Because this modification happens
+immediately after the DOM renders, clicking any cleaned link navigates
+directly to the stripped URL without sending tracking parameters to the
+destination server.</p>
+<h3 id="2-event-listener-interception">2. Event Listener
+Interception</h3>
+<p>For dynamically generated links or single-page applications (SPAs)
+where link elements are inserted into the page after initial load,
+userscripts use event delegation.</p>
+<p>The script attaches a global <code>click</code> event listener to the
+<code>document</code> object. When a user clicks on a link, the event
+listener intercepts the click, checks if the target URL contains UTM
+parameters, strips them on the fly, and updates the target before the
+browser completes the request.</p>
+<h2 id="example-logic-used-by-userscripts">Example Logic Used by
+Userscripts</h2>
+<p>A basic functional workflow within a userscript involves parsing and
+cleaning the URL parameters:</p>
+<ol type="1">
+<li>Parse the target URL string using
+<code>new URL(link.href)</code>.</li>
+<li>Access query parameters using <code>url.searchParams</code>.</li>
+<li>Iterate through parameter keys and execute
+<code>searchParams.delete('utm_source')</code> alongside other targeted
+<code>utm_</code> tags.</li>
+<li>Reassign the updated URL back to the element using
+<code>link.href = url.toString()</code>.</li>
+</ol>
+<p>Advanced scripts can also target non-UTM tracking parameters, such as
+<code>fbclid</code> (Facebook), <code>gclid</code> (Google), or
+<code>msclkid</code> (Microsoft).</p>
+<h2 id="limitations-of-using-userscripts-for-url-stripping">Limitations
+of Using Userscripts for URL Stripping</h2>
+<p>While userscripts are effective for standard link interactions, they
+have specific limitations:</p>
+<ul>
+<li><strong>HTTP Redirects:</strong> If a server-side redirect
+introduces UTM parameters or routes through a tracking intermediate
+service, a userscript running on the source page cannot alter parameters
+added mid-redirect on the server side.</li>
+<li><strong>Direct Address Bar Navigation:</strong> Userscripts only run
+within the context of loaded web pages. Entering a URL with UTM
+parameters directly into the browser address bar will not trigger a
+userscript before the initial HTTP request is dispatched.</li>
+<li><strong>Network-Level Request Modification:</strong> Browsers
+restrict standard userscripts from altering outgoing raw network
+requests. Dedicated extensions utilizing APIs like
+<code>declarativeNetRequest</code> provide deeper network-level URL
+cleaning compared to DOM-based userscripts.</li>
+</ul>
+<p>Despite these boundaries, userscripts remain a lightweight and
+customizable solution for stripping UTM parameters from links prior to
+on-page navigation.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

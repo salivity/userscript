@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Userscript to Standalone Browser Extension - userscript</title>
+    <meta name="description" content="Yes, you can easily turn any userscript into a standalone browser extension for browsers like Chrome, Firefox, and Edge. By bundling your script with a simple WebExtension configuration file called a manifest, you eliminate the need for users to pre-inst">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/convert-userscript-to-standalone-browser-extension">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Convert Userscript to Standalone Browser Extension - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/convert-userscript-to-standalone-browser-extension" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, you can easily turn any userscript into a standalone browser extension for browsers like Chrome, Firefox, and Edge. By bundling your script with a simple WebExtension configuration file called a manifest, you eliminate the need for users to pre-inst" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="convert-userscript-to-standalone-browser-extension">Convert
+Userscript to Standalone Browser Extension</h1>
+<p>Yes, you can easily turn any userscript into a standalone browser
+extension for browsers like Chrome, Firefox, and Edge. By bundling your
+script with a simple WebExtension configuration file called a manifest,
+you eliminate the need for users to pre-install script managers like
+Tampermonkey or Violentmonkey. This article provides a direct,
+step-by-step guide on how to restructure your userscript into a fully
+functional browser extension.</p>
+<h2 id="why-convert-a-userscript-to-an-extension">Why Convert a
+Userscript to an Extension?</h2>
+<p>While userscript managers are great for local development, converting
+your userscript into a dedicated extension offers several key
+advantages:</p>
+<ul>
+<li><strong>Simpler User Experience:</strong> Non-technical users only
+need to install a single extension file or download it from a
+store.</li>
+<li><strong>Store Distribution:</strong> You can publish your tool
+directly to the Chrome Web Store, Firefox Add-ons, or Microsoft Edge
+Add-ons market.</li>
+<li><strong>Independent Execution:</strong> Your code runs isolated in
+its own context without relying on third-party manager updates.</li>
+</ul>
+<h2 id="required-extension-files">Required Extension Files</h2>
+<p>To package your userscript, create a dedicated directory containing
+three basic files:</p>
+<ol type="1">
+<li><strong><code>manifest.json</code></strong>: The metadata file that
+replaces the userscript header block.</li>
+<li><strong><code>content.js</code></strong>: Your actual JavaScript
+code (with the userscript metadata header removed).</li>
+<li><strong><code>icon.png</code></strong>: An image file (typically
+128x128 pixels) to serve as the extension icon.</li>
+</ol>
+<h2 id="step-by-step-conversion-process">Step-by-Step Conversion
+Process</h2>
+<h3 id="step-1-create-the-manifestjson-file">Step 1: Create the
+<code>manifest.json</code> File</h3>
+<p>The <code>manifest.json</code> file serves as the configuration hub
+for your browser extension. Create a file with this name in your
+extension folder and insert the following base layout (using Manifest
+V3):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;manifest_version&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;My Extension Name&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;1.0&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;A clear description of what your extension does.&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;icons&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;128&quot;</span><span class="fu">:</span> <span class="st">&quot;icon.png&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;content_scripts&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;matches&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;https://*.example.com/*&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;js&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;content.js&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;run_at&quot;</span><span class="fu">:</span> <span class="st">&quot;document_idle&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="step-2-translate-userscript-metadata-to-manifest-fields">Step 2:
+Translate Userscript Metadata to Manifest Fields</h3>
+<p>Map the metadata block from your existing userscript to the new
+<code>manifest.json</code> structure:</p>
+<ul>
+<li><strong><code>@name</code></strong> <span
+class="math inline">\(\rightarrow\)</span> <code>"name"</code></li>
+<li><strong><code>@version</code></strong> <span
+class="math inline">\(\rightarrow\)</span> <code>"version"</code></li>
+<li><strong><code>@match</code> / <code>@include</code></strong> <span
+class="math inline">\(\rightarrow\)</span> Place target URLs in the
+<code>"matches"</code> array inside <code>"content_scripts"</code>.</li>
+<li><strong><code>@run-at</code></strong> <span
+class="math inline">\(\rightarrow\)</span> Map to <code>"run_at"</code>
+(<code>document_start</code>, <code>document_end</code>, or
+<code>document_idle</code>).</li>
+<li><strong><code>@grant</code></strong> <span
+class="math inline">\(\rightarrow\)</span> Move required browser
+permissions (like <code>storage</code> or <code>activeTab</code>) into a
+top-level <code>"permissions"</code> array.</li>
+</ul>
+<h3 id="step-3-prepare-the-javascript-file">Step 3: Prepare the
+JavaScript File</h3>
+<p>Copy your userscript code into a new file named
+<code>content.js</code>. Delete the top <code>// ==UserScript==</code>
+header block completely, as the browser now relies entirely on
+<code>manifest.json</code> to control execution timing and matching
+sites.</p>
+<h3 id="step-4-test-the-extension-locally">Step 4: Test the Extension
+Locally</h3>
+<ol type="1">
+<li>Open your browser and navigate to the extension management page
+(e.g., <code>chrome://extensions</code> in Chrome/Edge, or
+<code>about:debugging</code> in Firefox).</li>
+<li>Enable <strong>Developer mode</strong> using the toggle switch.</li>
+<li>Click <strong>Load unpacked</strong> (or <strong>Load Temporary
+Add-on</strong>) and select your extension folder.</li>
+<li>Open a webpage matching your URL rules to verify that the script
+executes properly.</li>
+</ol>
+<h3 id="step-5-package-and-distribute">Step 5: Package and
+Distribute</h3>
+<p>To distribute your extension, select all files inside your project
+folder (<code>manifest.json</code>, <code>content.js</code>,
+<code>icon.png</code>) and compress them into a <code>.zip</code>
+archive. You can send this <code>.zip</code> file directly to users for
+manual installation or submit it to developer portals for Chrome,
+Firefox, and Edge.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

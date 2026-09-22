@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Do You Update Installed Userscripts? - userscript</title>
+    <meta name="description" content="Updating installed userscripts ensures you have access to the latest features, bug fixes, and security patches provided by the script developers. Most popular browser extension managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—handle thi">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-do-you-update-installed-userscripts">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Do You Update Installed Userscripts? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-do-you-update-installed-userscripts" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Updating installed userscripts ensures you have access to the latest features, bug fixes, and security patches provided by the script developers. Most popular browser extension managers—such as Tampermonkey, Violentmonkey, and Greasemonkey—handle thi" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-do-you-update-installed-userscripts">How Do You Update
+Installed Userscripts?</h1>
+<p>Updating installed userscripts ensures you have access to the latest
+features, bug fixes, and security patches provided by the script
+developers. Most popular browser extension managers—such as
+Tampermonkey, Violentmonkey, and Greasemonkey—handle this process
+automatically in the background, but you can also trigger updates
+manually at any time. This article covers how automatic updates work and
+provides step-by-step instructions for manually checking and updating
+your userscripts across major script managers.</p>
+<hr />
+<h2 id="how-automatic-updates-work">How Automatic Updates Work</h2>
+<p>By default, userscript managers regularly check the source repository
+(such as Greasy Fork, OpenUserJS, or GitHub) where you originally
+downloaded the script.</p>
+<ul>
+<li><strong>Version Comparison:</strong> The manager reads the
+<code>@version</code> tag in the script's metadata header. If the source
+metadata shows a higher version number than your installed copy, the
+extension downloads and installs the revision.</li>
+<li><strong>Update Frequency:</strong> Most managers check for updates
+once every 24 to 48 hours, though this interval can usually be adjusted
+in the extension's settings menu.</li>
+</ul>
+<blockquote>
+<p><strong>Note:</strong> If a script developer changes the update URL
+inside the script's metadata header (<code>@updateURL</code> or
+<code>@downloadURL</code>), your script manager may fail to detect new
+updates automatically.</p>
+</blockquote>
+<hr />
+<h2 id="how-to-manually-update-userscripts">How to Manually Update
+Userscripts</h2>
+<p>If a script seems broken or you know a new release is available, you
+do not need to wait for the automatic cycle. You can manually check for
+updates directly from your extension dashboard.</p>
+<h3 id="updating-in-tampermonkey">Updating in Tampermonkey</h3>
+<ol type="1">
+<li>Click the <strong>Tampermonkey icon</strong> in your browser
+toolbar.</li>
+<li>Select <strong>Dashboard</strong> to open your list of installed
+scripts.</li>
+<li>Locate the script you want to update.</li>
+<li>Click the <strong>Check for updates</strong> icon or the date shown
+in the <strong>Last Updated</strong> column.</li>
+<li>To update all scripts at once, click the <strong>Utilities</strong>
+tab at the top and select <strong>Check for updates</strong>.</li>
+</ol>
+<h3 id="updating-in-violentmonkey">Updating in Violentmonkey</h3>
+<ol type="1">
+<li>Click the <strong>Violentmonkey icon</strong> in your toolbar.</li>
+<li>Click the <strong>gear icon</strong> or select <strong>Open
+Dashboard</strong>.</li>
+<li>To update a single script, click the <strong>Check for
+updates</strong> icon next to that specific script.</li>
+<li>To update all scripts simultaneously, click the <strong>Check for
+updates</strong> button located at the top of the dashboard menu.</li>
+</ol>
+<h3 id="updating-in-greasemonkey-firefox">Updating in Greasemonkey
+(Firefox)</h3>
+<ol type="1">
+<li>Click the <strong>Greasemonkey icon</strong> in Firefox.</li>
+<li>Select <strong>Manage Scripts</strong> or open your browser's
+<strong>Add-ons Manager</strong> (<code>about:addons</code>).</li>
+<li>Find the userscript from your list.</li>
+<li>Click the <strong>gear icon</strong> or options menu next to the
+script and select <strong>Check for Updates</strong>.</li>
+</ol>
+<hr />
+<h2 id="troubleshooting-failed-updates">Troubleshooting Failed
+Updates</h2>
+<p>If a script fails to update, consider the following common
+solutions:</p>
+<ul>
+<li><strong>Reinstall the Script:</strong> Navigate back to the original
+website where you found the script (e.g., Greasy Fork) and click
+<strong>Install</strong>. Overwriting the existing file often fixes
+broken update URLs.</li>
+<li><strong>Check the Script Source:</strong> The developer may have
+discontinued the script or deleted the repository, which prevents
+further updates.</li>
+<li><strong>Permissions:</strong> Ensure your script manager has
+permission to access the web domain hosting the update file.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

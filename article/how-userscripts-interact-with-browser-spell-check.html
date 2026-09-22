@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Userscripts Interact With Browser Spell Check - userscript</title>
+    <meta name="description" content="Userscripts interact with a browser's native spell-checking features primarily through Document Object Model (DOM) manipulation, event handling, and HTML attribute management. While web browsers do not expose a direct JavaScript API to invoke or query th">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/how-userscripts-interact-with-browser-spell-check">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="How Userscripts Interact With Browser Spell Check - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/how-userscripts-interact-with-browser-spell-check" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts interact with a browser's native spell-checking features primarily through Document Object Model (DOM) manipulation, event handling, and HTML attribute management. While web browsers do not expose a direct JavaScript API to invoke or query th" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="how-userscripts-interact-with-browser-spell-check">How
+Userscripts Interact With Browser Spell Check</h1>
+<p>Userscripts interact with a browser's native spell-checking features
+primarily through Document Object Model (DOM) manipulation, event
+handling, and HTML attribute management. While web browsers do not
+expose a direct JavaScript API to invoke or query the native
+spell-checker, userscripts can enable, disable, or modify spell-checking
+behavior by altering webpage elements. This article explains how
+userscripts interface with native spell-check settings, overcome editor
+limitations, and manage text modifications.</p>
+<h2 id="controlling-the-native-spellcheck-attribute">Controlling the
+Native Spellcheck Attribute</h2>
+<p>Browsers determine whether to spell-check an input element based on
+the standard HTML <code>spellcheck</code> attribute. Userscripts can
+target form fields, textareas, and editable regions to toggle this
+feature programmatically.</p>
+<ul>
+<li><strong>Enabling Spell-Check:</strong> A userscript can select input
+fields where spell-checking is disabled by default and set
+<code>element.spellcheck = true</code> or
+<code>element.setAttribute('spellcheck', 'true')</code>.</li>
+<li><strong>Disabling Spell-Check:</strong> For code editors, custom
+fields, or input forms where red squiggly lines are undesirable,
+userscripts can set <code>element.spellcheck = false</code>.</li>
+</ul>
+<p>When a userscript modifies this attribute, the browser's rendering
+engine immediately updates its behavior for that specific DOM node.</p>
+<h2 id="interacting-with-rich-text-editors-and-frameworks">Interacting
+with Rich Text Editors and Frameworks</h2>
+<p>Modern web applications often replace standard
+<code>&lt;textarea&gt;</code> elements with custom rich text editors
+(such as CodeMirror, Monaco, or Draft.js) or
+<code>contenteditable</code> <code>&lt;div&gt;</code> elements.</p>
+<ul>
+<li><strong><code>contenteditable</code> Elements:</strong> Browsers
+natively support spell-checking on elements with the
+<code>contenteditable="true"</code> attribute. Userscripts can inspect
+these elements and enforce spell-checking rules just as they would with
+standard form inputs.</li>
+<li><strong>Custom Frameworks:</strong> Complex editors often disable
+native spell-checking by default to prevent visual conflicts with custom
+syntax highlighting or inline decorations. A userscript can force
+<code>spellcheck="true"</code> onto the underlying editable container,
+though this may occasionally result in overlapping visual cues between
+the browser's red underline and the editor's custom styling.</li>
+</ul>
+<h2 id="modifying-text-and-triggering-re-evaluation">Modifying Text and
+Triggering Re-evaluation</h2>
+<p>When a userscript automatically modifies, replaces, or auto-corrects
+text within an input field, it alters the underlying DOM node.</p>
+<ol type="1">
+<li><strong>DOM Mutation:</strong> The userscript updates the
+<code>value</code> property of an input/textarea or the
+<code>textContent</code>/<code>innerHTML</code> of a
+<code>contenteditable</code> element.</li>
+<li><strong>Native Re-checking:</strong> Once the text change occurs,
+the browser's background spell-check thread automatically re-evaluates
+the newly inserted text.</li>
+<li><strong>Event Dispatching:</strong> To ensure both the browser
+spell-checker and the website's internal scripts recognize the change,
+userscripts often dispatch synthetic <code>input</code> or
+<code>change</code> events:
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>element<span class="op">.</span><span class="at">value</span> <span class="op">=</span> <span class="st">&quot;Updated text&quot;</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>element<span class="op">.</span><span class="fu">dispatchEvent</span>(<span class="kw">new</span> <span class="bu">Event</span>(<span class="st">&#39;input&#39;</span><span class="op">,</span> { <span class="dt">bubbles</span><span class="op">:</span> <span class="kw">true</span> }))<span class="op">;</span></span></code></pre></div></li>
+</ol>
+<h2 id="browser-isolation-and-api-limitations">Browser Isolation and API
+Limitations</h2>
+<p>Userscripts run in an isolated JavaScript context (often referred to
+as an "Isolated World"). This design introduces specific technical
+boundaries regarding native spell-checking:</p>
+<ul>
+<li><strong>No Direct Access to Dictionary Data:</strong> Userscripts
+cannot read the browser's custom user dictionary, check individual words
+against the native dictionary programmatically, or add words to the
+native dictionary via JavaScript.</li>
+<li><strong>No Access to Native UI Context Menus:</strong> The native
+context menu options (such as "Add to dictionary" or native spelling
+suggestions) are handled entirely by the browser operating system layer.
+Userscripts cannot directly manipulate these native context menu items
+unless they create a completely custom, overlay-based context menu in
+the DOM.</li>
+</ul>
+<p>To implement custom spell-checking features—such as integrated
+medical dictionaries or multi-language checking—userscripts typically
+bypass the browser's native engine entirely by fetching suggestions from
+external APIs or embedding lightweight third-party spell-checking
+libraries.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

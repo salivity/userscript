@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Userscripts in Selenium and Puppeteer Automation - userscript</title>
+    <meta name="description" content="Userscripts play a vital role in automated software testing by allowing developers and QA engineers to execute custom JavaScript directly within the browser context managed by tools like Selenium and Puppeteer. By injecting userscripts into automated ses">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/userscripts-in-selenium-and-puppeteer-automation">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Userscripts in Selenium and Puppeteer Automation - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/userscripts-in-selenium-and-puppeteer-automation" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts play a vital role in automated software testing by allowing developers and QA engineers to execute custom JavaScript directly within the browser context managed by tools like Selenium and Puppeteer. By injecting userscripts into automated ses" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="userscripts-in-selenium-and-puppeteer-automation">Userscripts in
+Selenium and Puppeteer Automation</h1>
+<p>Userscripts play a vital role in automated software testing by
+allowing developers and QA engineers to execute custom JavaScript
+directly within the browser context managed by tools like Selenium and
+Puppeteer. By injecting userscripts into automated sessions, testing
+teams can manipulate the Document Object Model (DOM), mock application
+states, bypass tedious user interface flows, and run custom assertions
+directly inside the page environment. This approach significantly speeds
+up test execution, simplifies complex interactions, and improves test
+reliability.</p>
+<h2 id="what-are-userscripts-in-automation">What Are Userscripts in
+Automation?</h2>
+<p>Userscripts are snippets of JavaScript code designed to alter web
+page behavior or appearance on the client side. In automated testing,
+web automation frameworks use these scripts to perform actions that
+standard framework APIs might find slow, complex, or restricted by
+browser security policies. Instead of driving the browser strictly
+through external protocol commands, userscripts execute natively inside
+the page's execution context.</p>
+<h2 id="core-roles-of-userscripts-in-automated-testing">Core Roles of
+Userscripts in Automated Testing</h2>
+<h3 id="1-direct-dom-manipulation-and-state-control">1. Direct DOM
+Manipulation and State Control</h3>
+<p>Standard framework actions like clicking elements or typing text rely
+on simulated hardware events, which can be slow or hindered by dynamic
+UI components. Userscripts allow testers to modify the DOM directly,
+change input values, toggle hidden elements, or instantly update the
+application state without waiting for sequential UI renders.</p>
+<h3 id="2-mocking-data-and-network-requests">2. Mocking Data and Network
+Requests</h3>
+<p>By injecting scripts before a page loads, testers can override native
+browser APIs such as <code>fetch()</code> or
+<code>XMLHttpRequest</code>. This enables seamless API mocking, allowing
+tests to run consistently under simulated network conditions or specific
+backend data responses without relying on live servers.</p>
+<h3 id="3-bypassing-ui-barriers">3. Bypassing UI Barriers</h3>
+<p>Certain workflows—such as multi-factor authentication, third-party
+payment gateways, or complex animation sequences—can introduce flakiness
+into automated suites. Userscripts can set local storage data, inject
+session cookies, or remove blocking overlays to navigate the browser
+directly to the target state.</p>
+<h3 id="4-efficient-in-page-assertions">4. Efficient In-Page
+Assertions</h3>
+<p>Instead of repeatedly querying elements over the driver protocol,
+userscripts can perform complex validations in bulk within the browser's
+memory. The script evaluates the page state locally and returns a single
+result back to the test runner, significantly reducing network
+overhead.</p>
+<h2 id="implementing-userscripts-in-selenium-and-puppeteer">Implementing
+Userscripts in Selenium and Puppeteer</h2>
+<h3 id="in-selenium">In Selenium</h3>
+<p>Selenium provides the <code>execute_script</code> (or
+<code>execute_async_script</code>) method to run JavaScript within the
+current page context. For scripts that need to execute before any page
+scripts run, Selenium can leverage the Chrome DevTools Protocol
+(CDP):</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Runtime execution in Selenium (JavaScript binding)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> driver<span class="op">.</span><span class="fu">executeScript</span>(<span class="st">&quot;document.querySelector(&#39;#admin-panel&#39;).style.display = &#39;block&#39;;&quot;</span>)<span class="op">;</span></span></code></pre></div>
+<h3 id="in-puppeteer">In Puppeteer</h3>
+<p>Puppeteer provides native, first-class support for script injection
+both prior to page load and during execution:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Injecting a script before page load in Puppeteer</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> page<span class="op">.</span><span class="fu">evaluateOnNewDocument</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">window</span><span class="op">.</span><span class="at">isAutomatedTest</span> <span class="op">=</span> <span class="kw">true</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  localStorage<span class="op">.</span><span class="fu">setItem</span>(<span class="st">&#39;user_role&#39;</span><span class="op">,</span> <span class="st">&#39;admin&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">// Executing code on the current page</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> page<span class="op">.</span><span class="fu">evaluate</span>(() <span class="kw">=&gt;</span> {</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">window</span><span class="op">.</span><span class="fu">scrollTo</span>(<span class="dv">0</span><span class="op">,</span> <span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">scrollHeight</span>)<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h2 id="best-practices-for-using-userscripts">Best Practices for Using
+Userscripts</h2>
+<ul>
+<li><strong>Keep Scripts Modular:</strong> Write small, single-purpose
+scripts rather than large blocks of monolithic code to keep tests
+maintainable.</li>
+<li><strong>Isolate Test Logic:</strong> Ensure injected scripts do not
+permanently alter standard browser behavior in ways that negatively
+affect subsequent test cases.</li>
+<li><strong>Combine with Framework Actions:</strong> Use userscripts for
+setup, teardown, and heavy state manipulation, but rely on native
+framework interactions for validating core end-to-end user paths.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

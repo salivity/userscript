@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync Userscript Settings Between Firefox and Chrome - userscript</title>
+    <meta name="description" content="Synchronizing userscripts and their associated settings across Firefox and Chrome relies on userscript managers leveraging cloud storage services or web extension APIs. While native browser sync features (Firefox Sync and Chrome Sync) operate in isolated">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/sync-userscript-settings-between-firefox-and-chrome">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sync Userscript Settings Between Firefox and Chrome - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/sync-userscript-settings-between-firefox-and-chrome" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Synchronizing userscripts and their associated settings across Firefox and Chrome relies on userscript managers leveraging cloud storage services or web extension APIs. While native browser sync features (Firefox Sync and Chrome Sync) operate in isolated" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="sync-userscript-settings-between-firefox-and-chrome">Sync
+Userscript Settings Between Firefox and Chrome</h1>
+<p>Synchronizing userscripts and their associated settings across
+Firefox and Chrome relies on userscript managers leveraging cloud
+storage services or web extension APIs. While native browser sync
+features (Firefox Sync and Chrome Sync) operate in isolated ecosystems,
+modern userscript managers bridge this gap using third-party cloud
+providers like Google Drive, Dropbox, or WebDAV servers. This article
+explains how userscript managers transfer settings and script data
+between Firefox and Chrome, the technical mechanisms behind the sync
+process, and how to configure cross-browser synchronization.</p>
+<h2 id="why-native-browser-sync-is-not-enough">Why Native Browser Sync
+Is Not Enough</h2>
+<p>Native synchronization features like Chrome Sync and Firefox Sync are
+restricted to their respective browser families. A Google account cannot
+natively push extension data to a Firefox account due to different
+backend architectures and security boundaries.</p>
+<p>Because of this limitation, userscript managers (such as Tampermonkey
+or Violentmonkey) must act as the synchronization layer. They abstract
+the settings data away from the browser's internal engine and handle
+cross-platform data transfers independently.</p>
+<h2 id="how-userscript-managers-sync-data">How Userscript Managers Sync
+Data</h2>
+<p>Userscripts store two distinct types of data:</p>
+<ol type="1">
+<li><strong>Script Code:</strong> The JavaScript files executing on
+target websites.</li>
+<li><strong>Script Settings and Storage:</strong> Persistent user
+configurations, preferences, and state data saved using the
+<code>GM_setValue</code> and <code>GM_getValue</code> APIs.</li>
+</ol>
+<p>To sync both elements between Chrome and Firefox, managers use
+specific cloud integration methods:</p>
+<h3 id="1-external-cloud-storage-integration">1. External Cloud Storage
+Integration</h3>
+<p>The most reliable method for cross-browser synchronization uses
+third-party cloud services. Userscript managers integrate with providers
+like Google Drive, Dropbox, and OneDrive via OAuth authentication.</p>
+<ul>
+<li><strong>Export Phase:</strong> When a setting changes or a script is
+edited in Chrome, the userscript manager serializes the script code,
+internal metadata, and <code>GM_setValue</code> data into a single
+structured file (usually JSON). It then uploads this file to an isolated
+app folder on the cloud service.</li>
+<li><strong>Import Phase:</strong> On Firefox, the manager periodically
+polls the cloud service or receives a trigger upon startup. It downloads
+the JSON file, parses the data, and updates the local storage in
+Firefox's extension environment.</li>
+</ul>
+<h3 id="2-webdav-protocol">2. WebDAV Protocol</h3>
+<p>For users who prefer self-hosted solutions or private cloud setups
+(such as Nextcloud), many script managers support WebDAV. The syncing
+process remains identical to commercial cloud storage: settings and
+script states are formatted and pushed to an HTTP server endpoint, which
+the secondary browser fetches and applies.</p>
+<h3 id="3-the-role-of-browserstoragesync">3. The Role of
+<code>browser.storage.sync</code></h3>
+<p>Inside a single browser environment, extensions use the WebExtension
+API <code>browser.storage.sync</code> (or
+<code>chrome.storage.sync</code>) to synchronize small amounts of data
+across devices logged into the same browser account.</p>
+<p>However, when syncing between Firefox and Chrome, managers use local
+extension storage (<code>storage.local</code>) to stage data before
+transferring it to external cloud services, ensuring that
+browser-specific limits on storage size do not corrupt larger script
+settings.</p>
+<h2 id="setting-up-cross-browser-userscript-sync">Setting Up
+Cross-Browser Userscript Sync</h2>
+<p>To enable settings synchronization between Firefox and Chrome, follow
+these general steps inside your chosen userscript manager:</p>
+<ol type="1">
+<li><strong>Install the Same Manager:</strong> Use the same userscript
+extension (e.g., Tampermonkey or Violentmonkey) on both Chrome and
+Firefox.</li>
+<li><strong>Access Extension Settings:</strong> Open the options page of
+the manager in your primary browser.</li>
+<li><strong>Enable Cloud Sync:</strong> Locate the <strong>Sync</strong>
+or <strong>Cloud Storage</strong> tab in the settings.</li>
+<li><strong>Choose a Provider:</strong> Select a shared service
+accessible from both browsers, such as Google Drive or Dropbox.</li>
+<li><strong>Include Script Storage:</strong> Ensure the option to sync
+<strong>Script Values</strong> or <strong>Factory Settings</strong> is
+checked so custom script variables (<code>GM_setValue</code>) are
+included alongside the code.</li>
+<li><strong>Authenticate and Connect:</strong> Log into the cloud
+service to grant access.</li>
+<li><strong>Repeat on the Second Browser:</strong> Open the manager in
+the target browser, select the same cloud provider, and authenticate
+with the same credentials. The manager will fetch the synced payload and
+apply your settings.</li>
+</ol></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

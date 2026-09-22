@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting Userscripts to Localhost Desktop APIs - userscript</title>
+    <meta name="description" content="Yes, userscripts can communicate with external desktop applications using localhost APIs hosted on your local machine. This capability enables browser extensions and userscripts to trigger local actions, control desktop software, or retrieve system data">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/connecting-userscripts-to-localhost-desktop-ap-is">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Connecting Userscripts to Localhost Desktop APIs - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/connecting-userscripts-to-localhost-desktop-ap-is" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Yes, userscripts can communicate with external desktop applications using localhost APIs hosted on your local machine. This capability enables browser extensions and userscripts to trigger local actions, control desktop software, or retrieve system data" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="connecting-userscripts-to-localhost-desktop-apis">Connecting
+Userscripts to Localhost Desktop APIs</h1>
+<p>Yes, userscripts can communicate with external desktop applications
+using localhost APIs hosted on your local machine. This capability
+enables browser extensions and userscripts to trigger local actions,
+control desktop software, or retrieve system data directly from the web
+browser. This article covers how this connection works, the differences
+between standard browser APIs and userscript privileges, security
+considerations, and best practices for establishing communication.</p>
+<h2 id="how-communication-works">How Communication Works</h2>
+<p>Desktop applications can host a lightweight local HTTP or WebSocket
+server listening on loopback addresses like
+<code>http://localhost:PORT</code> or
+<code>http://127.0.0.1:PORT</code>. Userscripts executed by extension
+managers like Tampermonkey, Violentmonkey, or Greasemonkey can send
+requests to these local endpoints to send commands or exchange data.</p>
+<p>There are two primary methods for making these requests:</p>
+<h3 id="1-standard-browser-apis-fetch-or-xmlhttprequest">1. Standard
+Browser APIs (<code>fetch</code> or <code>XMLHttpRequest</code>)</h3>
+<p>Userscripts can use standard web APIs like <code>fetch()</code> to
+send HTTP requests to a local server. However, requests made this way
+are strictly governed by the browser's Same-Origin Policy (SOP) and
+Cross-Origin Resource Sharing (CORS) rules.</p>
+<ul>
+<li><strong>CORS Requirement:</strong> The desktop app’s local HTTP
+server must explicitly include CORS headers in its responses, such as
+<code>Access-Control-Allow-Origin: *</code> or specific origins, along
+with handling preflight <code>OPTIONS</code> requests.</li>
+<li><strong>Private Network Access (PNA):</strong> Modern browsers
+restrict public websites from making subresource requests to local
+endpoints (<code>127.0.0.1</code> or <code>localhost</code>). If a
+userscript runs on a public website (e.g.,
+<code>https://example.com</code>), standard <code>fetch</code> requests
+to <code>localhost</code> may be blocked by browser PNA security
+policies.</li>
+</ul>
+<h3 id="2-userscript-specific-apis-gm_xmlhttprequest">2.
+Userscript-Specific APIs (<code>GM_xmlhttpRequest</code>)</h3>
+<p>Userscript managers provide elevated privilege functions like
+<code>GM_xmlhttpRequest</code> (or <code>GM.xmlHttpRequest</code>) that
+execute requests outside the web page's standard sandboxed context.</p>
+<ul>
+<li><strong>Bypassing CORS and PNA:</strong>
+<code>GM_xmlhttpRequest</code> bypasses browser CORS restrictions and
+Private Network Access checks, making it the most reliable method for
+connecting to local desktop applications.</li>
+<li><strong>Metadata Configuration:</strong> To use this feature, the
+userscript must request permission in its header block using
+<code>@grant</code> and specify the local host using
+<code>@connect</code>:</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">// @name         Desktop App Connector</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">// @namespace    http://tampermonkey.net/</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">// @version      1.0</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">// @match        https://example.com/*</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// @grant        GM_xmlhttpRequest</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">// @connect      127.0.0.1</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">// @connect      localhost</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">// ==UserScript==</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">GM_xmlhttpRequest</span>({</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">method</span><span class="op">:</span> <span class="st">&quot;POST&quot;</span><span class="op">,</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="dt">url</span><span class="op">:</span> <span class="st">&quot;http://127.0.0.1:8080/api/action&quot;</span><span class="op">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dt">headers</span><span class="op">:</span> {</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;Content-Type&quot;</span><span class="op">:</span> <span class="st">&quot;application/json&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="dt">data</span><span class="op">:</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>({ <span class="dt">command</span><span class="op">:</span> <span class="st">&quot;doSomething&quot;</span> })<span class="op">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="dt">onload</span><span class="op">:</span> <span class="kw">function</span>(response) {</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Desktop app response:&quot;</span><span class="op">,</span> response<span class="op">.</span><span class="at">responseText</span>)<span class="op">;</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="dt">onerror</span><span class="op">:</span> <span class="kw">function</span>(error) {</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">error</span>(<span class="st">&quot;Connection failed:&quot;</span><span class="op">,</span> error)<span class="op">;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<h3 id="3-websockets-websocket">3. WebSockets
+(<code>WebSocket</code>)</h3>
+<p>For real-time, two-way communication, desktop apps can host a
+WebSocket server on <code>ws://127.0.0.1:PORT</code>. Userscripts can
+initialize a standard <code>new WebSocket("ws://127.0.0.1:PORT")</code>
+connection to stream data back and forth without polling HTTP endpoints
+repeatedly.</p>
+<h2 id="security-best-practices">Security Best Practices</h2>
+<p>Allowing browser scripts to interact with local desktop applications
+introduces security risks. Malicious websites could attempt to send
+unauthorized requests to your local API if it is left unprotected.</p>
+<ul>
+<li><strong>Implement Authentication:</strong> Use an API key, bearer
+token, or unique session token generated by the desktop app that the
+user must copy into the userscript settings.</li>
+<li><strong>Validate Origin Headers:</strong> Check incoming
+<code>Origin</code> headers on the local server to verify where requests
+originate when using standard HTTP/WebSocket APIs.</li>
+<li><strong>Restrict Actions:</strong> Ensure the local API only exposes
+necessary operations and does not allow arbitrary system command
+execution without user confirmation.</li>
+</ul></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>

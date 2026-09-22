@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Userscripts Read and Modify LocalStorage? - userscript</title>
+    <meta name="description" content="Userscripts can fully read, modify, create, and delete data stored in a website's local storage. Because userscripts execute JavaScript directly within the browser, they have access to the same web storage APIs as the host site. This capability enables s">
+    <link rel="canonical" href="https://salivity.github.io/userscript/article/can-userscripts-read-and-modify-local-storage">
+    <link rel="search" type="application/opensearchdescription+xml" title="userscript" href="/userscript/opensearch.xml">
+    <link rel="icon" href="/userscript/favicon.ico">
+    <link rel="stylesheet" href="/userscript/css/style.css">
+    <link media="print" rel="stylesheet" href="/userscript/css/print.css">
+    <script src="/userscript/js/fuse.min.js"></script>
+    <script src="/userscript/js/script.js"></script>
+    <script id="MathJax-script" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/4.1.3/tex-chtml.min.js" defer></script>
+    <script src="/monetize/monetize.js"></script>
+    <script src="/social/social.js"></script>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Can Userscripts Read and Modify LocalStorage? - userscript" />
+    <meta property="og:url" content="https://salivity.github.io/userscript/article/can-userscripts-read-and-modify-local-storage" />
+    <meta property="og:image" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:secure_url" content="https://salivity.github.io/userscript/images/open-graph/default.webp" />
+    <meta property="og:image:width" content="1120" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:description" content="Userscripts can fully read, modify, create, and delete data stored in a website's local storage. Because userscripts execute JavaScript directly within the browser, they have access to the same web storage APIs as the host site. This capability enables s" />
+    <link rel="manifest" href="/userscript/pwa/manifest.json" />
+</head>
+<body>
+    <header>
+        <a href="/userscript/" aria-label="Go To Home Page" title="Go To Home Page" id="logo">
+            <span>salivity.github.io/</span><span>userscript</span>
+        </a>
+        <nav>
+            <ul class="header-links">
+                <li><a href="/userscript/search" title="Search" aria-label="Go To Search Page"><svg class="svg-icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"></path></svg></a></li>
+                <li><a id="theme-toggle" title="Theme" href="javascript:void(0);" aria-label="Toggle Website Theme"></a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        
+    <div class="article-layout">
+        <aside id="profile-sidebar" class="profile-column" aria-label="Author Profile"></aside>
+        <div class="article-main-column">
+            <article><h1 id="can-userscripts-read-and-modify-localstorage">Can Userscripts
+Read and Modify LocalStorage?</h1>
+<p>Userscripts can fully read, modify, create, and delete data stored in
+a website's local storage. Because userscripts execute JavaScript
+directly within the browser, they have access to the same web storage
+APIs as the host site. This capability enables scripts to customize site
+behavior, override saved user preferences, or inspect stored data, but
+it also means untrusted userscripts pose a security risk if they attempt
+to access sensitive information.</p>
+<h2 id="how-userscripts-interact-with-localstorage">How Userscripts
+Interact with LocalStorage</h2>
+<p>When a userscript runs on a specific webpage, it operates within the
+context of that page's origin. This gives the script standard access to
+the browser's <code>window.localStorage</code> object. Using standard
+JavaScript methods, a userscript can execute the following
+operations:</p>
+<ul>
+<li><strong>Read data:</strong> <code>localStorage.getItem('key')</code>
+retrieves existing values saved by the website or previous script
+executions.</li>
+<li><strong>Modify or write data:</strong>
+<code>localStorage.setItem('key', 'value')</code> overwrites existing
+entries or creates new ones.</li>
+<li><strong>Delete data:</strong>
+<code>localStorage.removeItem('key')</code> removes specific entries,
+while <code>localStorage.clear()</code> wipes all stored data for that
+domain.</li>
+</ul>
+<p>In script managers like Tampermonkey, Violentmonkey, or Greasemonkey,
+setting <code>@grant none</code> allows direct access to the page's
+standard <code>window.localStorage</code>. If a script uses sandbox
+restrictions (with <code>@grant</code> APIs active), it can still access
+page storage using the <code>unsafeWindow.localStorage</code>
+reference.</p>
+<h2 id="the-same-origin-policy-barrier">The Same-Origin Policy
+Barrier</h2>
+<p>Userscripts are bound by the browser's Same-Origin Policy regarding
+standard <code>localStorage</code>. A userscript running on
+<code>https://example.com</code> can only interact with the local
+storage associated with <code>https://example.com</code>. It cannot
+directly read or modify the local storage of a different domain, such as
+<code>https://another-site.com</code>.</p>
+<p>To store data persistently across multiple websites without relying
+on the target site's storage, userscript developers typically use
+manager-specific APIs like <code>GM_setValue</code> and
+<code>GM_getValue</code> instead of <code>localStorage</code>.</p>
+<h2 id="security-implications">Security Implications</h2>
+<p>Because local storage often holds session tokens, cached user data,
+and UI settings, granting access to an untrusted userscript carries
+security risks. A malicious userscript could silently read
+authentication tokens or personal data stored in
+<code>localStorage</code> and exfiltrate that information to a remote
+server using network requests. Users should always inspect the code of
+third-party userscripts before installation to ensure they handle local
+storage securely.</p></article>
+        <div id="comments-container"></div>
+        <script>
+            const utterancesScript = document.createElement('script');
+            utterancesScript.setAttribute('src', 'https://utteranc.es/client.js');
+            utterancesScript.setAttribute('repo', 'salivity/userscript'); 
+            utterancesScript.setAttribute('issue-term', 'pathname'); 
+            utterancesScript.setAttribute('theme', localStorage.getItem('theme') === 'dark' ? 'github-dark' : 'github-light'); 
+            utterancesScript.setAttribute('crossorigin', 'anonymous');
+            utterancesScript.async = true;
+            document.getElementById('comments-container').appendChild(utterancesScript);
+        </script>
+    
+        </div>
+    </div>
+    
+    </main>
+    <footer>
+        <nav>
+            <ul class="social-links">
+            </ul>
+        </nav>
+        <nav>
+            <ul class="footer-links">
+                <li><a href="/userscript/privacy-policy">Privacy Policy</a></li>
+                <li><a href="/userscript/terms-and-conditions">Terms and Conditions</a></li>
+            </ul>
+        </nav>
+        <div class="copyright">
+            Copyright &copy; <span id="current-year"></span>
+        </div>
+    </footer>
+</body>
+</html>
